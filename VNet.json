@@ -48,6 +48,7 @@
         "json": {
             "ddosPlanId": "[json(concat('{\"id\": \"', parameters('ddosPlanId'), '\"}'))]"
         },
+
         // validate the data passed into the subnet_additional_names and subnet_additional_addresses parameters
         // are subnet_additional_names and subnet_additional_addresses empty arrays?
         "subnet_additional_names_notEmpty": "[not(empty(parameters('subnet_additional_names')))]",
@@ -58,7 +59,7 @@
 
         // populate the validated variables for deployment
         // pass the parameters to the _validated variables if all checks out
-        // if all does NOT check out set the _validated variables to dummy data and  subnet_additional_deploy to false
+        // if all does NOT check out set the _validated variables to dummy data and subnet_additional_deploy to false
         "subnet_additional_names_validated": "[if(and(variables('subnet_additional_names_notEmpty'), variables('subnet_additional_parameters_match')), parameters('subnet_additional_names'), array('Infra-10.0.0.192'))]",
         "subnet_additional_addresses_validated": "[if(and(variables('subnet_additional_addresses_notEmpty'), variables('subnet_additional_parameters_match')), parameters('subnet_additional_addresses'), array('10.0.0.192/27'))]",
         "subnet_additional_deploy": "[and(variables('subnet_additional_names_notEmpty'), variables('subnet_additional_parameters_match'))]"
@@ -170,18 +171,6 @@
             "condition": "[not(variables('subnet_additional_deploy'))]",
             "type": "string",
             "value": "The count of subnet_additional_names does not match the count of subnet_additional_addresses, or one/both of the parameters is/are blank."
-        },
-        "subnet_additional_names_validated": {
-            "type": "array",
-            "value": "[variables('subnet_additional_names_validated')]"
-        },
-        "subnet_additional_addresses_validated": {
-            "type": "array",
-            "value": "[variables('subnet_additional_addresses_validated')]"
-        },
-        "subnet_additional_deploy": {
-            "type": "bool",
-            "value": "[variables('subnet_additional_deploy')]"
         }
     }
 }
