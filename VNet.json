@@ -1,0 +1,166 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetwork_name": {
+            "type": "string"
+        },
+        "virtualNetwork_addressSpace": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnet_gateway_addressSpace": {
+            "type": "string"
+        },
+        "subnet_firewall_addressSpace": {
+            "type": "string",
+            "defaultValue": "0.0.0.0/0"
+        },
+        "subnet_bastion_addressSpace": {
+            "type": "string",
+            "defaultValue": "0.0.0.0/0"
+        },
+        "subnet_additional_names": {
+            "type": "array",
+            "defaultValue": [
+                "Infra-10.0.0.192"
+            ]
+        },
+        "subnet_additional_addresses": {
+            "type": "array",
+            "defaultValue": [
+                "10.0.0.192/27"
+            ]
+        },
+        "ddosPlanId": {
+            "type": "string",
+            "defaultValue": "NONE"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {
+        "constants": {
+            "NsgAppendix": "-NSG"
+        },
+        "json": {
+            "ddosPlanId": "[json(concat('{\"id\": \"', parameters('ddosPlanId'), '\"}'))]"
+        },
+        "subnet_additional_names_validated": "[if(equals(length(parameters('subnet_additional_names')), length(parameters('subnet_additional_addresses'))), parameters('subnet_additional_names'), array('Infra-10.0.0.192'))]",
+        "subnet_additional_addresses_validated": "[if(equals(length(parameters('subnet_additional_names')), length(parameters('subnet_additional_addresses'))), parameters('subnet_additional_addresses'), array('10.0.0.192/27'))]",
+        "subnet_additional_deploy": "[equals(length(parameters('subnet_additional_names')), length(parameters('subnet_additional_addresses')))]"
+    },
+    "functions": [],
+    "resources": [
+        {
+            "name": "[parameters('virtualNetwork_name')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetwork_addressSpace')]"
+                    ]
+                },
+                "enableDdosProtection": "[if(equals(parameters('ddosPlanId'), 'NONE'), 'false', 'true')]",
+                "enableVmProtection": false,
+                "ddosProtectionPlan": "[if(equals(parameters('ddosPlanId'), 'NONE'), json('null'), variables('json').ddosPlanId)]"
+            },
+            "resources": [
+                {
+                    "condition": "[not(equals(parameters('subnet_gateway_addressSpace'), '0.0.0.0/0'))]",
+                    "type": "subnets",
+                    "apiVersion": "2020-11-01",
+                    "name": "GatewaySubnet",
+                    "dependsOn": [
+                        "[parameters('virtualNetwork_name')]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet_gateway_addressSpace')]"
+                    }
+                },
+                {
+                    "condition": "[not(equals(parameters('subnet_firewall_addressSpace'), '0.0.0.0/0'))]",
+                    "type": "subnets",
+                    "apiVersion": "2020-11-01",
+                    "name": "AzureFirewallSubnet",
+                    "dependsOn": [
+                        "[parameters('virtualNetwork_name')]",
+                        "GatewaySubnet"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet_firewall_addressSpace')]"
+                    }
+                },
+                {
+                    "condition": "[not(equals(parameters('subnet_bastion_addressSpace'), '0.0.0.0/0'))]",
+                    "type": "subnets",
+                    "apiVersion": "2020-11-01",
+                    "name": "AzureBastionSubnet",
+                    "dependsOn": [
+                        "[parameters('virtualNetwork_name')]",
+                        "GatewaySubnet",
+                        "AzureFirewallSubnet"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet_bastion_addressSpace')]"
+                    }
+                }
+            ]
+        },
+        {
+            "condition": "[variables('subnet_additional_deploy')]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetwork_name'), '/', variables('subnet_additional_names_validated')[copyIndex()])]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork_name'))]",
+                "nsgLoop"
+            ],
+            "properties": {
+                "addressPrefix": "[variables('subnet_additional_addresses_validated')[copyIndex()]]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('subnet_additional_names_validated')[copyIndex()], variables('constants').NsgAppendix))]"
+                }
+            },
+            "copy": {
+                "name": "subnetCopy",
+                "count": "[length(variables('subnet_additional_names_validated'))]",
+                "mode": "Serial"
+            }
+        },
+        {
+            "condition": "[variables('subnet_additional_deploy')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(variables('subnet_additional_names_validated')[copyIndex()], variables('constants').NsgAppendix)]",
+            "location": "[parameters('location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            },
+            "copy": {
+                "name": "nsgLoop",
+                "count": "[length(variables('subnet_additional_names_validated'))]",
+                "mode": "Parallel"
+            }
+        }
+    ],
+    "outputs": {
+        "vNetId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork_name'))]"
+        },
+        "errorOutput": {
+            "condition": "[not(variables('subnet_additional_deploy'))]",
+            "type": "string",
+            "value": "The count of subnet_additional_names does not match the count of subnet_additional_addresses."
+        }
+    }
+}

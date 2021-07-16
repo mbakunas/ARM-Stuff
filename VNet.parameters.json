@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetwork_name": {
+            "value": "VNet-Hub-EastUS2-01"
+        },
+        "virtualNetwork_addressSpace": {
+            "value": "10.0.0.0/23"
+        },
+        "subnet_gateway_addressSpace": {
+            "value": "10.0.0.0/26"
+        },
+        "subnet_firewall_addressSpace": {
+            "value": "10.0.0.64/26"
+        },
+        "subnet_bastion_addressSpace": {
+            "value": "10.0.0.128/26"
+        },
+        "subnet_additional_names": {
+            "value": [
+                "Infra-10.0.0.192",
+                "JumpHosts-10.0.0.224",
+                "Hub1-10.0.1.0",
+                "Hub2-10.0.1.64",
+                "Hub3-10.0.1.128",
+                "Hub4-10.0.1.192"
+            ]
+        },
+        "subnet_additional_addresses": {
+            "value": [
+                "10.0.0.192/27",
+                "10.0.0.224/27",
+                "10.0.1.0/26",
+                "10.0.1.64/26",
+                "10.0.1.128/26"
+            ]
+        }
+    }
+}
