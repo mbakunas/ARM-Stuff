@@ -60,6 +60,7 @@
         // populate the validated variables for deployment
         // pass the parameters to the _validated variables if all checks out
         // if all does NOT check out set the _validated variables to dummy data and subnet_additional_deploy to false
+        //   the deployment will succeed, but no NSGs or additional subnets will be deployed, and a message will appear in the output
         "subnet_additional_names_validated": "[if(and(variables('subnet_additional_names_notEmpty'), variables('subnet_additional_parameters_match')), parameters('subnet_additional_names'), array('Infra-10.0.0.192'))]",
         "subnet_additional_addresses_validated": "[if(and(variables('subnet_additional_addresses_notEmpty'), variables('subnet_additional_parameters_match')), parameters('subnet_additional_addresses'), array('10.0.0.192/27'))]",
         "subnet_additional_deploy": "[and(variables('subnet_additional_names_notEmpty'), variables('subnet_additional_parameters_match'))]"
