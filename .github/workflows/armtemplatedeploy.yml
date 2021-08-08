@@ -18,4 +18,13 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDS }}
+      
+      - name: Deploy Resource Group
+        uses: Azure/arm-deploy@v1
+        with:
+          scope: subscription
+          subscriptionId: fac1ea11-e5a7-4e74-8d7e-965344c54f56 # Bakunas Sandbox 3
+          region: East US 2
+          template: ./Testing/ResourceGroup.json
+          deploymentName: ResourceGroupDeploy
 
