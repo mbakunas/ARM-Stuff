@@ -1,14 +1,22 @@
 # This is a basic workflow to help you get started with Actions
 
 name: armTemplateDeployment
+env:
+  azureRegion: East US 2
+  subscriptionId: fac1ea11-e5a7-4e74-8d7e-965344c54f56 # Bakunas Sandbox 3
+  networkResourceGroupName: Test-01
 
 # Controls when the workflow will run
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 
 jobs:
   armDeploy:
+    name: Deploy ARM Templates
     runs-on: ubuntu-latest
 
     steps:
@@ -19,12 +27,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDS }}
       
-      - name: Deploy Resource Group
+      - name: Deploy Resource Group ${{ env.networkResourceGroupName }}
         uses: Azure/arm-deploy@v1
         with:
           scope: subscription
-          subscriptionId: fac1ea11-e5a7-4e74-8d7e-965344c54f56 # Bakunas Sandbox 3
-          region: East US 2
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{ env.azureRegion }}
           template: ./Testing/ResourceGroup.json
-          deploymentName: ResourceGroupDeploy
+          parameters:
+            resourceGroup_Name=${{ env.networkResourceGroupName }}
+          deploymentName: ResourceGroupDeploy-${{ env.networkResourceGroupName }}
 
