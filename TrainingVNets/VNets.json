@@ -1,0 +1,406 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        //Hub VNet
+        "hubVnet_Name": {
+            "type": "String"
+        },
+        "hubVnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_gatewaySubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureFirewallSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureBastionSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //Spoke 1 VNet
+        "spoke1Vnet_Name": {
+            "type": "String"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //Spoke 2 VNet
+        "spoke2Vnet_Name": {
+            "type": "String"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "constants": {
+            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets will be deployed here
+            "SecondaryRegion": "centralus" //Spoke 2 VNet will be deployed here
+        }
+    },
+    "functions": [
+        {
+            "namespace": "function",
+            "members": {
+                // This function appends -NSG onto the supplied parameter which is intended to be the subnet name
+                "nsgName": {
+                    "parameters": [
+                        {
+                            "name": "subnetName",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[concat(parameters('subnetName'), '-NSG')]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "resources": [
+        // VNets
+        {
+            "comments": "Hub VNet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('hubVnet_Name')]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups',function.nsgName(parameters('hubVnet_subnet1_Name')))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('hubVnet_subnet2_Name')))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('hubVnet_AddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('hubVnet_gatewaySubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "AzureFirewallSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('hubVnet_azureFirewallSubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('hubVnet_azureBastionSubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('hubVnet_subnet1_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('hubVnet_subnet1_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('hubVnet_subnet1_Name')))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('hubVnet_subnet2_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('hubVnet_subnet2_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('hubVnet_subnet2_Name')))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "comments": "Spoke 1 VNet, same region as the Hub VNet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('spoke1Vnet_Name')]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke1Vnet_subnet1_Name')))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke1Vnet_subnet2_Name')))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('spoke1Vnet_AddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('spoke1Vnet_subnet1_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('spoke1Vnet_subnet1_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke1Vnet_subnet1_Name')))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('spoke1Vnet_subnet2_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('spoke1Vnet_subnet2_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke1Vnet_subnet2_Name')))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },{
+            "comments": "Spoke 2 VNet, different region from the Hub VNet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('spoke2Vnet_Name')]",
+            "location": "[variables('constants').SecondaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke2Vnet_subnet1_Name')))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke2Vnet_subnet2_Name')))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('spoke2Vnet_AddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('spoke2Vnet_subnet1_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('spoke2Vnet_subnet1_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke2Vnet_subnet1_Name')))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('spoke2Vnet_subnet2_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('spoke2Vnet_subnet2_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', function.nsgName(parameters('spoke2Vnet_subnet2_Name')))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+
+        //NSGs
+        {
+            "comments": "Hub VNet, subnet 1 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Hub VNet, subnet 2 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Spoke 1 VNet, subnet 1 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Spoke 1 VNet, subnet 2 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Spoke 2 VNet, subnet 1 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]",
+            "location": "[variables('constants').SecondaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Spoke 2 VNet, subnet 2 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]",
+            "location": "[variables('constants').SecondaryRegion]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+
+        //VNet Peerings
+        {
+            "comments": "Hub to Spoke 1",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('hubVnet_Name'), '/', parameters('hubVnet_Name'), '_to_', parameters('spoke1Vnet_Name'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke1Vnet_Name'))]"
+            ],
+            "properties": {
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke1Vnet_Name'))]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('spoke1Vnet_AddressSpace')]"
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Hub to Spoke 2",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('hubVnet_Name'), '/', parameters('hubVnet_Name') ,'_to_', parameters('spoke2Vnet_Name'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke2Vnet_Name'))]"
+            ],
+            "properties": {
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke2Vnet_Name'))]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('spoke2Vnet_AddressSpace')]"
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Spoke 1 to Hub",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('spoke1Vnet_Name'), '/', parameters('spoke1Vnet_Name') ,'_to_', parameters('hubVnet_Name'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke1Vnet_Name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]"
+            ],
+            "properties": {
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('hubVnet_AddressSpace')]"
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Spoke 2 to Hub",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('spoke2Vnet_Name'), '/', parameters('spoke2Vnet_Name'), '_to_', parameters('hubVnet_Name'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spoke2Vnet_Name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]"
+            ],
+            "properties": {
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnet_Name'))]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": true,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('hubVnet_AddressSpace')]"
+                    ]
+                }
+            }
+        }
+    ]
+}

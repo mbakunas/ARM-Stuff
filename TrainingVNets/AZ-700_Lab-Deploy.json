@@ -1,0 +1,124 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "type": "string"
+        },
+
+        //Resource Group
+        "resourceGroup_Name": {
+            "type": "string",
+            "defaultValue": "AZ-700-1"
+        },
+        "resourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": {
+                "environment": "sandbox"
+            }
+        },
+        
+        //Hub VNet
+        "hubVnet_Name": {
+            "type": "String"
+        },
+        "hubVnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_gatewaySubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureFirewallSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureBastionSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_AddressSpace": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "constants": {
+            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets will be deployed here
+            "SecondaryRegion": "centralus", //Spoke 2 VNet will be deployed here
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
+        },
+        "deploymentName": "[deployment().name]",
+        "deploymentNames": {
+            "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]"
+        }
+    },
+    "functions": [
+        {
+            "namespace": "function",
+            "members": {
+                // This function appends -NSG onto the supplied parameter which is intended to be the subnet name
+                "nsgName": {
+                    "parameters": [
+                        {
+                            "name": "subnetName",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[concat(parameters('subnetName'), '-NSG')]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "resources": [
+        {
+            "name": "[parameters('resourceGroup_Name')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-05-01",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[parameters('resourceGroup_Tags')]"
+        },
+        {
+            "name": "[variables('deploymentNames').hubVNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('hubVnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('hubVnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_gatewaySubnet_AddressSpace": {"value": "[parameters('hubVnet_gatewaySubnet_AddressSpace')]"},
+                    "subnet_azureFirewallSubnet_AddressSpace": {"value": "[parameters('hubVnet_azureFirewallSubnet_AddressSpace')]"},
+                    "subnet_azureBastionSubnet_AddressSpace": {"value": "[parameters('hubVnet_azureBastionSubnet_AddressSpace')]"},
+                    "subnet_subnet1_Name": {"value": "[parameters('hubVnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('hubVnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('hubVnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('hubVnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"}
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

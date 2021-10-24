@@ -1,0 +1,136 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        //VNet
+        "vnet_Name": {
+            "type": "String"
+        },
+        "vnet_AddressSpace": {
+            "type": "string"
+        },
+        "vnet_Location": {
+            "type": "string"
+        },
+
+        //Subnets
+        "subnet_gatewaySubnet_AddressSpace": {
+            "type": "string"
+        },
+        "subnet_azureFirewallSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "subnet_azureBastionSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "subnet_subnet1_Name": {
+            "type": "string"
+        },
+        "subnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "subnet_subnet2_Name": {
+            "type": "string"
+        },
+        "subnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //NSGs
+        "nsg_subnet1_Name": {
+            "type": "string"
+        },
+        "nsg_subnet2_Name": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        
+        //VNet
+        {
+            "comments": "VNet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnet_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnet_AddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_gatewaySubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "AzureFirewallSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_azureFirewallSubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_azureBastionSubnet_AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet_subnet1_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_subnet1_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet_subnet2_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_subnet2_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+
+        //NSGs
+        {
+            "comments": "Subnet 1 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsg_subnet1_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Subnet 2 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsg_subnet2_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        }
+    ],
+    "outputs": {}
+}
