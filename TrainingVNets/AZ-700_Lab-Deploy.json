@@ -3,7 +3,8 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "assetLocationURI": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/TrainingVNets/"
         },
 
         //Resource Group
@@ -45,6 +46,46 @@
         },
         "hubVnet_subnet2_AddressSpace": {
             "type": "string"
+        },
+
+        //Spoke 1 VNet
+        "spoke1Vnet_Name": {
+            "type": "String"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //Spoke 2 VNet
+        "spoke2Vnet_Name": {
+            "type": "String"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "type": "string"
         }
     },
     "variables": {
@@ -55,7 +96,9 @@
         },
         "deploymentName": "[deployment().name]",
         "deploymentNames": {
-            "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]"
+            "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
+            "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
+            "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]"
         }
     },
     "functions": [
@@ -79,14 +122,20 @@
         }
     ],
     "resources": [
+
+        //Resource Group
         {
+            "comments": "Resource Group",
             "name": "[parameters('resourceGroup_Name')]",
             "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2021-05-01",
+            "apiVersion": "2021-04-01",
             "location": "[variables('constants').PrimaryRegion]",
             "tags": "[parameters('resourceGroup_Tags')]"
         },
+
+        //VNets
         {
+            "comments": "Hub VNet",
             "name": "[variables('deploymentNames').hubVNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
@@ -116,6 +165,68 @@
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
                     "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"}
+                }
+            }
+        },
+        {
+            "comments": "Spoke 1 VNet, deployed to the same region as the Hub",
+            "name": "[variables('deploymentNames').spoke1VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke1Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke1Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke1Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"}
+                }
+            }
+        },
+        {
+            "comments": "Spoke 2 VNet, deployed to the opposite region as the Hub",
+            "name": "[variables('deploymentNames').spoke2VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke2Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke2Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke2Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"}
                 }
             }
         }
