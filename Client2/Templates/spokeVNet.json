@@ -26,12 +26,21 @@
         "subnet_subnet2_AddressSpace": {
             "type": "string"
         },
+        "subnet_subnet3_Name": {
+            "type": "string"
+        },
+        "subnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
 
         //NSGs
         "nsg_subnet1_Name": {
             "type": "string"
         },
         "nsg_subnet2_Name": {
+            "type": "string"
+        },
+        "nsg_subnet3_Name": {
             "type": "string"
         }
     },
@@ -75,6 +84,15 @@
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
                             }
                         }
+                    },
+                    {
+                        "name": "[parameters('subnet_subnet3_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_subnet3_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet3_Name'))]"
+                            }
+                        }
                     }
                 ],
                 "enableDdosProtection": false
@@ -98,6 +116,17 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-11-01",
             "name": "[parameters('nsg_subnet2_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "comments": "Subnet 3 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsg_subnet3_Name')]",
             "location": "[parameters('vnet_Location')]",
             "tags": "[resourceGroup().tags]",
             "properties": {
