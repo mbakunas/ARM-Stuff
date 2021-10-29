@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/Client2/"
+        },
+        "resourceGroup_Name": {
+            "value": "AZ-700-1"
+        },
+        "resourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+
+        "hubVnet_Name": {
+            "value": "AZ-700-HUB-EastUS2-01"
+        },
+        "hubVnet_AddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "hubVnet_gatewaySubnet_AddressSpace": {
+            "value": "10.0.0.0/26"
+        },
+        "hubVnet_azureFirewallSubnet_AddressSpace": {
+            "value": "10.0.0.64/26"
+        },
+        "hubVnet_azureBastionSubnet_AddressSpace": {
+            "value": "10.0.0.128/26"
+        },
+        "hubVnet_subnet1_Name": {
+            "value": "Infra-10.0.0.192-27"
+        },
+        "hubVnet_subnet1_AddressSpace": {
+            "value": "10.0.0.192/27"
+        },
+        "hubVnet_subnet2_Name": {
+            "value": "CorpNet-10.0.1.0-24"
+        },
+        "hubVnet_subnet2_AddressSpace": {
+            "value": "10.0.1.0/24"
+        },
+
+        "spoke1Vnet_Name": {
+            "value": "AZ-700-SPOKE-EastUS2-01"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "value": "10.1.0.0/16"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "value": "AppGW-10.1.0.0-24"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "value": "10.1.0.0/24"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "value": "CorpNet-10.1.1.0-24"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "value": "10.1.1.0/24"
+        },
+
+        "spoke2Vnet_Name": {
+            "value": "AZ-700-SPOKE-CentralUS-01"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "value": "10.2.0.0/16"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "value": "AppGW-10.2.0.0-24"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "value": "10.2.0.0/24"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "value": "CorpNet-10.2.1.0-24"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "value": "10.2.1.0/24"
+        }
+    }
+}

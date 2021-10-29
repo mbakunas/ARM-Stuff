@@ -1,0 +1,394 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "type": "string"
+        },
+
+        //Resource Group
+        "resourceGroup_Name": {
+            "type": "string"
+        },
+        "resourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+        
+        //Hub VNet
+        "hubVnet_Name": {
+            "type": "String"
+        },
+        "hubVnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_gatewaySubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureFirewallSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_azureBastionSubnet_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_Name": {
+            "type": "string"
+        },
+        "hubVnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //Spoke 1 VNet
+        "spoke1Vnet_Name": {
+            "type": "String"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //Spoke 2 VNet
+        "spoke2Vnet_Name": {
+            "type": "String"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "constants": {
+            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets will be deployed here
+            "SecondaryRegion": "centralus", //Spoke 2 VNet will be deployed here
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
+        },
+        "deploymentName": "[deployment().name]",
+        "deploymentNames": {
+            "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
+            "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
+            "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
+            "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]"
+        }
+    },
+    "functions": [
+        {
+            "namespace": "function",
+            "members": {
+                // This function appends -NSG onto the supplied parameter which is intended to be the subnet name
+                "nsgName": {
+                    "parameters": [
+                        {
+                            "name": "subnetName",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[concat(parameters('subnetName'), '-NSG')]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "resources": [
+
+        //Resource Group
+        {
+            "comments": "Resource Group",
+            "name": "[parameters('resourceGroup_Name')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-04-01",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[parameters('resourceGroup_Tags')]"
+        },
+
+        //VNets
+        {
+            "comments": "Hub VNet",
+            "name": "[variables('deploymentNames').hubVNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('hubVnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('hubVnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_gatewaySubnet_AddressSpace": {"value": "[parameters('hubVnet_gatewaySubnet_AddressSpace')]"},
+                    "subnet_azureFirewallSubnet_AddressSpace": {"value": "[parameters('hubVnet_azureFirewallSubnet_AddressSpace')]"},
+                    "subnet_azureBastionSubnet_AddressSpace": {"value": "[parameters('hubVnet_azureBastionSubnet_AddressSpace')]"},
+                    "subnet_subnet1_Name": {"value": "[parameters('hubVnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('hubVnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('hubVnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('hubVnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"}
+                }
+            }
+        },
+        {
+            "comments": "Spoke 1 VNet, deployed to the same region as the Hub",
+            "name": "[variables('deploymentNames').spoke1VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke1Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke1Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke1Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"}
+                }
+            }
+        },
+        {
+            "comments": "Spoke 2 VNet, deployed to the opposite region as the Hub",
+            "name": "[variables('deploymentNames').spoke2VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke2Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke2Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke2Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet2_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"}
+                }
+            }
+        },
+
+        //VNet Peerings
+        {
+            "comments": "Hub to Spoke 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke1')]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').spoke1VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(parameters('hubVnet_Name'), '/', parameters('hubVnet_Name'), '_to_', parameters('spoke1Vnet_Name'))]",
+                            "apiVersion": "2020-11-01",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(variables('deploymentNames').spoke1VNet).outputs.vnetID.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('spoke1Vnet_AddressSpace')]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Hub to Spoke 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke2')]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').spoke2VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(parameters('hubVnet_Name'), '/', parameters('hubVnet_Name'), '_to_', parameters('spoke2Vnet_Name'))]",
+                            "apiVersion": "2020-11-01",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(variables('deploymentNames').spoke2VNet).outputs.vnetID.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('spoke2Vnet_AddressSpace')]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "Spoke 1 to Hub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke1-Hub')]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').spoke1VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(parameters('spoke1Vnet_Name'), '/', parameters('spoke1Vnet_Name'), '_to_', parameters('hubVnet_Name'))]",
+                            "apiVersion": "2020-11-01",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(variables('deploymentNames').hubVNet).outputs.vnetID.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('hubVnet_Name')]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": " Spoke 2 to Hub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke2-Hub')]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').spoke2VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "name": "[concat(parameters('spoke2Vnet_Name'), '/', parameters('spoke2Vnet_Name'), '_to_', parameters('hubVnet_Name'))]",
+                            "apiVersion": "2020-11-01",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(variables('deploymentNames').hubVNet).outputs.vnetID.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('hubVnet_Name')]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
