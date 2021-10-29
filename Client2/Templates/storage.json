@@ -9,7 +9,7 @@
             "type": "string"
         },
         "storageAccount_retentionDays": {
-            "type": "string"
+            "type": "int"
         }
     },
     "variables": {},
