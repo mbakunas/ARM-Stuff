@@ -5,17 +5,30 @@
         "assetLocationURI": {
             "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/Client2/"
         },
-        "resourceGroup_Name": {
-            "value": "AZ-700-1"
+        "resourceGroupsRegion": {
+            "value": "East US 2"
         },
-        "resourceGroup_Tags": {
+
+        "networkResourceGroup_Name": {
+            "value": "Network-01"
+        },
+        "networkResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+
+        "storageResourceGroup_Name": {
+            "value": "Storage-01"
+        },
+        "storageResourceGroup_Tags": {
             "value": {
                 "environment": "sandbox"
             }
         },
 
         "hubVnet_Name": {
-            "value": "AZ-700-HUB-EastUS2-01"
+            "value": "HUB-EastUS2-01"
         },
         "hubVnet_AddressSpace": {
             "value": "10.0.0.0/16"
@@ -43,41 +56,60 @@
         },
 
         "spoke1Vnet_Name": {
-            "value": "AZ-700-SPOKE-EastUS2-01"
+            "value": "SPOKE-Prod-EastUS2-01"
         },
         "spoke1Vnet_AddressSpace": {
             "value": "10.1.0.0/16"
         },
         "spoke1Vnet_subnet1_Name": {
-            "value": "AppGW-10.1.0.0-24"
+            "value": "Front-10.1.0.0_24"
         },
         "spoke1Vnet_subnet1_AddressSpace": {
             "value": "10.1.0.0/24"
         },
         "spoke1Vnet_subnet2_Name": {
-            "value": "CorpNet-10.1.1.0-24"
+            "value": "Mid-10.1.1.0_24"
         },
         "spoke1Vnet_subnet2_AddressSpace": {
             "value": "10.1.1.0/24"
         },
+        "spoke1Vnet_subnet3_Name": {
+            "value": "Back-10.1.2.0_24"
+        },
+        "spoke1Vnet_subnet3_AddressSpace": {
+            "value": "10.1.2.0/24"
+        },
 
         "spoke2Vnet_Name": {
-            "value": "AZ-700-SPOKE-CentralUS-01"
+            "value": "SPOKE-NonProd-EastUS2-01"
         },
         "spoke2Vnet_AddressSpace": {
             "value": "10.2.0.0/16"
         },
         "spoke2Vnet_subnet1_Name": {
-            "value": "AppGW-10.2.0.0-24"
+            "value": "Front-10.2.0.0_24"
         },
         "spoke2Vnet_subnet1_AddressSpace": {
             "value": "10.2.0.0/24"
         },
         "spoke2Vnet_subnet2_Name": {
-            "value": "CorpNet-10.2.1.0-24"
+            "value": "Mid-10.2.1.0-24"
         },
         "spoke2Vnet_subnet2_AddressSpace": {
             "value": "10.2.1.0/24"
+        },
+        "spoke2Vnet_subnet3_Name": {
+            "value": "Back-10.2.2.0_24"
+        },
+        "spoke2Vnet_subnet3_AddressSpace": {
+            "value": "10.2.2.0/24"
+        },
+
+        "storageAccount_Name": {
+            "value": "bakunasnsgstorage01"
+        },
+        "storageAccount_retentionDays": {
+            "value": 30
         }
     }
 }

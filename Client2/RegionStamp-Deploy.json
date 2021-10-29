@@ -5,12 +5,71 @@
         "assetLocationURI": {
             "type": "string"
         },
+        "resourceGroupsRegion": { // Region to use when creating resource groups.  May not be the same as the region to which resources are deployed
+            "type": "string",
+            "defaultValue": "East US 2",
+            "metadata": {
+                "description": "Region where resouce groups will be created.  May not be the same as the region to which resources are deployed"
+            },
+            "allowedValues": [
+                "East Asia",
+                "Southeast Asia",
+                "Central US",
+                "East US",
+                "East US 2",
+                "West US",
+                "North Central US",
+                "South Central US",
+                "North Europe",
+                "West Europe",
+                "Japan West",
+                "Japan East",
+                "Brazil South",
+                "Australia East",
+                "Australia Southeast",
+                "South India",
+                "Central India",
+                "West India",
+                "Canada Central",
+                "Canada East",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West US 2",
+                "Korea Central",
+                "Korea South",
+                "France Central",
+                "France South",
+                "Australia Central",
+                "Australia Central 2",
+                "UAE Central",
+                "UAE North",
+                "South Africa North",
+                "South Africa West",
+                "Switzerland North",
+                "Switzerland West",
+                "Germany North",
+                "Germany West Central",
+                "Norway West",
+                "Norway East",
+                "Brazil Southeast"
+            ]
+        },
 
-        //Resource Group
-        "resourceGroup_Name": {
+        //Resource Group for the network resources
+        "networkResourceGroup_Name": {
             "type": "string"
         },
-        "resourceGroup_Tags": {
+        "networkResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+
+        //Resource Group for the storage account
+        "storageResourceGroup_Name": {
+            "type": "string"
+        },
+        "storageResourceGroup_Tags": {
             "type": "object",
             "defaultValue": ""
         },
@@ -63,6 +122,12 @@
         "spoke1Vnet_subnet2_AddressSpace": {
             "type": "string"
         },
+        "spoke1Vnet_subnet3_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
 
         //Spoke 2 VNet
         "spoke2Vnet_Name": {
@@ -82,20 +147,80 @@
         },
         "spoke2Vnet_subnet2_AddressSpace": {
             "type": "string"
+        },
+        "spoke2Vnet_subnet3_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
+
+        //Storage account for NSG flow logs
+        "storageAccount_Name": {
+            "type": "string"
+        },
+        "storageAccount_retentionDays": {
+            "type": "int"
         }
     },
     "variables": {
         "constants": {
-            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets will be deployed here
-            "SecondaryRegion": "centralus", //Spoke 2 VNet will be deployed here
-            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
+            "location": "[deployment().location]",
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
+            "storageAccountRetentionDays": 30,
+            "networkWatcherName": "[concat('NetworkWatcher_', variables('azureRegion')[deployment().location])]"
         },
         "deploymentName": "[deployment().name]",
         "deploymentNames": {
             "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
             "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
-            "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]"
+            "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]",
+            "storageAccount": "[concat(variables('deploymentName'), '-Storage')]",
+            "networkWatcher": "[concat(variables('deploymentName'), '-NetworkWatcher')]"
+        },
+        "azureRegion": {
+            "East Asia":"eastasia",
+            "Southeast Asia":"southeastasia",
+            "Central US":"centralus",
+            "East US":"eastus",
+            "East US 2":"eastus2",
+            "West US":"westus",
+            "North Central US":"northcentralus",
+            "South Central US":"southcentralus",
+            "North Europe":"northeurope",
+            "West Europe":"westeurope",
+            "Japan West":"japanwest",
+            "Japan East":"japaneast",
+            "Brazil South":"brazilsouth",
+            "Australia East":"australiaeast",
+            "Australia Southeast":"australiasoutheast",
+            "South India":"southindia",
+            "Central India":"centralindia",
+            "West India":"westindia",
+            "Canada Central":"canadacentral",
+            "Canada East":"canadaeast",
+            "UK South":"uksouth",
+            "UK West":"ukwest",
+            "West Central US":"westcentralus",
+            "West US 2":"westus2",
+            "Korea Central":"koreacentral",
+            "Korea South":"koreasouth",
+            "France Central":"francecentral",
+            "France South":"francesouth",
+            "Australia Central":"australiacentral",
+            "Australia Central 2":"australiacentral2",
+            "UAE Central":"uaecentral",
+            "UAE North":"uaenorth",
+            "South Africa North":"southafricanorth",
+            "South Africa West":"southafricawest",
+            "Switzerland North":"switzerlandnorth",
+            "Switzerland West":"switzerlandwest",
+            "Germany North":"germanynorth",
+            "Germany West Central":"germanywestcentral",
+            "Norway West":"norwaywest",
+            "Norway East":"norwayeast",
+            "Brazil Southeast":"brazilsoutheast"
         }
     },
     "functions": [
@@ -120,14 +245,24 @@
     ],
     "resources": [
 
-        //Resource Group
+        //Network resource Group
         {
-            "comments": "Resource Group",
-            "name": "[parameters('resourceGroup_Name')]",
+            "comments": "Network resource Group",
+            "name": "[parameters('networkResourceGroup_Name')]",
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2021-04-01",
-            "location": "[variables('constants').PrimaryRegion]",
-            "tags": "[parameters('resourceGroup_Tags')]"
+            "location": "[parameters('resourceGroupsRegion')]",
+            "tags": "[parameters('networkResourceGroup_Tags')]"
+        },
+
+        //Storage resource group
+        {
+            "comments": "Storage resource Group",
+            "name": "[parameters('storageResourceGroup_Name')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-04-01",
+            "location": "[parameters('resourceGroupsRegion')]",
+            "tags": "[parameters('storageResourceGroup_Tags')]"
         },
 
         //VNets
@@ -136,9 +271,9 @@
             "name": "[variables('deploymentNames').hubVNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -150,7 +285,7 @@
                     //VNet
                     "vnet_Name": {"value": "[parameters('hubVnet_Name')]"},
                     "vnet_AddressSpace": {"value": "[parameters('hubVnet_AddressSpace')]"},
-                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    "vnet_Location": {"value": "[variables('constants').location]"},
                     //Subnets
                     "subnet_gatewaySubnet_AddressSpace": {"value": "[parameters('hubVnet_gatewaySubnet_AddressSpace')]"},
                     "subnet_azureFirewallSubnet_AddressSpace": {"value": "[parameters('hubVnet_azureFirewallSubnet_AddressSpace')]"},
@@ -166,13 +301,13 @@
             }
         },
         {
-            "comments": "Spoke 1 VNet, deployed to the same region as the Hub",
+            "comments": "Spoke 1 VNet",
             "name": "[variables('deploymentNames').spoke1VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -184,26 +319,29 @@
                     //VNet
                     "vnet_Name": {"value": "[parameters('spoke1Vnet_Name')]"},
                     "vnet_AddressSpace": {"value": "[parameters('spoke1Vnet_AddressSpace')]"},
-                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    "vnet_Location": {"value": "[variables('constants').location]"},
                     //Subnets
                     "subnet_subnet1_Name": {"value": "[parameters('spoke1Vnet_subnet1_Name')]"},
                     "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet1_AddressSpace')]"},
                     "subnet_subnet2_Name": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
                     "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet2_AddressSpace')]"},
+                    "subnet_subnet3_Name": {"value": "[parameters('spoke1Vnet_subnet3_Name')]"},
+                    "subnet_subnet3_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet3_AddressSpace')]"},
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
-                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"}
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"}
                 }
             }
         },
         {
-            "comments": "Spoke 2 VNet, deployed to the opposite region as the Hub",
+            "comments": "Spoke 2 VNet",
             "name": "[variables('deploymentNames').spoke2VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -215,15 +353,18 @@
                     //VNet
                     "vnet_Name": {"value": "[parameters('spoke2Vnet_Name')]"},
                     "vnet_AddressSpace": {"value": "[parameters('spoke2Vnet_AddressSpace')]"},
-                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    "vnet_Location": {"value": "[variables('constants').location]"},
                     //Subnets
                     "subnet_subnet1_Name": {"value": "[parameters('spoke2Vnet_subnet1_Name')]"},
                     "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet1_AddressSpace')]"},
                     "subnet_subnet2_Name": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
                     "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet2_AddressSpace')]"},
+                    "subnet_subnet3_Name": {"value": "[parameters('spoke2Vnet_subnet3_Name')]"},
+                    "subnet_subnet3_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet3_AddressSpace')]"},
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
-                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"}
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"}
                 }
             }
         },
@@ -234,7 +375,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke1')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -274,7 +415,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke2')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -314,7 +455,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke1-Hub')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -354,7 +495,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke2-Hub')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -387,6 +528,53 @@
                         }
                     ]
                 }
+            }
+        },
+
+        //Storage accounts for NSG flow logs
+        {
+            "name": "[variables('deploymentNames').storageAccount]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('storageResourceGroup_Name')]",
+            "dependsOn": [
+                "[parameters('storageResourceGroup_Name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'storage.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccount_name": {"value": "[parameters('storageAccount_Name')]"},
+                    "storageAccount_location": {"value": "[variables('constants').location]"},
+                    "storageAccount_retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+
+        // Network watcher
+        {
+            "name": "[variables('deploymentNames').networkWatcher]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "microsoft.network/networkwatchers",
+                            "apiVersion": "2020-11-01",
+                            "name": "[variables('constants').networkWatcherName]",
+                            "location": "[variables('constants').location]",
+                            "properties": {}
+                        }
+                    ]
+                }
+
             }
         }
     ],
