@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "nsgName": {
+            "type": "string"
+        },
+        "nsgResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "storageAccountId": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "networkWatcher_Name": "[concat('NetworkWatcher_', parameters('location'))]",
+        "retentionDays": 30
+    },
+    "functions": [],
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkWatchers/flowLogs",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(variables('networkWatcher_Name'), '/', parameters('nsgName'), '-flowlog')]",
+            "location": "[parameters('location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                //Assume we're in the Network Watcher resource group
+                "targetResourceId": "[resourceId(parameters('nsgResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]",
+                "storageId": "[parameters('storageAccountId')]",
+                "enabled": true,
+                "format": {
+                    "type": "JSON",
+                    "version": 2
+                },
+                "flowAnalyticsConfiguration": {
+                    "networkWatcherFlowAnalyticsConfiguration": {}
+                },
+                "retentionPolicy": {
+                    "days": "[variables('retentionDays')]",
+                    "enabled": true
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
