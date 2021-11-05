@@ -42,6 +42,11 @@
         },
         "nsg_subnet3_Name": {
             "type": "string"
+        },
+
+        //Route Table
+        "routeTable_name": {
+            "type": "string"
         }
     },
     "functions": [],
@@ -73,7 +78,8 @@
                             "addressPrefix": "[parameters('subnet_subnet1_AddressSpace')]",
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]"
-                            }
+                            },
+                            "routeTable": "[parameters('routeTable_name')]"
                         }
                     },
                     {
@@ -82,7 +88,8 @@
                             "addressPrefix": "[parameters('subnet_subnet2_AddressSpace')]",
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
-                            }
+                            },
+                            "routeTable": "[parameters('routeTable_name')]"
                         }
                     },
                     {
@@ -91,7 +98,8 @@
                             "addressPrefix": "[parameters('subnet_subnet3_AddressSpace')]",
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet3_Name'))]"
-                            }
+                            },
+                            "routeTable": "[parameters('routeTable_name')]"
                         }
                     }
                 ],
