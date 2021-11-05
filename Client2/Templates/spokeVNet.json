@@ -45,7 +45,7 @@
         },
 
         //Route Table
-        "routeTable_name": {
+        "routeTable_id": {
             "type": "string"
         }
     },
@@ -79,7 +79,7 @@
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]"
                             },
-                            "routeTable": "[parameters('routeTable_name')]"
+                            "routeTable": "[parameters('routeTable_id')]"
                         }
                     },
                     {
@@ -89,7 +89,7 @@
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
                             },
-                            "routeTable": "[parameters('routeTable_name')]"
+                            "routeTable": "[parameters('routeTable_id')]"
                         }
                     },
                     {
@@ -99,7 +99,7 @@
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet3_Name'))]"
                             },
-                            "routeTable": "[parameters('routeTable_name')]"
+                            "routeTable": "[parameters('routeTable_id')]"
                         }
                     }
                 ],
