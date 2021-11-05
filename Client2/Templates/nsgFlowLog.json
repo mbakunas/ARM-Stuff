@@ -26,7 +26,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkWatchers/flowLogs",
-            "apiVersion": "2020-11-01",
+            "apiVersion": "2020-06-01",
             "name": "[concat(variables('networkWatcher_Name'), '/', parameters('nsgName'), '-flowlog')]",
             "location": "[parameters('location')]",
             "properties": {
