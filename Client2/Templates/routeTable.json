@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "routeTables_name": {
+            "type": "String"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('routeTables_name')]",
+            "location": "[parameters('location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "disableBgpRoutePropagation": false
+            }
+        }
+        
+    ]
+}
