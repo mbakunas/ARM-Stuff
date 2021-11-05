@@ -97,7 +97,9 @@
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]"
                             },
-                            "routeTable": "[parameters('routeTable_id')]"
+                            "routeTable": {
+                                "id": "[parameters('routeTable_id')]"
+                            }
                         }
                     },
                     {
@@ -107,7 +109,9 @@
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
                             },
-                            "routeTable": "[parameters('routeTable_id')]"
+                            "routeTable": {
+                                "id": "[parameters('routeTable_id')]"
+                            }
                         }
                     }
                 ],
