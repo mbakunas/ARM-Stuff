@@ -142,7 +142,7 @@
         },
 
         "storageAccount_Name": {
-            "value": "bakunasnsgstorage01"
+            "value": "bakunasnsgflow01"
         },
         "storageAccount_retentionDays": {
             "value": 30

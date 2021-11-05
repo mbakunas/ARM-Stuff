@@ -91,15 +91,6 @@
         "nonProdSpokeVNetResourceGroup_SubscriptionId": {
             "type": "string"
         },
-
-        //Resource Group for the storage account
-        "storageResourceGroup_Name": {
-            "type": "string"
-        },
-        "storageResourceGroup_Tags": {
-            "type": "object",
-            "defaultValue": ""
-        },
         
         //Hub VNet
         "hubVnet_Name": {
@@ -219,7 +210,7 @@
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
             "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]",
             "storageAccount": "[concat(variables('deploymentName'), '-Storage')]",
-            "networkWatcher": "[concat(variables('deploymentName'), '-NetworkWatcher')]"
+            "nsgFlowLog": "[concat(variables('deploymentName'), '-NSG-FlowLog-')]"
         }
     },
     "functions": [
@@ -386,6 +377,31 @@
             }
         },
 
+        //Storage account
+        {
+            "comments": "Storage account for NSG flow logs",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').storageAccount]",
+            "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'storage.json')]"
+                },
+                "parameters": {
+                    "storageAccount_name": {"value": "[parameters('storageAccount_Name')]"},
+                    "storageAccount_location": {"value": "[variables('constants').location]"},
+                    "storageAccount_retentionDays": {"value": "[variables('constants').storageAccountRetentionDays]"}
+                }
+            }
+        },
+
         //VNets
         {
             "comments": "Hub VNet",
@@ -479,8 +495,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]"
                 },
                 "parameters": {
                     //VNet
@@ -670,6 +685,216 @@
                             }
                         }
                     ]
+                }
+            }
+        },
+
+        //NSG FLow Logs
+        {
+            "comments": "NSG Flow Log for Hub subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'HubSubnet1')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('hubVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Hub subnet 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'HubSubnet2')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('hubVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet1')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet2')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 3",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet3')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet1')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet2')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet3')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
                 }
             }
         }
