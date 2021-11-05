@@ -397,7 +397,7 @@
                 "parameters": {
                     "storageAccount_name": {"value": "[parameters('storageAccount_Name')]"},
                     "storageAccount_location": {"value": "[variables('constants').location]"},
-                    "storageAccount_retentionDays": {"value": "[variables('constants').storageAccountRetentionDays]"}
+                    "storageAccount_retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -712,7 +712,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('hubVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -738,7 +739,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('hubVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -764,7 +766,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -790,7 +793,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -816,7 +820,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -842,7 +847,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -868,7 +874,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         },
@@ -894,7 +901,8 @@
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
                     "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
-                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"}
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
             }
         }

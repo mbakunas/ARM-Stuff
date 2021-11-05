@@ -16,11 +16,13 @@
         },
         "storageAccountId": {
             "type": "string"
+        },
+        "retentionDays": {
+            "type": "int"
         }
     },
     "variables": {
-        "networkWatcher_Name": "[concat('NetworkWatcher_', parameters('location'))]",
-        "retentionDays": 30
+        "networkWatcher_Name": "[concat('NetworkWatcher_', parameters('location'))]"
     },
     "functions": [],
     "resources": [
@@ -42,7 +44,7 @@
                     "networkWatcherFlowAnalyticsConfiguration": {}
                 },
                 "retentionPolicy": {
-                    "days": "[variables('retentionDays')]",
+                    "days": "[parameters('retentionDays')]",
                     "enabled": true
                 }
             }
