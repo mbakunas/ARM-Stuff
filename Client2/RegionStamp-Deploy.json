@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "assetLocationURI": {
@@ -56,13 +56,40 @@
             ]
         },
 
-        //Resource Group for the network resources
-        "networkResourceGroup_Name": {
+        //Resource Group for the hub network
+        "hubVNetResourceGroup_Name": {
             "type": "string"
         },
-        "networkResourceGroup_Tags": {
+        "hubVNetResourceGroup_Tags": {
             "type": "object",
             "defaultValue": ""
+        },
+        "hubVNetResourceGroup_SubscriptionId": {
+            "type": "string"
+        },
+
+        //Resource Group for the prod spoke network
+        "prodSpokeVNetResourceGroup_Name": {
+            "type": "string"
+        },
+        "prodSpokeVNetResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+        "prodSpokeVNetResourceGroup_SubscriptionId": {
+            "type": "string"
+        },
+
+        //Resource Group for the hub network
+        "nonProdSpokeVNetResourceGroup_Name": {
+            "type": "string"
+        },
+        "nonProdSpokeVNetResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+        "nonProdSpokeVNetResourceGroup_SubscriptionId": {
+            "type": "string"
         },
 
         //Resource Group for the storage account
@@ -103,7 +130,7 @@
             "type": "string"
         },
 
-        //Spoke 1 VNet
+        //Prod Spoke VNet
         "spoke1Vnet_Name": {
             "type": "String"
         },
@@ -129,7 +156,7 @@
             "type": "string"
         },
 
-        //Spoke 2 VNet
+        //NonProd spoke VNet
         "spoke2Vnet_Name": {
             "type": "String"
         },
@@ -168,59 +195,19 @@
             "location": "[deployment().location]",
             "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
             "storageAccountRetentionDays": 30,
-            "networkWatcherName": "[concat('NetworkWatcher_', variables('azureRegion')[deployment().location])]"
+            "networkWatcherName": "[concat('NetworkWatcher_', deployment().location)]"
         },
         "deploymentName": "[deployment().name]",
         "deploymentNames": {
+            "hubVNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('hubVNetResourceGroup_Name'))]",
+            "spoke1VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('prodSpokeVNetResourceGroup_Name'))]",
+            "spoke2VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('nonProdSpokeVNetResourceGroup_Name'))]",
             "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
             "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
             "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]",
             "storageAccount": "[concat(variables('deploymentName'), '-Storage')]",
             "networkWatcher": "[concat(variables('deploymentName'), '-NetworkWatcher')]"
-        },
-        "azureRegion": {
-            "East Asia":"eastasia",
-            "Southeast Asia":"southeastasia",
-            "Central US":"centralus",
-            "East US":"eastus",
-            "East US 2":"eastus2",
-            "West US":"westus",
-            "North Central US":"northcentralus",
-            "South Central US":"southcentralus",
-            "North Europe":"northeurope",
-            "West Europe":"westeurope",
-            "Japan West":"japanwest",
-            "Japan East":"japaneast",
-            "Brazil South":"brazilsouth",
-            "Australia East":"australiaeast",
-            "Australia Southeast":"australiasoutheast",
-            "South India":"southindia",
-            "Central India":"centralindia",
-            "West India":"westindia",
-            "Canada Central":"canadacentral",
-            "Canada East":"canadaeast",
-            "UK South":"uksouth",
-            "UK West":"ukwest",
-            "West Central US":"westcentralus",
-            "West US 2":"westus2",
-            "Korea Central":"koreacentral",
-            "Korea South":"koreasouth",
-            "France Central":"francecentral",
-            "France South":"francesouth",
-            "Australia Central":"australiacentral",
-            "Australia Central 2":"australiacentral2",
-            "UAE Central":"uaecentral",
-            "UAE North":"uaenorth",
-            "South Africa North":"southafricanorth",
-            "South Africa West":"southafricawest",
-            "Switzerland North":"switzerlandnorth",
-            "Switzerland West":"switzerlandwest",
-            "Germany North":"germanynorth",
-            "Germany West Central":"germanywestcentral",
-            "Norway West":"norwaywest",
-            "Norway East":"norwayeast",
-            "Brazil Southeast":"brazilsoutheast"
         }
     },
     "functions": [
@@ -245,24 +232,78 @@
     ],
     "resources": [
 
-        //Network resource Group
+        //Resource Groups
         {
-            "comments": "Network resource Group",
-            "name": "[parameters('networkResourceGroup_Name')]",
-            "type": "Microsoft.Resources/resourceGroups",
+            "comments": "Hub network resource group",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').hubVNetResourceGroup]",
             "location": "[parameters('resourceGroupsRegion')]",
-            "tags": "[parameters('networkResourceGroup_Tags')]"
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "2021-04-01",
+                            "name": "[parameters('hubVNetResourceGroup_Name')]",
+                            "location": "[parameters('resourceGroupsRegion')]",
+                            "tags": "[parameters('hubVNetResourceGroup_Tags')]"
+                        }
+                    ]
+                }
+            }
         },
-
-        //Storage resource group
         {
-            "comments": "Storage resource Group",
-            "name": "[parameters('storageResourceGroup_Name')]",
-            "type": "Microsoft.Resources/resourceGroups",
+            "comments": "Prod spoke network resource group",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke1VNetResourceGroup]",
             "location": "[parameters('resourceGroupsRegion')]",
-            "tags": "[parameters('storageResourceGroup_Tags')]"
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "2021-04-01",
+                            "name": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+                            "location": "[parameters('resourceGroupsRegion')]",
+                            "tags": "[parameters('prodSpokeVNetResourceGroup_Tags')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "NonProd spoke network resource group",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke2VNetResourceGroup]",
+            "location": "[parameters('resourceGroupsRegion')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "2021-04-01",
+                            "name": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+                            "location": "[parameters('resourceGroupsRegion')]",
+                            "tags": "[parameters('nonProdSpokeVNetResourceGroup_Tags')]"
+                        }
+                    ]
+                }
+            }
         },
 
         //VNets
@@ -271,15 +312,16 @@
             "name": "[variables('deploymentNames').hubVNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
-                "[parameters('networkResourceGroup_Name')]"
+                "[variables('deploymentNames').hubVNetResourceGroup]"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]"
                 },
                 "parameters": {
                     //VNet
@@ -301,13 +343,15 @@
             }
         },
         {
-            "comments": "Spoke 1 VNet",
+            "comments": "Prod Spoke VNet",
             "name": "[variables('deploymentNames').spoke1VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
-                "[parameters('networkResourceGroup_Name')]"
+                "[variables('deploymentNames').spoke1VNetResourceGroup]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -335,13 +379,15 @@
             }
         },
         {
-            "comments": "Spoke 2 VNet",
+            "comments": "NonProd Spoke VNet",
             "name": "[variables('deploymentNames').spoke2VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
-                "[parameters('networkResourceGroup_Name')]"
+                "[variables('deploymentNames').spoke2VNetResourceGroup]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -371,11 +417,13 @@
 
         //VNet Peerings
         {
-            "comments": "Hub to Spoke 1",
+            "comments": "Hub to Prod Spoke",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke1')]",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-ProdSpoke')]",
+            "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -411,11 +459,13 @@
             }
         },
         {
-            "comments": "Hub to Spoke 2",
+            "comments": "Hub to NonProd Spoke",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke2')]",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-NonProdSpoke')]",
+            "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -451,11 +501,13 @@
             }
         },
         {
-            "comments": "Spoke 1 to Hub",
+            "comments": "Prod Spoke to Hub",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke1-Hub')]",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "name": "[concat(variables('deploymentNames').vneetPeer, 'ProdSpoke-Hub')]",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -491,11 +543,13 @@
             }
         },
         {
-            "comments": " Spoke 2 to Hub",
+            "comments": "NonProd Spoke to Hub",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke2-Hub')]",
-            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
+            "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            "location": "[variables('constants').location]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -528,53 +582,6 @@
                         }
                     ]
                 }
-            }
-        },
-
-        //Storage accounts for NSG flow logs
-        {
-            "name": "[variables('deploymentNames').storageAccount]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('storageResourceGroup_Name')]",
-            "dependsOn": [
-                "[parameters('storageResourceGroup_Name')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'storage.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "storageAccount_name": {"value": "[parameters('storageAccount_Name')]"},
-                    "storageAccount_location": {"value": "[variables('constants').location]"},
-                    "storageAccount_retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
-                }
-            }
-        },
-
-        // Network watcher
-        {
-            "name": "[variables('deploymentNames').networkWatcher]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": [
-                        {
-                            "type": "microsoft.network/networkwatchers",
-                            "apiVersion": "2020-11-01",
-                            "name": "[variables('constants').networkWatcherName]",
-                            "location": "[variables('constants').location]",
-                            "properties": {}
-                        }
-                    ]
-                }
-
             }
         }
     ],

@@ -9,13 +9,40 @@
             "value": "East US 2"
         },
 
-        "networkResourceGroup_Name": {
-            "value": "Network-01"
+        "hubVNetResourceGroup_Name": {
+            "value": "Network-Hub-01"
         },
-        "networkResourceGroup_Tags": {
+        "hubVNetResourceGroup_Tags": {
             "value": {
                 "environment": "sandbox"
             }
+        },
+        "hubVNetResourceGroup_SubscriptionId": {
+            "value": "c64ca001-2cce-46de-837e-03f5564fc802"
+        },
+
+        "prodSpokeVNetResourceGroup_Name": {
+            "value": "Network-Prod-01"
+        },
+        "prodSpokeVNetResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+        "prodSpokeVNetResourceGroup_SubscriptionId": {
+            "value": "fac1ea11-e5a7-4e74-8d7e-965344c54f56"
+        },
+
+        "nonProdSpokeVNetResourceGroup_Name": {
+            "value": "Network-Spoke-01"
+        },
+        "nonProdSpokeVNetResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+        "nonProdSpokeVNetResourceGroup_SubscriptionId": {
+            "value": "16936380-29b0-4326-8f6b-db86da154736"
         },
 
         "storageResourceGroup_Name": {
