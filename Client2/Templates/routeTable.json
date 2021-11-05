@@ -22,5 +22,11 @@
             }
         }
         
-    ]
+    ],
+    "outputs": {
+        "routeTableId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/routeTables', parameters('routeTables_name'))]"
+        }
+    }
 }

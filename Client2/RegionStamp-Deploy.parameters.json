@@ -22,7 +22,7 @@
         },
 
         "prodSpokeVNetResourceGroup_Name": {
-            "value": "Network-Prod-01"
+            "value": "Network-ProdSpoke-01"
         },
         "prodSpokeVNetResourceGroup_Tags": {
             "value": {
@@ -34,7 +34,7 @@
         },
 
         "nonProdSpokeVNetResourceGroup_Name": {
-            "value": "Network-Spoke-01"
+            "value": "Network-NonProdSpoke-01"
         },
         "nonProdSpokeVNetResourceGroup_Tags": {
             "value": {
@@ -81,6 +81,9 @@
         "hubVnet_subnet2_AddressSpace": {
             "value": "10.0.1.0/24"
         },
+        "hubVnet_routeTable_name": {
+            "value": "RT-Hub-EastUS2-01" 
+        },
 
         "spoke1Vnet_Name": {
             "value": "SPOKE-Prod-EastUS2-01"
@@ -106,6 +109,9 @@
         "spoke1Vnet_subnet3_AddressSpace": {
             "value": "10.1.2.0/24"
         },
+        "spoke1Vnet_routeTable_name": {
+            "value": "RT-ProdSpoke-EastUS2-01"
+        },
 
         "spoke2Vnet_Name": {
             "value": "SPOKE-NonProd-EastUS2-01"
@@ -130,6 +136,9 @@
         },
         "spoke2Vnet_subnet3_AddressSpace": {
             "value": "10.2.2.0/24"
+        },
+        "spoke2Vnet_routeTable_name": {
+            "value": "RT-NonProdSpoke-EastUS2-01"
         },
 
         "storageAccount_Name": {

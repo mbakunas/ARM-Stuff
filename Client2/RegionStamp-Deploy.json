@@ -129,6 +129,9 @@
         "hubVnet_subnet2_AddressSpace": {
             "type": "string"
         },
+        "hubVnet_routeTable_name": {
+            "type": "string"
+        },
 
         //Prod Spoke VNet
         "spoke1Vnet_Name": {
@@ -153,6 +156,9 @@
             "type": "string"
         },
         "spoke1Vnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_routeTable_name": {
             "type": "string"
         },
 
@@ -181,6 +187,9 @@
         "spoke2Vnet_subnet3_AddressSpace": {
             "type": "string"
         },
+        "spoke2Vnet_routeTable_name": {
+            "type": "string"
+        },
 
         //Storage account for NSG flow logs
         "storageAccount_Name": {
@@ -202,6 +211,9 @@
             "hubVNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('hubVNetResourceGroup_Name'))]",
             "spoke1VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('prodSpokeVNetResourceGroup_Name'))]",
             "spoke2VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('nonProdSpokeVNetResourceGroup_Name'))]",
+            "hubRouteTable": "[concat(variables('deploymentName'), '-', parameters('hubVnet_routeTable_name'))]",
+            "spoke1RouteTable": "[concat(variables('deploymentName'), '-', parameters('spoke1Vnet_routeTable_name'))]",
+            "spoke2RouteTable": "[concat(variables('deploymentName'), '-', parameters('spoke2Vnet_routeTable_name'))]",
             "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
             "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
@@ -306,6 +318,74 @@
             }
         },
 
+        //Route tables
+        {
+            "comments": "Hub Route Table (empty, no routes)",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').hubRouteTable]",
+            "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'routeTable.json')]"
+                },
+                "parameters": {
+                    "routeTables_name": {"value": "[parameters('hubVnet_routeTable_name')]"},
+                    "location": {"value": "[variables('constants').location]"}
+                }
+            }
+        },
+        {
+            "comments": "Prod Spoke Route Table (empty, no routes)",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke1RouteTable]",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'routeTable.json')]"
+                },
+                "parameters": {
+                    "routeTables_name": {"value": "[parameters('spoke1Vnet_routeTable_name')]"},
+                    "location": {"value": "[variables('constants').location]"}
+                }
+            }
+        },
+        {
+            "comments": "NonProd Spoke Route Table (empty, no routes)",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke2RouteTable]",
+            "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'routeTable.json')]"
+                },
+                "parameters": {
+                    "routeTables_name": {"value": "[parameters('spoke2Vnet_routeTable_name')]"},
+                    "location": {"value": "[variables('constants').location]"}
+                }
+            }
+        },
+
         //VNets
         {
             "comments": "Hub VNet",
@@ -314,9 +394,10 @@
             "apiVersion": "2021-04-01",
             "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
-                "[variables('deploymentNames').hubVNetResourceGroup]"
+                "[variables('deploymentNames').hubVNetResourceGroup]",
+                "[variables('deploymentNames').hubRouteTable]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -338,7 +419,9 @@
                     "subnet_subnet2_AddressSpace": {"value": "[parameters('hubVnet_subnet2_AddressSpace')]"},
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet1_Name'))]"},
-                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"}
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('hubVnet_subnet2_Name'))]"},
+                    //Route Table
+                    "routeTable_id": {"value": "[reference(variables('deploymentNames').hubRouteTable).outputs.routeTableId.value]"}
                 }
             }
         },
@@ -349,9 +432,10 @@
             "apiVersion": "2021-04-01",
             "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
-                "[variables('deploymentNames').spoke1VNetResourceGroup]"
+                "[variables('deploymentNames').spoke1VNetResourceGroup]",
+                "[variables('deploymentNames').spoke1RouteTable]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -374,7 +458,9 @@
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
                     "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
-                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"}
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"},
+                    //Route Table
+                    "routeTable_id": {"value": "[reference(variables('deploymentNames').spoke1RouteTable).outputs.routeTableId.value]"}
                 }
             }
         },
@@ -385,9 +471,10 @@
             "apiVersion": "2021-04-01",
             "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
-                "[variables('deploymentNames').spoke2VNetResourceGroup]"
+                "[variables('deploymentNames').spoke2VNetResourceGroup]",
+                "[variables('deploymentNames').spoke2RouteTable]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -410,7 +497,9 @@
                     //NSGs
                     "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
                     "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
-                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"}
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
+                    //Route Table
+                    "routeTable_id": {"value": "[reference(variables('deploymentNames').spoke2RouteTable).outputs.routeTableId.value]"}
                 }
             }
         },
@@ -423,7 +512,7 @@
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-ProdSpoke')]",
             "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -465,7 +554,7 @@
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-NonProdSpoke')]",
             "resourceGroup": "[parameters('hubVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('hubVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -507,7 +596,7 @@
             "name": "[concat(variables('deploymentNames').vneetPeer, 'ProdSpoke-Hub')]",
             "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -549,7 +638,7 @@
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke2-Hub')]",
             "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
             "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
-            "location": "[variables('constants').location]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
