@@ -19,6 +19,7 @@
             "apiVersion": "2021-06-01",
             "name": "[parameters('storageAccount_name')]",
             "location": "[parameters('storageAccount_location')]",
+            "tags": "[resourceGroup().tags]",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
