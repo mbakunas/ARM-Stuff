@@ -1,0 +1,555 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "type": "string"
+        },
+        "resourceGroupsRegion": { // Region to use when creating resource groups.  May not be the same as the region to which resources are deployed
+            "type": "string",
+            "defaultValue": "East US 2",
+            "metadata": {
+                "description": "Region where resouce groups will be created.  May not be the same as the region to which resources are deployed"
+            },
+            "allowedValues": [
+                "East Asia",
+                "Southeast Asia",
+                "Central US",
+                "East US",
+                "East US 2",
+                "West US",
+                "North Central US",
+                "South Central US",
+                "North Europe",
+                "West Europe",
+                "Japan West",
+                "Japan East",
+                "Brazil South",
+                "Australia East",
+                "Australia Southeast",
+                "South India",
+                "Central India",
+                "West India",
+                "Canada Central",
+                "Canada East",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West US 2",
+                "Korea Central",
+                "Korea South",
+                "France Central",
+                "France South",
+                "Australia Central",
+                "Australia Central 2",
+                "UAE Central",
+                "UAE North",
+                "South Africa North",
+                "South Africa West",
+                "Switzerland North",
+                "Switzerland West",
+                "Germany North",
+                "Germany West Central",
+                "Norway West",
+                "Norway East",
+                "Brazil Southeast"
+            ]
+        },
+
+        //Resource Group for the prod spoke network
+        "prodSpokeVNetResourceGroup_Name": {
+            "type": "string"
+        },
+        "prodSpokeVNetResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+        "prodSpokeVNetResourceGroup_SubscriptionId": {
+            "type": "string"
+        },
+
+        //Resource Group for the hub network
+        "nonProdSpokeVNetResourceGroup_Name": {
+            "type": "string"
+        },
+        "nonProdSpokeVNetResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+        "nonProdSpokeVNetResourceGroup_SubscriptionId": {
+            "type": "string"
+        },
+
+        //Prod Spoke VNet
+        "spoke1Vnet_Name": {
+            "type": "String"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet3_Name": {
+            "type": "string"
+        },
+        "spoke1Vnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
+        "spoke1Vnet_routeTable_name": {
+            "type": "string"
+        },
+
+        //NonProd spoke VNet
+        "spoke2Vnet_Name": {
+            "type": "String"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet3_Name": {
+            "type": "string"
+        },
+        "spoke2Vnet_subnet3_AddressSpace": {
+            "type": "string"
+        },
+        "spoke2Vnet_routeTable_name": {
+            "type": "string"
+        },
+
+        //Storage account for NSG flow logs
+        "storageAccount_Name": {
+            "type": "string"
+        },
+        "storageAccount_retentionDays": { // also used for NSG flow log retention value
+            "type": "int"
+        }
+    },
+    "variables": {
+        "constants": {
+            "location": "[deployment().location]",
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
+            "storageAccountRetentionDays": 30,
+            "networkWatcherName": "[concat('NetworkWatcher_', deployment().location)]"
+        },
+        "deploymentName": "[deployment().name]",
+        "deploymentNames": {
+            "spoke1VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('prodSpokeVNetResourceGroup_Name'))]",
+            "spoke2VNetResourceGroup": "[concat(variables('deploymentName'), '-', parameters('nonProdSpokeVNetResourceGroup_Name'))]",
+            "spoke1RouteTable": "[concat(variables('deploymentName'), '-', parameters('spoke1Vnet_routeTable_name'))]",
+            "spoke2RouteTable": "[concat(variables('deploymentName'), '-', parameters('spoke2Vnet_routeTable_name'))]",
+            "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
+            "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
+            "storageAccount": "[concat(variables('deploymentName'), '-Storage')]",
+            "nsgFlowLog": "[concat(variables('deploymentName'), '-NSG-FlowLog-')]"
+        }
+    },
+    "functions": [
+        {
+            "namespace": "function",
+            "members": {
+                // This function appends -NSG onto the supplied parameter which is intended to be the subnet name
+                "nsgName": {
+                    "parameters": [
+                        {
+                            "name": "subnetName",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[concat(parameters('subnetName'), '-NSG')]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
+    "resources": [
+
+        //Resource Groups
+        {
+            "comments": "Prod spoke network resource group",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke1VNetResourceGroup]",
+            "location": "[parameters('resourceGroupsRegion')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "2021-04-01",
+                            "name": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+                            "location": "[parameters('resourceGroupsRegion')]",
+                            "tags": "[parameters('prodSpokeVNetResourceGroup_Tags')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comments": "NonProd spoke network resource group",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke2VNetResourceGroup]",
+            "location": "[parameters('resourceGroupsRegion')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "2021-04-01",
+                            "name": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+                            "location": "[parameters('resourceGroupsRegion')]",
+                            "tags": "[parameters('nonProdSpokeVNetResourceGroup_Tags')]"
+                        }
+                    ]
+                }
+            }
+        },
+
+        //Route tables
+        {
+            "comments": "Prod Spoke Route Table (empty, no routes)",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke1RouteTable]",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'routeTable.json')]"
+                },
+                "parameters": {
+                    "routeTables_name": {"value": "[parameters('spoke1Vnet_routeTable_name')]"},
+                    "location": {"value": "[variables('constants').location]"}
+                }
+            }
+        },
+        {
+            "comments": "NonProd Spoke Route Table (empty, no routes)",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke2RouteTable]",
+            "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'routeTable.json')]"
+                },
+                "parameters": {
+                    "routeTables_name": {"value": "[parameters('spoke2Vnet_routeTable_name')]"},
+                    "location": {"value": "[variables('constants').location]"}
+                }
+            }
+        },
+
+        //Storage account
+        {
+            "comments": "Storage account for NSG flow logs",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').storageAccount]",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNetResourceGroup]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'storage.json')]"
+                },
+                "parameters": {
+                    "storageAccount_name": {"value": "[parameters('storageAccount_Name')]"},
+                    "storageAccount_location": {"value": "[variables('constants').location]"},
+                    "storageAccount_retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+
+        //VNets
+        {
+            "comments": "Prod Spoke VNet",
+            "name": "[variables('deploymentNames').spoke1VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('prodSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNetResourceGroup]",
+                "[variables('deploymentNames').spoke1RouteTable]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke1Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke1Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').location]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke1Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet2_AddressSpace')]"},
+                    "subnet_subnet3_Name": {"value": "[parameters('spoke1Vnet_subnet3_Name')]"},
+                    "subnet_subnet3_AddressSpace": {"value": "[parameters('spoke1Vnet_subnet3_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"},
+                    //Route Table
+                    "routeTable_id": {"value": "[reference(variables('deploymentNames').spoke1RouteTable).outputs.routeTableId.value]"}
+                }
+            }
+        },
+        {
+            "comments": "NonProd Spoke VNet",
+            "name": "[variables('deploymentNames').spoke2VNet]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "resourceGroup": "[parameters('nonProdSpokeVNetResourceGroup_Name')]",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNetResourceGroup]",
+                "[variables('deploymentNames').spoke2RouteTable]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]"
+                },
+                "parameters": {
+                    //VNet
+                    "vnet_Name": {"value": "[parameters('spoke2Vnet_Name')]"},
+                    "vnet_AddressSpace": {"value": "[parameters('spoke2Vnet_AddressSpace')]"},
+                    "vnet_Location": {"value": "[variables('constants').location]"},
+                    //Subnets
+                    "subnet_subnet1_Name": {"value": "[parameters('spoke2Vnet_subnet1_Name')]"},
+                    "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet1_AddressSpace')]"},
+                    "subnet_subnet2_Name": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
+                    "subnet_subnet2_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet2_AddressSpace')]"},
+                    "subnet_subnet3_Name": {"value": "[parameters('spoke2Vnet_subnet3_Name')]"},
+                    "subnet_subnet3_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet3_AddressSpace')]"},
+                    //NSGs
+                    "nsg_subnet1_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
+                    "nsg_subnet2_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
+                    "nsg_subnet3_Name": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
+                    //Route Table
+                    "routeTable_id": {"value": "[reference(variables('deploymentNames').spoke2RouteTable).outputs.routeTableId.value]"}
+                }
+            }
+        },
+        
+        //NSG FLow Logs
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet1')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet1_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet2')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet2_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for Prod Spoke subnet 3",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'ProdSpokeSubnet3')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('prodSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke1Vnet_subnet3_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet1')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet2')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        },
+        {
+            "comments": "NSG Flow Log for NonProd Spoke subnet 1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').nsgFlowLog, 'NonPrdSpokeSubnet3')]",
+            "resourceGroup": "NetworkWatcherRG",
+            "subscriptionId": "[parameters('nonProdSpokeVNetResourceGroup_SubscriptionId')]",
+            // location property not allowed, even though VS Code Intellisense warns it's missing
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]",
+                "[variables('deploymentNames').storageAccount]"
+                //TODO: figure out the dependency for the Network Watcher resource
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'nsgFlowLog.json')]"
+                },
+                "parameters": {
+                    "location": {"value": "[variables('constants').location]"},
+                    "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
+                    "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
+                    "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

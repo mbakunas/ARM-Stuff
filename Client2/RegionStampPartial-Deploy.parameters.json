@@ -1,0 +1,99 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/Client2/"
+        },
+        "resourceGroupsRegion": {
+            "value": "East US 2"
+        },
+
+        "prodSpokeVNetResourceGroup_Name": {
+            "value": "Network-ProdSpoke-01"
+        },
+        "prodSpokeVNetResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+        "prodSpokeVNetResourceGroup_SubscriptionId": {
+            "value": "fac1ea11-e5a7-4e74-8d7e-965344c54f56"
+        },
+
+        "nonProdSpokeVNetResourceGroup_Name": {
+            "value": "Network-NonProdSpoke-01"
+        },
+        "nonProdSpokeVNetResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
+        "nonProdSpokeVNetResourceGroup_SubscriptionId": {
+            "value": "16936380-29b0-4326-8f6b-db86da154736"
+        },
+
+        "spoke1Vnet_Name": {
+            "value": "SPOKE-Prod-EastUS2-01"
+        },
+        "spoke1Vnet_AddressSpace": {
+            "value": "10.1.0.0/16"
+        },
+        "spoke1Vnet_subnet1_Name": {
+            "value": "Front-10.1.0.0_24"
+        },
+        "spoke1Vnet_subnet1_AddressSpace": {
+            "value": "10.1.0.0/24"
+        },
+        "spoke1Vnet_subnet2_Name": {
+            "value": "Mid-10.1.1.0_24"
+        },
+        "spoke1Vnet_subnet2_AddressSpace": {
+            "value": "10.1.1.0/24"
+        },
+        "spoke1Vnet_subnet3_Name": {
+            "value": "Back-10.1.2.0_24"
+        },
+        "spoke1Vnet_subnet3_AddressSpace": {
+            "value": "10.1.2.0/24"
+        },
+        "spoke1Vnet_routeTable_name": {
+            "value": "RT-ProdSpoke-EastUS2-01"
+        },
+
+        "spoke2Vnet_Name": {
+            "value": "SPOKE-NonProd-EastUS2-01"
+        },
+        "spoke2Vnet_AddressSpace": {
+            "value": "10.2.0.0/16"
+        },
+        "spoke2Vnet_subnet1_Name": {
+            "value": "Front-10.2.0.0_24"
+        },
+        "spoke2Vnet_subnet1_AddressSpace": {
+            "value": "10.2.0.0/24"
+        },
+        "spoke2Vnet_subnet2_Name": {
+            "value": "Mid-10.2.1.0-24"
+        },
+        "spoke2Vnet_subnet2_AddressSpace": {
+            "value": "10.2.1.0/24"
+        },
+        "spoke2Vnet_subnet3_Name": {
+            "value": "Back-10.2.2.0_24"
+        },
+        "spoke2Vnet_subnet3_AddressSpace": {
+            "value": "10.2.2.0/24"
+        },
+        "spoke2Vnet_routeTable_name": {
+            "value": "RT-NonProdSpoke-EastUS2-01"
+        },
+
+        "storageAccount_Name": {
+            "value": "bakunasnsgflow01"
+        },
+        "storageAccount_retentionDays": {
+            "value": 30
+        }
+    }
+}
