@@ -186,7 +186,7 @@
         "storageAccount_Name": {
             "type": "string"
         },
-        "storageAccount_retentionDays": {
+        "storageAccount_retentionDays": { // also used for NSG flow log retention value
             "type": "int"
         }
     },
@@ -846,7 +846,7 @@
                 "parameters": {
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet1_Name'))]"},
-                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
                     "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
                     "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
@@ -873,7 +873,7 @@
                 "parameters": {
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet2_Name'))]"},
-                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
                     "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
                     "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
@@ -900,7 +900,7 @@
                 "parameters": {
                     "location": {"value": "[variables('constants').location]"},
                     "nsgName": {"value": "[function.nsgName(parameters('spoke2Vnet_subnet3_Name'))]"},
-                    "nsgResourceGroup": {"value": "[parameters('prodSpokeVNetResourceGroup_Name')]"},
+                    "nsgResourceGroup": {"value": "[parameters('nonProdSpokeVNetResourceGroup_Name')]"},
                     "storageAccountId": {"value": "[reference(variables('deploymentNames').storageAccount).outputs.storageAccountId.value]"},
                     "retentionDays": {"value": "[parameters('storageAccount_retentionDays')]"}
                 }
