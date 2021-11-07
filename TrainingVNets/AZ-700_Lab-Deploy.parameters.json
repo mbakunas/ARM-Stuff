@@ -78,6 +78,19 @@
         },
         "spoke2Vnet_subnet2_AddressSpace": {
             "value": "10.2.1.0/24"
+        },
+
+        "vm_NamePrefix": {
+            "value": "VM-WEB-01"
+        },
+        "vm_size": {
+            "value": "Standard_E2s_v3"
+        },
+        "vm_userName": {
+            "value": "azureAdmin"
+        },
+        "vm_userPassword": {
+            "value": "C0mplexPassw0rd!"
         }
     }
 }

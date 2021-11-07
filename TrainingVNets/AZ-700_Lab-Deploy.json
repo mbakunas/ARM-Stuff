@@ -82,12 +82,28 @@
         },
         "spoke2Vnet_subnet2_AddressSpace": {
             "type": "string"
+        },
+
+        //VMs
+        "vm_NamePrefix": {
+            "type": "string"
+        },
+        "vm_size": {
+            "type": "string"
+        },
+        "vm_userName": {
+            "type": "string"
+        },
+        "vm_userPassword": {
+            "type": "secureString"
         }
     },
     "variables": {
         "constants": {
-            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets will be deployed here
-            "SecondaryRegion": "centralus", //Spoke 2 VNet will be deployed here
+            //Ensure the primary and secondary regions support availability zones
+            //https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#azure-regions-with-availability-zones
+            "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets and VMs will be deployed here
+            "SecondaryRegion": "centralus", //Spoke 2 VNet and VMs will be deployed here
             "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
         },
         "deploymentName": "[deployment().name]",
@@ -95,7 +111,9 @@
             "hubVNet": "[concat(variables('deploymentName'), '-HubVNet')]",
             "spoke1VNet": "[concat(variables('deploymentName'), '-Spoke1VNet')]",
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
-            "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]"
+            "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]",
+            "spoke1VMs": "[concat(variables('deploymentName'), '-Spoke1-VM')]",
+            "spoke2VMs": "[concat(variables('deploymentName'), '-Spoke2-VM')]"
         }
     },
     "functions": [
@@ -143,8 +161,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "uri": "[concat(variables('constants').templateLocationURI, 'hubVNet.json')]"
                 },
                 "parameters": {
                     //VNet
@@ -177,8 +194,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]"
                 },
                 "parameters": {
                     //VNet
@@ -208,8 +224,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]",
-                    "contentVersion": "1.0.0.0"
+                    "uri": "[concat(variables('constants').templateLocationURI, 'spokeVNet.json')]"
                 },
                 "parameters": {
                     //VNet
@@ -386,6 +401,39 @@
                             }
                         }
                     ]
+                }
+            }
+        },
+
+        //VMs
+        {
+            "comments": "Spoke 1 VMs, deployed to the same region as the Hub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[variables('deploymentNames').spoke1VMs]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').spoke1VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'VM.json')]"
+                },
+                "parameters": {
+                    //VM details
+                    "virtualMachine_Name": {"value": "[parameters('vm_NamePrefix')]"},
+                    "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
+                    "virtualMachine_Location": {"value": "[variables('constants').PrimaryRegion]"},
+
+                    //Network
+                    "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke1VNet).outputs.vnetID.value]"},
+                    "subnetName": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
+                    "availabiityZone": {"value": "1"},
+
+                    //Admin user account
+                    "adminUsername": {"value": "[parameters('vm_userName')]"},
+                    "adminPassword": {"value": "[parameters('vm_userPassword')]"}
                 }
             }
         }
