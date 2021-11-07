@@ -87,7 +87,8 @@
                         "createOption": "fromImage",
                         "managedDisk": {
                             "storageAccountType": "[variables('vm').osDiskType]"
-                        }
+                        },
+                        "name": "[concat(parameters('virtualMachine_Name'), '-OsDisk')]"
                     },
                     "imageReference": {
                         "publisher": "MicrosoftWindowsServer",
