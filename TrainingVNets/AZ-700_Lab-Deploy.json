@@ -113,7 +113,8 @@
             "spoke2VNet": "[concat(variables('deploymentName'), '-Spoke2VNet')]",
             "vneetPeer": "[concat(variables('deploymentName'), '-VNet-Peer-')]",
             "spoke1VMs": "[concat(variables('deploymentName'), '-Spoke1-VM')]",
-            "spoke2VMs": "[concat(variables('deploymentName'), '-Spoke2-VM')]"
+            "spoke2VMs": "[concat(variables('deploymentName'), '-Spoke2-VM')]",
+            "bastion": "[concat(variables('deploymentName'), '-Bastion')]"
         }
     },
     "functions": [
@@ -481,7 +482,21 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "foo"
+            "name": "[variables('deploymentNames').bastion]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').hubVNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'bastion.json')]"
+                },
+                "parameters": {
+                    "bastionHost_vnetName": {"value": "[parameters('hubVnet_Name')]"},
+                    "bastionHost_location": {"value": "[variables('constants').PrimaryRegion]"}
+                }
+            }
         }
     ],
     "outputs": {}
