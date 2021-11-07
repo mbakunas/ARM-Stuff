@@ -12,6 +12,9 @@
         "virtualMachine_Location": {
             "type": "string"
         },
+        "virtualMachine_DscUri": {
+            "type": "string"
+        },
 
         //Network
         "virtualNetworkId": {
@@ -145,12 +148,28 @@
                     "timeInMinutes": 30
                 }
             }
-        }
+        },
+     {
+         "name": "[concat(parameters('virtualMachine_Name'), '-WebServerInstall')]",
+         "type": "Microsoft.Compute/virtualMachines/extensions",
+         "apiVersion": "2021-03-01",
+         "location": "[parameters('virtualMachine_Location')]",
+         "tags": "[resourceGroup().tags]",
+         "dependsOn": [
+             "[parameters('virtualMachine_Name')]"
+         ],
+         "properties": {
+             "publisher": "Microsoft.Powershell",
+             "type": "DSC",
+             "typeHandlerVersion": "2.9",
+             "autoUpgradeMinorVersion": true,
+             "settings": {
+                 "modulesUrl": "[concat(parameters('virtualMachine_DscUri'), 'WebServerInstall.ps1.zip')]",
+                 "configurationFunction": "Configure"
+             },
+             "protectedSettings": {}
+         }
+     }
     ],
-    "outputs": {
-        "adminUsername": {
-            "type": "string",
-            "value": "[parameters('adminUsername')]"
-        }
-    }
+    "outputs": {}
 }

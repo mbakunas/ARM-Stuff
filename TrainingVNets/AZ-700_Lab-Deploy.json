@@ -104,7 +104,8 @@
             //https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#azure-regions-with-availability-zones
             "PrimaryRegion": "eastus2",  //The hub and spoke 1 VNets and VMs will be deployed here
             "SecondaryRegion": "centralus", //Spoke 2 VNet and VMs will be deployed here
-            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
+            "dscLocationURI": "[concat(parameters('assetLocationURI'), 'DSC/')]"
         },
         "deploymentName": "[deployment().name]",
         "deploymentNames": {
@@ -426,6 +427,7 @@
                     "virtualMachine_Name": {"value": "[concat(parameters('vm_NamePrefix'), '-Spoke1-', copyIndex(1))]"},
                     "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
                     "virtualMachine_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    "virtualMachine_DscUri": {"value": "[variables('constants').dscLocationURI]"},
 
                     //Network
                     "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke1VNet).outputs.vnetID.value]"},
@@ -461,6 +463,7 @@
                     "virtualMachine_Name": {"value": "[concat(parameters('vm_NamePrefix'), '-Spoke2-', copyIndex(1))]"},
                     "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
                     "virtualMachine_Location": {"value": "[variables('constants').SecondaryRegion]"},
+                    "virtualMachine_DscUri": {"value": "[variables('constants').dscLocationURI]"},
 
                     //Network
                     "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke2VNet).outputs.vnetID.value]"},
