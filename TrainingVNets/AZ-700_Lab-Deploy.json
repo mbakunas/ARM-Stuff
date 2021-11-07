@@ -215,7 +215,7 @@
                     //VNet
                     "vnet_Name": {"value": "[parameters('spoke2Vnet_Name')]"},
                     "vnet_AddressSpace": {"value": "[parameters('spoke2Vnet_AddressSpace')]"},
-                    "vnet_Location": {"value": "[variables('constants').PrimaryRegion]"},
+                    "vnet_Location": {"value": "[variables('constants').SecondaryRegion]"},
                     //Subnets
                     "subnet_subnet1_Name": {"value": "[parameters('spoke2Vnet_subnet1_Name')]"},
                     "subnet_subnet1_AddressSpace": {"value": "[parameters('spoke2Vnet_subnet1_AddressSpace')]"},
