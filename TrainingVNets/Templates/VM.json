@@ -165,7 +165,7 @@
              "autoUpgradeMinorVersion": true,
              "settings": {
                  "modulesUrl": "[concat(parameters('virtualMachine_DscUri'), 'WebServerInstall.ps1.zip')]",
-                 "configurationFunction": "WebServerInstall"
+                 "configurationFunction": "WebServerInstall.ps1\\WebServerInstall"
              },
              "protectedSettings": {}
          }
