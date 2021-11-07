@@ -150,7 +150,7 @@
             }
         },
      {
-         "name": "[concat(parameters('virtualMachine_Name'), '-WebServerInstall')]",
+         "name": "[concat(parameters('virtualMachine_Name'), '/WebServerInstall')]",
          "type": "Microsoft.Compute/virtualMachines/extensions",
          "apiVersion": "2021-03-01",
          "location": "[parameters('virtualMachine_Location')]",
