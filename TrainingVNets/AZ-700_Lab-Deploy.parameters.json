@@ -81,7 +81,7 @@
         },
 
         "vm_NamePrefix": {
-            "value": "VM-WEB-01"
+            "value": "VM-WEB"
         },
         "vm_size": {
             "value": "Standard_E2s_v3"

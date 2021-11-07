@@ -410,7 +410,7 @@
             "comments": "Spoke 1 VMs, deployed to the same region as the Hub",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "name": "[variables('deploymentNames').spoke1VMs]",
+            "name": "[concat(variables('deploymentNames').spoke1VMs, copyIndex(1))]",
             "resourceGroup": "[parameters('resourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').spoke1VNet]"
@@ -422,20 +422,66 @@
                 },
                 "parameters": {
                     //VM details
-                    "virtualMachine_Name": {"value": "[parameters('vm_NamePrefix')]"},
+                    "virtualMachine_Name": {"value": "[concat(parameters('vm_NamePrefix'), '-Spoke1-', copyIndex(1))]"},
                     "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
                     "virtualMachine_Location": {"value": "[variables('constants').PrimaryRegion]"},
 
                     //Network
                     "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke1VNet).outputs.vnetID.value]"},
                     "subnetName": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
-                    "availabiityZone": {"value": "1"},
+                    "availabiityZone": {"value": "[string(copyIndex(1))]"},
 
                     //Admin user account
                     "adminUsername": {"value": "[parameters('vm_userName')]"},
                     "adminPassword": {"value": "[parameters('vm_userPassword')]"}
                 }
+            },
+            "copy": {
+                "name": "spoke1VMsLoop",
+                "count": 3
             }
+        },
+        {
+            "comments": "Spoke 2 VMs, deployed to the opposite region as the Hub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').spoke2VMs, copyIndex(1))]",
+            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "dependsOn": [
+                "[variables('deploymentNames').spoke2VNet]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'VM.json')]"
+                },
+                "parameters": {
+                    //VM details
+                    "virtualMachine_Name": {"value": "[concat(parameters('vm_NamePrefix'), '-Spoke2-', copyIndex(1))]"},
+                    "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
+                    "virtualMachine_Location": {"value": "[variables('constants').SecondaryRegion]"},
+
+                    //Network
+                    "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke2VNet).outputs.vnetID.value]"},
+                    "subnetName": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
+                    "availabiityZone": {"value": "[string(copyIndex(1))]"},
+
+                    //Admin user account
+                    "adminUsername": {"value": "[parameters('vm_userName')]"},
+                    "adminPassword": {"value": "[parameters('vm_userPassword')]"}
+                }
+            },
+            "copy": {
+                "name": "spoke2VMsLoop",
+                "count": 3
+            }
+        },
+
+        //Azure Bastion
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "foo"
         }
     ],
     "outputs": {}
