@@ -12,7 +12,7 @@
     "variables": {
         "bastionHost": {
             "name": "[concat(parameters('bastionHost_vnetName'), '-Bastion')]",
-            "pubicIpAddressName": "[concat(variables('bastionHost').name, '-IP')]",
+            "pubicIpAddressName": "[concat(parameters('bastionHost_vnetName'), '-Bastion-IP')]",
             "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('bastionHost_vnetName'), 'AzureBastionSubnet')]",
             "sku": "Basic",
             "ScaleUnits": 2,
