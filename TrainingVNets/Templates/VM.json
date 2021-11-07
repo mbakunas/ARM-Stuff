@@ -54,7 +54,7 @@
         {
             "name": "[variables('virtualMachine_NicName')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2021-03-01",
+            "apiVersion": "2020-11-01",
             "location": "[parameters('virtualMachine_Location')]",
             "tags": "[resourceGroup().tags]",
             "properties": {
@@ -165,7 +165,7 @@
              "autoUpgradeMinorVersion": true,
              "settings": {
                  "modulesUrl": "[concat(parameters('virtualMachine_DscUri'), 'WebServerInstall.ps1.zip')]",
-                 "configurationFunction": "Configure"
+                 "configurationFunction": "WebServerInstall"
              },
              "protectedSettings": {}
          }
