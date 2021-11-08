@@ -9,10 +9,7 @@
             "type": "string"
         },
         "nsgResourceGroup": {
-            "type": "string",
-            "metadata": {
-                "description": "description"
-            }
+            "type": "string"
         },
         "storageAccountId": {
             "type": "string"
