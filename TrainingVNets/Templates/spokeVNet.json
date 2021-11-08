@@ -90,7 +90,26 @@
             "location": "[parameters('vnet_Location')]",
             "tags": "[resourceGroup().tags]",
             "properties": {
-                "securityRules": []
+                "securityRules": [
+                    {
+                        //NSG rule necessary to attach app gateway to this subnet
+                        "name": "AppGW_Allow_65200-65535",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "65200-65535",
+                            "sourceAddressPrefix": "GatewayManager",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 4010,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
             }
         },
         {
