@@ -6,11 +6,11 @@
             "type": "string"
         },
 
-        //Resource Group
-        "resourceGroup_Name": {
+        //Resource Group for network resources
+        "networkResourceGroup_Name": {
             "type": "string"
         },
-        "resourceGroup_Tags": {
+        "networkResourceGroup_Tags": {
             "type": "object",
             "defaultValue": ""
         },
@@ -84,6 +84,15 @@
             "type": "string"
         },
 
+        //Resource group for VMs
+        "vmResourceGroup_Name": {
+            "type": "string"
+        },
+        "vmResourceGroup_Tags": {
+            "type": "object",
+            "defaultValue": ""
+        },
+
         //VMs
         "vm_NamePrefix": {
             "type": "string"
@@ -140,14 +149,22 @@
     ],
     "resources": [
 
-        //Resource Group
+        //Resource Groups
         {
-            "comments": "Resource Group",
-            "name": "[parameters('resourceGroup_Name')]",
+            "comments": "Resource group for network resources",
+            "name": "[parameters('networkResourceGroup_Name')]",
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2021-04-01",
             "location": "[variables('constants').PrimaryRegion]",
-            "tags": "[parameters('resourceGroup_Tags')]"
+            "tags": "[parameters('networkResourceGroup_Tags')]"
+        },
+        {
+            "comments": "Resource group for VMs",
+            "name": "[parameters('vmResourceGroup_Name')]",
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-04-01",
+            "location": "[variables('constants').PrimaryRegion]",
+            "tags": "[parameters('vmResourceGroup_Tags')]"
         },
 
         //VNets
@@ -156,9 +173,9 @@
             "name": "[variables('deploymentNames').hubVNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -189,9 +206,9 @@
             "name": "[variables('deploymentNames').spoke1VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -219,9 +236,9 @@
             "name": "[variables('deploymentNames').spoke2VNet]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
-                "[parameters('resourceGroup_Name')]"
+                "[parameters('networkResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -251,7 +268,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke1')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -291,7 +308,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Hub-Spoke2')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -331,7 +348,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke1-Hub')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke1VNet]"
@@ -371,7 +388,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').vneetPeer, 'Spoke2-Hub')]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]",
                 "[variables('deploymentNames').spoke2VNet]"
@@ -413,9 +430,10 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').spoke1VMs, copyIndex(1))]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('vmResourceGroup_Name')]",
             "dependsOn": [
-                "[variables('deploymentNames').spoke1VNet]"
+                "[variables('deploymentNames').spoke1VNet]",
+                "[parameters('vmResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -428,12 +446,10 @@
                     "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
                     "virtualMachine_Location": {"value": "[variables('constants').PrimaryRegion]"},
                     "virtualMachine_DscUri": {"value": "[variables('constants').dscLocationURI]"},
-
                     //Network
                     "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke1VNet).outputs.vnetID.value]"},
                     "subnetName": {"value": "[parameters('spoke1Vnet_subnet2_Name')]"},
                     "availabiityZone": {"value": "[string(copyIndex(1))]"},
-
                     //Admin user account
                     "adminUsername": {"value": "[parameters('vm_userName')]"},
                     "adminPassword": {"value": "[parameters('vm_userPassword')]"}
@@ -449,9 +465,10 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[concat(variables('deploymentNames').spoke2VMs, copyIndex(1))]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('vmResourceGroup_Name')]",
             "dependsOn": [
-                "[variables('deploymentNames').spoke2VNet]"
+                "[variables('deploymentNames').spoke2VNet]",
+                "[parameters('vmResourceGroup_Name')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -464,12 +481,10 @@
                     "virtualMachine_Size": {"value": "[parameters('vm_size')]"},
                     "virtualMachine_Location": {"value": "[variables('constants').SecondaryRegion]"},
                     "virtualMachine_DscUri": {"value": "[variables('constants').dscLocationURI]"},
-
                     //Network
                     "virtualNetworkId": {"value": "[reference(variables('deploymentNames').spoke2VNet).outputs.vnetID.value]"},
                     "subnetName": {"value": "[parameters('spoke2Vnet_subnet2_Name')]"},
                     "availabiityZone": {"value": "[string(copyIndex(1))]"},
-
                     //Admin user account
                     "adminUsername": {"value": "[parameters('vm_userName')]"},
                     "adminPassword": {"value": "[parameters('vm_userPassword')]"}
@@ -486,7 +501,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
             "name": "[variables('deploymentNames').bastion]",
-            "resourceGroup": "[parameters('resourceGroup_Name')]",
+            "resourceGroup": "[parameters('networkResourceGroup_Name')]",
             "dependsOn": [
                 "[variables('deploymentNames').hubVNet]"
             ],

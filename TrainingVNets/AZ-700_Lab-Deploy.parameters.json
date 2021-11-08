@@ -5,10 +5,10 @@
         "assetLocationURI": {
             "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/TrainingVNets/"
         },
-        "resourceGroup_Name": {
+        "networkResourceGroup_Name": {
             "value": "AZ-700-1"
         },
-        "resourceGroup_Tags": {
+        "networkResourceGroup_Tags": {
             "value": {
                 "environment": "sandbox"
             }
@@ -78,6 +78,15 @@
         },
         "spoke2Vnet_subnet2_AddressSpace": {
             "value": "10.2.1.0/24"
+        },
+
+        "vmResourceGroup_Name": {
+            "value": "AZ-700-2"
+        },
+        "vmResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
         },
 
         "vm_NamePrefix": {
