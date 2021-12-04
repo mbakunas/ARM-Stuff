@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webTier_vms": {
+            "type": "array"
+        },
+        "appTier_vms": {
+            "type": "array"
+        },
+        "dataTier_vms": {
+            "type": "array"
+        },
+        "resourceGroupsRegion": {
+            "type": "string"
+        },
+        "assetLocationUri": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "constants": {
+            "location": "[deployment().location]"
+        }
+    },
+    "functions": [],
+    "resources": [
+        // resource groups
+
+        // web tier VMs
+
+        // app tier VMs
+
+        // data tier VMs
+    ],
+    "outputs": {
+        "webTier": {
+            "type": "string",
+            "value": "[parameters('webTier_vms')[0].name]"
+        },
+        "appTier": {
+            "type": "string",
+            "value": "[parameters('appTier_vms')[0].name]"
+        },
+        "dataTier": {
+            "type": "string",
+            "value": "[parameters('dataTier_vms')[0].name]"
+        }
+    }
+}
