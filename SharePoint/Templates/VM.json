@@ -1,0 +1,157 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        //VM details
+        "virtualMachine_Name": {
+            "type": "string"
+        },
+        "virtualMachine_Size": {
+            "type": "string"
+        },
+        "virtualMachine_osDiskType": {
+            "type": "string"
+        },
+        "virtualMachine_Location": {
+            "type": "string"
+        },
+        "virtualMachine_availabilitySetName": {
+            "type": "string"
+        },
+        "virtualMachine_dataDisks": {
+            "type": "array",
+            "defaultValue": []
+        },
+        "virtualMachine_dataDiskType": {
+            "type": "string",
+            "defaultValue": "StandardSSD_LRS"
+        },
+
+        //Network
+        "virtualNetworkId": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+
+        //Admin user account
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "subnetRef": "[concat(parameters('virtualNetworkId'), '/subnets/', parameters('subnetName'))]",
+        "virtualMachine_NicName": "[concat(parameters('virtualMachine_Name'), '-NIC1')]",
+        "vm": {
+            "enableAcceleratedNetworking": true,
+            "patchMode": "Manual",
+            "enableHotpatching": false,
+            "licenseType": ""  //"Windows_Server" enables hybrid benifit licensing
+        }
+        //"licenseTypeJson": "[if(equals(variables('vm').licenseType, 'Windows_Server'), json('\"licenseType\": \"Windows_Server\"'), 'json(null)')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('virtualMachine_NicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('virtualMachine_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('vm').enableAcceleratedNetworking]"
+            }
+        },
+        {
+            "name": "[parameters('virtualMachine_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-03-01",
+            "location": "[parameters('virtualMachine_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('virtualMachine_NicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachine_Size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('virtualMachine_osDiskType')]"
+                        },
+                        "name": "[concat(parameters('virtualMachine_Name'), '-OsDisk')]"
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-datacenter-gensecond",
+                        "version": "latest"
+                    },
+                    "copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[length(parameters('virtualMachine_dataDisks'))]",
+                            "input": {
+                                "lun": "[copyIndex('dataDisks')]",
+                                "name": "[concat(parameters('virtualMachine_Name'), '-DataDisk', copyIndex('dataDisks', 1))]",
+                                "createOption": "Empty",
+                                "caching": "None",
+                                "managedDisk": {
+                                    "storageAccountType": "[parameters('virtualMachine_dataDiskType')]"
+                                },
+                                "diskSizeGB": "[parameters('virtualMachine_dataDisks')[copyIndex('dataDisks')]]"
+                            }
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('virtualMachine_NicName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachine_Name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": false,
+                        "provisionVmAgent": true,
+                        "patchSettings": {
+                            "enableHotpatching": "[variables('vm').enableHotpatching]",
+                            "patchMode": "[variables('vm').patchMode]"
+                        }
+                    }
+                },
+                //"licenseType": "[variables('vm').licenseType]",
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('virtualMachine_availabilitySetName'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

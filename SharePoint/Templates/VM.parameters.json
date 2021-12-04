@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachine_Name": {
+            "value": "DC01" 
+        },
+        "virtualMachine_Size": {
+            "value": "Standard_E2s_v3" 
+        },
+        "virtualMachine_osDiskType": {
+            "value": "StandardSSD_LRS" 
+        },
+        "virtualMachine_Location": {
+            "value": "eastus2" 
+        },
+        "virtualMachine_availabilitySetName": {
+            "value": "FooAvSet" 
+        },
+        "virtualMachine_dataDisks": {
+            "value": []
+        },
+        "virtualMachine_dataDiskType": {
+            "value": "" 
+        },
+        "virtualNetworkId": {
+            "value": "/subscriptions/16936380-29b0-4326-8f6b-db86da154736/resourceGroups/Foo01/providers/Microsoft.Network/virtualNetworks/Foo-EastUS2-Hub-01" 
+        },
+        "subnetName": {
+            "value": "CorpNet" 
+        },
+        "adminUsername": {
+            "value": "azureAdmin" 
+        },
+        "adminPassword": {
+            "value": "LongPassw0rd!" 
+        }
+    }
+}
