@@ -54,7 +54,7 @@
             "value": "eastus2" 
         },
         "assetLocationUri": {
-            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/SharePoint/Templates"
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/SharePoint/Templates/"
         }
     }
 }
