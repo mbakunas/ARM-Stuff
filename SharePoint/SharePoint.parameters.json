@@ -2,7 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "webTier_vms": {
+        "resourceGroupsRegion": {
+            "value": "eastus2" 
+        },
+        "resourceGroupTags": {
+            "value": {
+                "Environment": "QA"
+            }
+        },
+        "assetLocationUri": {
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/SharePoint/Templates/"
+        },
+        "VMs": {
             "value": [
                 {
                     "resourceGroup": "FooWebTier01",
@@ -15,11 +26,7 @@
                     ],
                     "vnetId": "/subscriptions/16936380-29b0-4326-8f6b-db86da154736/resourceGroups/Foo01/providers/Microsoft.Network/virtualNetworks/Foo-EastUS2-Hub-01",
                     "subnetName": "FrontEnd-10.0.1.0_24"
-                }
-            ]
-        },
-        "appTier_vms": {
-            "value": [
+                },
                 {
                     "resourceGroup": "FooAppTier01",
                     "name": "VM02",
@@ -31,11 +38,7 @@
                     ],
                     "vnetId": "/subscriptions/16936380-29b0-4326-8f6b-db86da154736/resourceGroups/Foo01/providers/Microsoft.Network/virtualNetworks/Foo-EastUS2-Hub-01",
                     "subnetName": "MidTier-10.0.2.0_24"
-                }
-            ]
-        },
-        "dataTier_vms": {
-            "value": [
+                },
                 {
                     "resourceGroup": "FooDataTier01",
                     "name": "VM03",
@@ -49,12 +52,6 @@
                     "subnetName": "BackEnd-10.0.3.0_24"
                 }
             ]
-        },
-        "resourceGroupsRegion": {
-            "value": "eastus2" 
-        },
-        "assetLocationUri": {
-            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/SharePoint/Templates/"
         }
     }
 }
