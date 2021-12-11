@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resrourceGroup_Name": {
+            "value": "FooGroup"
+        },
+        "resourceGroup_Location": {
+            "value": "eastus2"
+        },
+        "resourceGroupRbac_RoleNameGuid": {
+            "value": "68854112-beaa-41fc-a1e2-136956e31532"
+        },
+        "resourceGroupRbac_PrincipleId": {
+            "value": "a3511f4c-84fe-41ed-a506-9955dbc78e5c"
+        }
+    }
+}
