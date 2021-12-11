@@ -5,9 +5,6 @@
         "resrourceGroup_Name": {
             "value": "FooGroup"
         },
-        "resourceGroup_Location": {
-            "value": "eastus2"
-        },
         "resourceGroupRbac_RoleNameGuid": {
             "value": "68854112-beaa-41fc-a1e2-136956e31532"
         },

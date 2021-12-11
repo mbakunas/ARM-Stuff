@@ -6,9 +6,6 @@
         "resrourceGroup_Name": {
             "type": "string"
         },
-        "resourceGroup_Location": {
-            "type": "string"
-        },
 
         //Resource group RBAC details
         "resourceGroupRbac_RoleNameGuid": {
@@ -25,9 +22,9 @@
     "resources": [
         {
             "type": "Microsoft.Resources/resourceGroups",
-            "apiVersion": "2021-05-01",
+            "apiVersion": "2021-04-01",
             "name": "[parameters('resrourceGroup_Name')]",
-            "location": "[parameters('resourceGroup_Location')]",
+            "location": "[deployment().location]",
             "tags": {}
         },
         {
@@ -46,7 +43,7 @@
                     "resources": [
                         {
                             "type": "Microsoft.Authorization/roleAssignments",
-                            "apiVersion": "2020-10-01-preview",
+                            "apiVersion": "2020-04-01-preview",
                             "name": "[parameters('resourceGroupRbac_RoleNameGuid')]",
                             "properties": {
                                 "roleDefinitionId": "[variables('Owner')]",
