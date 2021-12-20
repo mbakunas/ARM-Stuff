@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "location": {
+            "type": "string"
+        },
         "vnet": {
             "type": "object"
         }
@@ -14,7 +17,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-11-01",
             "name": "[parameters('vnet').name]",
-            "location": "[parameters('vnet').location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "nsgLoop"
             ],
@@ -34,7 +37,7 @@
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2020-11-01",
             "name": "[concat(parameters('vnet').name, '/', parameters('vnet').subnets[copyIndex()].name)]",
-            "location": "[parameters('vnet').location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet').name)]"
             ],
@@ -62,7 +65,7 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-11-01",
             "name": "[concat(parameters('vnet').subnets[copyIndex()].name, '-NSG')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": "[resourceGroup().tags]",
             "properties": {
                 "securityRules": []

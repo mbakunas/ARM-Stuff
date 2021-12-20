@@ -2,11 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "location": {
+            "value": "eastus2"
+        },
         "vnet": {
             "value": {
                 "name": "Hub-EastUS2-01",
                 "addressSpace": "10.0.0.0/23",
-                "location": "eastus2",
                 "subnets": [
                     {
                         "name": "GatewaySubnet",

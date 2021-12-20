@@ -17,7 +17,6 @@
                 {
                     "name": "Hub-EastUS2-01",
                     "addressSpace": "10.0.0.0/23",
-                    "location": "eastus2",
                     "subnets": [
                         {
                             "name": "GatewaySubnet",
@@ -40,7 +39,6 @@
                 {
                     "name": "Spoke-NonProd-EastUS2-01",
                     "addressSpace": "10.0.4.0/22",
-                    "location": "eastus2",
                     "subnets": [
                         {
                             "name": "AppGW-10.0.4.0_24",

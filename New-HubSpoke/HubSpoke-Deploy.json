@@ -53,6 +53,7 @@
                     "uri": "[concat(variables('constants').templateLocationURI, 'VNet.json')]"
                 },
                 "parameters": {
+                    "location": {"value": "[deployment().location]"},
                     "vnet": {"value": "[parameters('vnets')[copyIndex()]]"}
                 }
             },
