@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "assetLocationURI": {
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/master/New-HubSpoke/"
+        },
+        "resourceGroup_name": {
+            "value": "HubSpokeTest01"
+        },
+        "resourceGroup_location": {
+            "value": "eastus2"
+        },
+
+        "vnets": {
+            "value": [
+                {
+                    "name": "Hub-EastUS2-01",
+                    "addressSpace": "10.0.0.0/23",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "GatewaySubnet",
+                            "addressSpace": "10.0.0.0/26"
+                        },
+                        {
+                            "name": "AzureFirewallSubnet",
+                            "addressSpace": "10.0.0.64/26"
+                        },
+                        {
+                            "name": "AzureBastionSubnet",
+                            "addressSpace": "10.0.0.128/26"
+                        },
+                        {
+                            "name": "Infra-10.0.1.0_24",
+                            "addressSpace": "10.0.1.0/24"
+                        }
+                    ]
+                },
+                {
+                    "name": "Spoke-NonProd-EastUS2-01",
+                    "addressSpace": "10.0.4.0/22",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "AppGW-10.0.4.0_24",
+                            "addressSpace": "10.0.4.0/24"
+                        },
+                        {
+                            "name": "Web-10.0.5.0_24",
+                            "addressSpace": "10.0.5.0/24"
+                        },
+                        {
+                            "name": "App-10.0.6.0_24",
+                            "addressSpace": "10.0.6.0/24"
+                        },
+                        {
+                            "name": "Data-10.0.7.0_24",
+                            "addressSpace": "10.0.7.0/24"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

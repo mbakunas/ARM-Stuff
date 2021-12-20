@@ -1,0 +1,157 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup_location": {
+            "type": "string"
+        },
+        "assetLocationURI": {
+            "type": "string"
+        },
+        "resourceGroup_name": {
+            "type": "string"
+        },
+        "vnets": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "constants": {
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
+            "location": "[deployment().location]"
+        },
+        "deploymentName": "[deployment().name]",
+        "deploymentNames": {
+            "VNets": "[concat(variables('deploymentName'), '-VNet-')]",
+            "peerOutbound": "[concat(variables('deploymentName'), '-Peer-Outbound-')]",
+            "peerInbound": "[concat(variables('deploymentName'), '-Peer-Inbound-')]"
+        }
+    },
+    "functions": [],
+    "resources": [
+        // Resource Group
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('resourceGroup_name')]",
+            "location": "[parameters('resourceGroup_location')]",
+            "tags": {}
+        },
+
+        // VNets
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').VNets, copyIndex(1))]",
+            "resourceGroup": "[parameters('resourceGroup_name')]",
+            "dependsOn": [
+                "[parameters('resourceGroup_name')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('constants').templateLocationURI, 'VNet.json')]"
+                },
+                "parameters": {
+                    "vnet": {"value": "[parameters('vnets')[copyIndex()]]"}
+                }
+            },
+            "copy": {
+                "count": "[length(parameters('vnets'))]",
+                "name": "vnetLoop"
+            }
+        },
+
+        // VNet Peerings
+        // This template assumes the first VNet is the hub
+        {
+            "comments": "Outbound peering(s) - hub to spoke",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').peerOutbound, copyIndex(1))]",
+            "resourceGroup": "[parameters('resourceGroup_name')]",
+            "dependsOn": [
+                "vnetLoop"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "apiVersion": "2020-11-01",
+                            "name": "[concat(parameters('vnets')[0].name, '/', parameters('vnets')[0].name, '_to_', parameters('vnets')[copyIndex(1)].name)]",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(concat(variables('deploymentNames').VNets, copyIndex(2))).outputs.vnetId.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('vnets')[copyIndex(1)].addressSpace]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "copy": {
+                "name": "outboundPeerLoop",
+                "count": "[sub(length(parameters('vnets')), 1)]",
+                "mode": "Serial"
+            }
+        },
+        {
+            "comments": "Inbound peering(s) - spoke to hub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('deploymentNames').peerInbound, copyIndex(1))]",
+            "resourceGroup": "[parameters('resourceGroup_name')]",
+            "dependsOn": [
+                "vnetLoop"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "apiVersion": "2020-11-01",
+                            "name": "[concat(parameters('vnets')[copyIndex(1)].name, '/', parameters('vnets')[copyIndex(1)].name, '_to_', parameters('vnets')[0].name)]",
+                            "properties": {
+                                "remoteVirtualNetwork": {
+                                    "id": "[reference(concat(variables('deploymentNames').VNets, 1)).outputs.vnetId.value]"
+                                },
+                                "allowVirtualNetworkAccess": true,
+                                "allowForwardedTraffic": true,
+                                "allowGatewayTransit": false,
+                                "useRemoteGateways": false,
+                                "remoteAddressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('vnets')[0].addressSpace]"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "copy": {
+                "name": "inboundPeerLoop",
+                "count": "[sub(length(parameters('vnets')), 1)]",
+                "mode": "Serial"
+            }
+        }
+    ],
+    "outputs": {}
+}
