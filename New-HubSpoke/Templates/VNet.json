@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": {
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "functions": [],
+    "resources": [
+        // VNet
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnet').name]",
+            "location": "[parameters('vnet').location]",
+            "dependsOn": [
+                "nsgLoop"
+            ],
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnet').addressSpace]"
+                    ]
+                },
+                "enableDdosProtection": false
+            }
+        },
+
+        // Subnets
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('vnet').name, '/', parameters('vnet').subnets[copyIndex()].name)]",
+            "location": "[parameters('vnet').location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet').name)]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('vnet').subnets[copyIndex()].addressSpace]",
+                "networkSecurityGroup": 
+                    // This mess is necessary because the 'special' subnets don't get an NSG
+                    "[if(or(equals(parameters('vnet').subnets[copyIndex()].name, 'GatewaySubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureFirewallSubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureBastionSubnet')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vnet').subnets[copyIndex()].name, '-NSG')), '\"}')))]",
+                "serviceEndpoints": [],
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            },
+            "copy": {
+                "count": "[length(parameters('vnet').subnets)]",
+                "name": "subnetLoop",
+                "mode": "Serial"
+            }
+        },
+
+        // NSGs
+        {
+            // Don't add NSGs to the GatewaySubnet, AzureFirewallSubnet, or AzureBastionSubnet
+            "condition": "[not(or(equals(parameters('vnet').subnets[copyIndex()].name, 'GatewaySubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureFirewallSubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureBastionSubnet')))]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('vnet').subnets[copyIndex()].name, '-NSG')]",
+            "location": "[resourceGroup().location]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            },
+            "copy": {
+                "count": "[length(parameters('vnet').subnets)]",
+                "name": "nsgLoop"
+            }
+        }
+
+    ],
+    "outputs": {}
+}
