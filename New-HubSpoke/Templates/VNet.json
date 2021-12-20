@@ -9,8 +9,34 @@
             "type": "object"
         }
     },
-    "variables": {},
-    "functions": [],
+    "variables": {
+        "appendSubnetAddressSpace": true
+    },
+    "functions": [
+        {
+            // This function appends the subnet's address space to its name (swapping a _ for the /).
+            // It does NOT change the name of GatewaySubnet, AzureFirewallSubnet, or AzureBastionSubnet
+            "namespace": "function",
+            "members": {
+                "subnetFullName": {
+                    "parameters": [
+                        {
+                            "name": "subnetName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "subnetAddressSpace",
+                            "type": "string"
+                        }
+                    ],
+                    "output": {
+                        "value": "[if(or(equals(parameters('subnetName'), 'GatewaySubnet'), equals(parameters('subnetName'), 'AzureFirewallSubnet'), equals(parameters('subnetName'), 'AzureBastionSubnet')), parameters('subnetName'), concat(parameters('subnetName'), '-', replace(parameters('subnetAddressSpace'), '/', '_')))]",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    ],
     "resources": [
         // VNet
         {
@@ -36,7 +62,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2020-11-01",
-            "name": "[concat(parameters('vnet').name, '/', parameters('vnet').subnets[copyIndex()].name)]",
+            "name": "[concat(parameters('vnet').name, '/', if(variables('appendSubnetAddressSpace'), function.subnetFullName(parameters('vnet').subnets[copyIndex()].name, parameters('vnet').subnets[copyIndex()].addressSpace), parameters('vnet').subnets[copyIndex()].name))]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet').name)]"
@@ -45,7 +71,7 @@
                 "addressPrefix": "[parameters('vnet').subnets[copyIndex()].addressSpace]",
                 "networkSecurityGroup": 
                     // This mess is necessary because the 'special' subnets don't get an NSG
-                    "[if(or(equals(parameters('vnet').subnets[copyIndex()].name, 'GatewaySubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureFirewallSubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureBastionSubnet')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vnet').subnets[copyIndex()].name, '-NSG')), '\"}')))]",
+                    "[if(or(equals(parameters('vnet').subnets[copyIndex()].name, 'GatewaySubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureFirewallSubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureBastionSubnet')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/networkSecurityGroups', concat(if(variables('appendSubnetAddressSpace'), function.subnetFullName(parameters('vnet').subnets[copyIndex()].name, parameters('vnet').subnets[copyIndex()].addressSpace),parameters('vnet').subnets[copyIndex()].name), '-NSG')), '\"}')))]",
                 "serviceEndpoints": [],
                 "delegations": [],
                 "privateEndpointNetworkPolicies": "Enabled",
@@ -64,7 +90,7 @@
             "condition": "[not(or(equals(parameters('vnet').subnets[copyIndex()].name, 'GatewaySubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureFirewallSubnet'), equals(parameters('vnet').subnets[copyIndex()].name, 'AzureBastionSubnet')))]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-11-01",
-            "name": "[concat(parameters('vnet').subnets[copyIndex()].name, '-NSG')]",
+            "name": "[concat(if(variables('appendSubnetAddressSpace'), function.subnetFullName(parameters('vnet').subnets[copyIndex()].name, parameters('vnet').subnets[copyIndex()].addressSpace), parameters('vnet').subnets[copyIndex()].name), '-NSG')]",
             "location": "[parameters('location')]",
             "tags": "[resourceGroup().tags]",
             "properties": {

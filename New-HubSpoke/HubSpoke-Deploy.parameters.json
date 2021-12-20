@@ -11,6 +11,9 @@
         "resourceGroup_location": {
             "value": "eastus2"
         },
+        "vnet_location": {
+            "value": "eastus2"
+        },
 
         "vnets": {
             "value": [
@@ -31,7 +34,7 @@
                             "addressSpace": "10.0.0.128/26"
                         },
                         {
-                            "name": "Infra-10.0.1.0_24",
+                            "name": "Infra",
                             "addressSpace": "10.0.1.0/24"
                         }
                     ]
@@ -41,20 +44,42 @@
                     "addressSpace": "10.0.4.0/22",
                     "subnets": [
                         {
-                            "name": "AppGW-10.0.4.0_24",
+                            "name": "AppGW",
                             "addressSpace": "10.0.4.0/24"
                         },
                         {
-                            "name": "Web-10.0.5.0_24",
+                            "name": "Web",
                             "addressSpace": "10.0.5.0/24"
                         },
                         {
-                            "name": "App-10.0.6.0_24",
+                            "name": "App",
                             "addressSpace": "10.0.6.0/24"
                         },
                         {
-                            "name": "Data-10.0.7.0_24",
+                            "name": "Data",
                             "addressSpace": "10.0.7.0/24"
+                        }
+                    ]
+                },
+                {
+                    "name": "Spoke-Prod-EastUS2-01",
+                    "addressSpace": "10.0.8.0/22",
+                    "subnets": [
+                        {
+                            "name": "AppGW",
+                            "addressSpace": "10.0.8.0/24"
+                        },
+                        {
+                            "name": "Web",
+                            "addressSpace": "10.0.9.0/24"
+                        },
+                        {
+                            "name": "App",
+                            "addressSpace": "10.0.10.0/24"
+                        },
+                        {
+                            "name": "Data",
+                            "addressSpace": "10.0.11.0/24"
                         }
                     ]
                 }

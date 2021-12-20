@@ -11,14 +11,17 @@
         "resourceGroup_name": {
             "type": "string"
         },
+        "vnet_location": {
+            "type": "string",
+            "defaultValue": "[deployment().location]"
+        },
         "vnets": {
             "type": "array"
         }
     },
     "variables": {
         "constants": {
-            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]",
-            "location": "[deployment().location]"
+            "templateLocationURI": "[concat(parameters('assetLocationURI'), 'Templates/')]"
         },
         "deploymentName": "[deployment().name]",
         "deploymentNames": {
@@ -53,7 +56,7 @@
                     "uri": "[concat(variables('constants').templateLocationURI, 'VNet.json')]"
                 },
                 "parameters": {
-                    "location": {"value": "[deployment().location]"},
+                    "location": {"value": "[parameters('vnet_location')]"},
                     "vnet": {"value": "[parameters('vnets')[copyIndex()]]"}
                 }
             },

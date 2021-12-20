@@ -23,7 +23,7 @@
                         "addressSpace": "10.0.0.128/26"
                     },
                     {
-                        "name": "Infra-10.0.1.0_24",
+                        "name": "Infra",
                         "addressSpace": "10.0.1.0/24"
                     }
                 ]
