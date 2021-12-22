@@ -5,6 +5,9 @@
         "location": {
             "value": "eastus2"
         },
+        "appendSubnetAddressSpace": {
+            "value": true
+        },
         "vnet": {
             "value": {
                 "name": "Hub-EastUS2-01",
