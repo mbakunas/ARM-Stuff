@@ -2,18 +2,21 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "resourceGroup_location": {
-            "type": "string"
-        },
         "assetLocationURI": {
             "type": "string"
         },
         "resourceGroup_name": {
             "type": "string"
         },
+        "resourceGroup_location": {
+            "type": "string"
+        },
         "vnet_location": {
             "type": "string",
             "defaultValue": "[deployment().location]"
+        },
+        "appendSubnetAddressSpace": {
+            "type": "bool"
         },
         "vnets": {
             "type": "array"
@@ -57,7 +60,8 @@
                 },
                 "parameters": {
                     "location": {"value": "[parameters('vnet_location')]"},
-                    "vnet": {"value": "[parameters('vnets')[copyIndex()]]"}
+                    "vnet": {"value": "[parameters('vnets')[copyIndex()]]"},
+                    "appendSubnetAddressSpace": {"value": "[parameters('appendSubnetAddressSpace')]"}
                 }
             },
             "copy": {

@@ -14,6 +14,9 @@
         "vnet_location": {
             "value": "eastus2"
         },
+        "appendSubnetAddressSpace": {
+            "value": true
+        },
 
         "vnets": {
             "value": [
