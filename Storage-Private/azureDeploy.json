@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccount-name": {
+            "type": "string"
+        },
+        "storageAccount-sku": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        },
+        "storageAccount-tier": {
+            "type": "string",
+            "defaultValue": "Standard"
+        },
+        "privateEndpoint-VNetName": {
+            "type": "string"
+        },
+        "privateEndpoint-SubnetName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "constants": {
+            "location": "[resourceGroup().location]",
+            "storageAccountKind": "StorageV2",
+            "storageAccountAccessTier": "Hot",
+            "storageAccountNetworkAclsDefaultAction": "Deny",
+            "storageAccountNetworkAclsBypass": "AzureServices",
+            "storageAccountAllowBlobPublicAccess": false
+        },
+        "names": {
+            "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('privateEndpoint-VNetName'))]",
+            "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('privateEndpoint-VNetName'), parameters('privateEndpoint-SubnetName'))]",
+            "privateEndpointName": "[concat(parameters('storageAccount-name'), '-endpoint')]",
+            "privateEndpointConnectionName": "[concat(parameters('storageAccount-name'), '-connection')]",
+            "blobPrivateDnsZoneName": "[concat('privatelink.blob.', environment().suffixes.storage)]"
+        }
+    },
+    "functions": [],
+    "resources": [
+        // storage account
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('storageAccount-name')]",
+            "tags": "[resourceGroup().tags]",
+            "location": "[variables('constants').location]",
+            "kind": "[variables('constants').storageAccountKind]",
+            "sku": {
+                "name": "[parameters('storageAccount-sku')]",
+                "tier": "[parameters('storageAccount-tier')]"
+            },
+            "properties": {
+                "accessTier": "[variables('constants').storageAccountAccessTier]",
+                "networkAcls": {
+                    "defaultAction": "[variables('constants').storageAccountNetworkAclsDefaultAction]",
+                    "bypass": "[variables('constants').storageAccountNetworkAclsBypass]"
+                },
+                "allowBlobPublicAccess": "[variables('constants').storageAccountAllowBlobPublicAccess]"
+            }
+        },
+
+        // private endpoint
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2020-11-01",
+            "name": "[variables('names').privateEndpointName]",
+            "tags": "[resourceGroup().tags]",
+            "location": "[variables('constants').location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount-name'))]"
+            ],
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[variables('names').privateEndpointConnectionName]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount-name'))]",
+                            "groupIds": [
+                                "blob"
+                            ]
+                        }
+                    }
+                ],
+                "subnet": "[variables('names').subnetId]"
+            }
+        },
+
+        // private dns
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('names').blobPrivateDnsZoneName]",
+            "tags": "[resourceGroup().tags]",
+            "location": "global",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "2020-06-01",
+            "name": "[concat(variables('names').blobPrivateDnsZoneName, '/link_to_', toLower(parameters('privateEndpoint-VNetName')))]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('names').blobPrivateDnsZoneName)]"
+            ],
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[variables('names').vnetId]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
