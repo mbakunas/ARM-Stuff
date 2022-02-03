@@ -10,6 +10,9 @@
             "defaultValue": "Spoke-NonProd-EastUS2-01-AppGW-01-IP",
             "type": "String"
         },
+        "vnet_subscriptionId": {
+            "type": "string"
+        },
         "vnet_resourceGroupName": {
             "type": "string"
         },
@@ -21,17 +24,21 @@
         },
         "privateIPaddress": {
             "type": "string"
+        },
+        "vnetID": {
+            "type": "string"
         }
     },
     "variables": {
-        "vnetID": "[resourceId(parameters('vnet_resourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('vnet_name'))]"
+        "vnetID": "[resourceId(parameters('vnet_subscriptionId'), parameters('vnet_resourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('vnet_name'))]",
+        "location": "[resourceGroup().location]"
     },
     "resources": [
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2020-11-01",
             "name": "[parameters('publicIPAddresses_name')]",
-            "location": "eastus2",
+            "location": "[variables('location')]",
             "sku": {
                 "name": "Standard",
                 "tier": "Regional"
@@ -48,7 +55,7 @@
             "type": "Microsoft.Network/applicationGateways",
             "apiVersion": "2020-11-01",
             "name": "[parameters('applicationGateways_name')]",
-            "location": "eastus2",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_name'))]"
             ],
@@ -62,7 +69,7 @@
                         "name": "appGatewayIpConfig",
                         "properties": {
                             "subnet": {
-                                "id": "[concat(variables('vnetID'), '/subnets/', parameters('subnet_name'))]"
+                                "id": "[concat(parameters('vnetID'), '/subnets/', parameters('subnet_name'))]"
                             }
                         }
                     }
@@ -86,7 +93,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "subnet": {
-                                "id": "[concat(variables('vnetID'), '/subnets/', parameters('subnet_name'))]"
+                                "id": "[concat(parameters('vnetID'), '/subnets/', parameters('subnet_name'))]"
                             },
                             "privateIPAddress": "[parameters('privateIPaddress')]"
                         }

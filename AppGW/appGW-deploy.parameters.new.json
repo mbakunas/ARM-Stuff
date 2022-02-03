@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationGateways_name": {
+            "value": "SPOKE-NONPROD-SouthCentralUS-01-AppGW-01"
+        },
+        "publicIPAddresses_name": {
+            "value": "SPOKE-NONPROD-SouthCentralUS-01-AppGW-01-IP"
+        },
+        "vnet_subscriptionId": {
+            "value": "dce134c0-381a-4f56-9397-366063f8a584"
+        },
+        "vnet_resourceGroupName": {
+            "value": "Infra-Network-NonProd-01"
+        },
+        "vnet_name": {
+            "value": "SPOKE-NONPROD-SouthCentralUS-01"
+        },
+        "subnet_name": {
+            "value": "AG-10.121.206.0-24"
+        },
+        "privateIPaddress": {
+            "value": "10.121.206.10"
+        },
+        "vnetID": {
+            "value": "/subscriptions/dce134c0-381a-4f56-9397-366063f8a584/resourceGroups/Infra-Network-NonProd-01/providers/Microsoft.Network/virtualNetworks/SPOKE-NONPROD-SouthCentralUS-01"
+        }
+    }
+}
