@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationGateways_name": {
+            "value": "Spoke-NonProd-EastUS2-01-AppGW-01"
+        },
+        "publicIPAddresses_name": {
+            "value": "Spoke-NonProd-EastUS2-01-AppGW-01-IP"
+        },
+        "vnet_resourceGroupName": {
+            "value": "HubSpokeTest01"
+        },
+        "vnet_name": {
+            "value": "Spoke-NonProd-EastUS2-01"
+        },
+        "subnet_name": {
+            "value": "AppGW-10.0.4.0_24"
+        },
+        "privateIPaddress": {
+            "value": "10.0.4.10"
+        }
+    }
+}
