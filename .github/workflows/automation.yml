@@ -1,0 +1,72 @@
+# This is a basic workflow to help you get started with Actions
+
+name: deployToAzure
+env:
+  subscriptionId: c64ca001-2cce-46de-837e-03f5564fc802 # Bakunas Sandbox 2
+  azureRegion: East US 2
+  networkResourceGroupName: ARMdeployDemo01
+  vmResourceGroupName: ARMdeployDemo02
+
+# Controls when the workflow will run
+on:
+  # Workflow will run on upon a commit
+  push:
+    branches:
+      - main
+    paths:
+      - "Automation/**"
+
+  # Workflow can be triggered manually from the Actions tab
+  workflow_dispatch:
+
+
+jobs:
+  validate:
+    name: Validate ARM Template
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: Azure/login@v1
+        name: Login to Azure
+        with:
+          creds: ${{ secrets.AZURE_CREDS }}
+        
+      - uses: Azure/arm-deploy@v1
+        name: Validate Template
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{ env.azureRegion }}
+          template: ./AZ-700_Lab-Deploy.json
+          parameters: ./AZ-700_Lab-Deploy.parameters.json
+            networkResourceGroup_Name=${{ env.networkResourceGroupName }}
+            vmResourceGroup_Name=${{ env.vmResourceGroupName }}
+          deploymentName: Github.Actions-${{ github.run_number }}
+          deploymentMode: Validate
+
+  deploy:
+    name: Deploy ARM Template
+    runs-on: ubuntu-latest
+    needs: [validate]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: Azure/login@v1
+        name: Login to Azure
+        with:
+          creds: ${{ secrets.AZURE_CREDS }}
+
+      - uses: Azure/arm-deploy@v1
+        name: Deploy Template
+        with:
+          scope: subscription
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{ env.azureRegion }}
+          template: ./AZ-700_Lab-Deploy.json
+          parameters: ./AZ-700_Lab-Deploy.parameters.json
+            networkResourceGroup_Name=${{ env.networkResourceGroupName }}
+            vmResourceGroup_Name=${{ env.vmResourceGroupName }}
+          deploymentName: Github.Actions-${{ github.run_number }}
