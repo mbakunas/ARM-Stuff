@@ -43,7 +43,7 @@
             "osDiskType": "StandardSSD_LRS",
             "patchMode": "Manual",
             "enableHotpatching": false,
-            "autoShutdownStatus": "Disabled",   // <----------
+            "autoShutdownStatus": "Enabled",   // <----------
             "autoShutdownTime": "19:00",
             "autoShutdownTimeZone": "Eastern Standard Time",
             "autoShutdownNotificationStatus": "Disabled",
