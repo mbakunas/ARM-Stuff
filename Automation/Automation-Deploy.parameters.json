@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "assetLocationURI": {
-            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/Automation/master/"
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/main/Automation/"
         },
         "networkResourceGroup_Name": {
             "value": "Automation01"
