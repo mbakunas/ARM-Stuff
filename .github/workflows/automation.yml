@@ -39,8 +39,8 @@ jobs:
           scope: subscription
           subscriptionId: ${{ env.subscriptionId }}
           region: ${{ env.azureRegion }}
-          template: ./Automation-Deploy.json
-          parameters: ./Automation-Deploy.parameters.json
+          template: ./Automation/Automation-Deploy.json
+          parameters: ./Automation/Automation-Deploy.parameters.json
             networkResourceGroup_Name=${{ env.networkResourceGroupName }}
             vmResourceGroup_Name=${{ env.vmResourceGroupName }}
           deploymentName: Github.Actions-${{ github.run_number }}
@@ -65,8 +65,8 @@ jobs:
           scope: subscription
           subscriptionId: ${{ env.subscriptionId }}
           region: ${{ env.azureRegion }}
-          template: ./Automation-Deploy.json
-          parameters: ./Automation-Deploy.parameters.json
+          template: ./Automation/Automation-Deploy.json
+          parameters: ./Automation/Automation-Deploy.parameters.json
             networkResourceGroup_Name=${{ env.networkResourceGroupName }}
             vmResourceGroup_Name=${{ env.vmResourceGroupName }}
           deploymentName: Github.Actions-${{ github.run_number }}
