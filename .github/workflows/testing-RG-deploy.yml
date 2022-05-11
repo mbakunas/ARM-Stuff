@@ -3,7 +3,7 @@
 name: Deploy RG
 env:
   azureRegion: East US 2
-  subscriptionId: fac1ea11-e5a7-4e74-8d7e-965344c54f56 # Bakunas Sandbox 3
+  subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
   networkResourceGroupName: Test-01
 
 # Controls when the workflow will run
