@@ -9,4 +9,4 @@
 *.jar
 *.rar
 *.tar
-*.zip
+#*.zip  .zip files are necessary for PowerShell DSC
