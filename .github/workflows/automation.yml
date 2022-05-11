@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: deployToAzure
+name: Automation
 env:
   subscriptionId: c64ca001-2cce-46de-837e-03f5564fc802 # Bakunas Sandbox 2
   azureRegion: East US 2
