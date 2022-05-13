@@ -1,6 +1,7 @@
 targetScope = 'resourceGroup'
 
 param localVNet_Name string
+param localVNet_isHub bool
 param remoteVNet_Name string
 param remoteVNet_Id string
 param remoteVNet_AddressSpace string
@@ -10,8 +11,8 @@ resource peering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: true
-    allowGatewayTransit: true
-    useRemoteGateways: true
+    allowGatewayTransit: localVNet_isHub ? false : true
+    useRemoteGateways: localVNet_isHub ? true : false
     remoteVirtualNetwork: {
       id: remoteVNet_Id
     }
