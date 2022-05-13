@@ -3,7 +3,7 @@ env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_2 }}
   azureRegion: East US 2
   templateFile: ./Reference/main.bicep
-  parametersFile: ./Automation/Automation-Deploy.parameters.json
+  parametersFile: ./Reference/main.parameters.json
 
 # Controls when the workflow will run
 on:
