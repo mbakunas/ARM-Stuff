@@ -222,3 +222,14 @@ module routeTableSecondary '../Templates/routeTable.bicep' = {
 
   }
 }
+
+// Azure Bastion
+module bastion '../Templates/bastion.bicep' = {
+  name: '${deployment().name}-AzureBastion'
+  scope: resourceGroup(networkResourceGroup.name)
+  params: {
+    bastion_Location: primaryRegion
+    bastion_VNet_Name: hubVnet_Name
+    bastion_SKU: 'Basic'
+  }
+}
