@@ -68,13 +68,15 @@ resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRange: '65200-65535'
+          sourceAddressPrefix: 'GatewayManager'
+          destinationAddressPrefix: '*'
           access: 'Allow'
           priority: 4010
           direction: 'Inbound'
-          sourcePortRanges: []
-          destinationPortRanges: []
-          sourceAddressPrefixes: []
-          destinationAddressPrefixes: []
+          //sourcePortRanges: []
+          //destinationPortRanges: []
+          //sourceAddressPrefixes: []
+          //destinationAddressPrefixes: []
         }
       }
     ]
