@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet_Name": {
+            "value": "Test-HUB-EastUS2-01"
+        },
+        "vnet_AddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "vnet_Location": {
+            "value": "eastus2"
+        },
+        "subnet_gatewaySubnet_AddressSpace": {
+            "value": "10.0.0.0/26"
+        },
+        "subnet_azureFirewallSubnet_AddressSpace": {
+            "value": "10.0.0.64/26"
+        },
+        "subnet_azureBastionSubnet_AddressSpace": {
+            "value": "10.0.0.128/26"
+        },
+        "subnet_subnet1_Name": {
+            "value": "Infra-10.0.0.192-27"
+        },
+        "subnet_subnet1_AddressSpace": {
+            "value": "10.0.0.192/27"
+        },
+        "subnet_subnet2_Name": {
+            "value": "CorpNet-10.0.1.0-24"
+        },
+        "subnet_subnet2_AddressSpace": {
+            "value": "10.0.1.0/24"
+        },
+        "nsg_subnet1_Name": {
+            "value": "Infra-10.0.0.192-27-NSG"
+        },
+        "nsg_subnet2_Name": {
+            "value": "CorpNet-10.0.1.0-24"
+        }
+    }
+}

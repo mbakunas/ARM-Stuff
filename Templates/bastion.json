@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "bastionHost_vnetName": {
+            "type": "string"
+        },
+        "bastionHost_location": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "bastionHost": {
+            "name": "[concat(parameters('bastionHost_vnetName'), '-Bastion')]",
+            "pubicIpAddressName": "[concat(parameters('bastionHost_vnetName'), '-Bastion-IP')]",
+            "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('bastionHost_vnetName'), 'AzureBastionSubnet')]",
+            "sku": "Basic",
+            "ScaleUnits": 2,
+            "enableTunneling": false
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2020-08-01",
+            "name": "[variables('bastionHost').pubicIpAddressName]",
+            "location": "[parameters('bastionHost_location')]",
+            "tags": "[resourceGroup().tags]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2020-11-01",
+            "name": "[variables('bastionHost').name]",
+            "sku": {
+                "name": "[variables('bastionHost').sku]"
+            },
+            "location": "[parameters('bastionHost_location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionHost').pubicIpAddressName)]"
+            ],
+            "properties": {
+                "enableTunneling": "[variables('bastionHost').enableTunneling]",
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('bastionHost').subnetId]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionHost').pubicIpAddressName)]"
+                            }
+                        }
+                    }
+                ],
+                "scaleUnits": "[variables('bastionHost').ScaleUnits]"
+            }
+        }
+    ]
+}

@@ -1,0 +1,133 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        //VNet
+        "vnet_Name": {
+            "type": "String"
+        },
+        "vnet_AddressSpace": {
+            "type": "string"
+        },
+        "vnet_Location": {
+            "type": "string"
+        },
+
+        //Subnets
+        "subnet_subnet1_Name": {
+            "type": "string"
+        },
+        "subnet_subnet1_AddressSpace": {
+            "type": "string"
+        },
+        "subnet_subnet2_Name": {
+            "type": "string"
+        },
+        "subnet_subnet2_AddressSpace": {
+            "type": "string"
+        },
+
+        //NSGs
+        "nsg_subnet1_Name": {
+            "type": "string"
+        },
+        "nsg_subnet2_Name": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+
+        //VNet
+        {
+            "comments": "Hub VNet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnet_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnet_AddressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet_subnet1_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_subnet1_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet1_Name'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet_subnet2_Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_subnet2_AddressSpace')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_subnet2_Name'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            }
+        },
+
+        //NSGs
+        {
+            "comments": "Subnet 1 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsg_subnet1_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": [
+                    {
+                        //NSG rule necessary to attach app gateway to this subnet
+                        "name": "AppGW_Allow_65200-65535",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "65200-65535",
+                            "sourceAddressPrefix": "GatewayManager",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 4010,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Subnet 2 NSG",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('nsg_subnet2_Name')]",
+            "location": "[parameters('vnet_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "securityRules": []
+            }
+        }
+    ],
+    "outputs": {
+        "vnetId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet_Name'))]"
+        }
+    }
+}

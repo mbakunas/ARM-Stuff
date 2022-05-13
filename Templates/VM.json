@@ -1,0 +1,175 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        //VM details
+        "virtualMachine_Name": {
+            "type": "string"
+        },
+        "virtualMachine_Size": {
+            "type": "string"
+        },
+        "virtualMachine_Location": {
+            "type": "string"
+        },
+        "virtualMachine_DscUri": {
+            "type": "string"
+        },
+
+        //Network
+        "virtualNetworkId": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "availabiityZone": {
+            "type": "string"
+        },
+
+        //Admin user account
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "subnetRef": "[concat(parameters('virtualNetworkId'), '/subnets/', parameters('subnetName'))]",
+        "virtualMachine_NicName": "[concat(parameters('virtualMachine_Name'), '-NIC')]",
+        "vm": {
+            "enableAcceleratedNetworking": true,
+            "osDiskType": "StandardSSD_LRS",
+            "patchMode": "Manual",
+            "enableHotpatching": false,
+            "autoShutdownStatus": "Disabled",   // <----------
+            "autoShutdownTime": "19:00",
+            "autoShutdownTimeZone": "Eastern Standard Time",
+            "autoShutdownNotificationStatus": "Disabled",
+            "autoShutdownNotificationLocale": "en"
+        }
+    },
+    "resources": [
+        {
+            "name": "[variables('virtualMachine_NicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2020-11-01",
+            "location": "[parameters('virtualMachine_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('vm').enableAcceleratedNetworking]"
+            }
+        },
+        {
+            "name": "[parameters('virtualMachine_Name')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-03-01",
+            "location": "[parameters('virtualMachine_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('virtualMachine_NicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachine_Size')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('vm').osDiskType]"
+                        },
+                        "name": "[concat(parameters('virtualMachine_Name'), '-OsDisk')]"
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('virtualMachine_NicName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachine_Name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": false,
+                        "provisionVmAgent": true,
+                        "patchSettings": {
+                            "enableHotpatching": "[variables('vm').enableHotpatching]",
+                            "patchMode": "[variables('vm').patchMode]"
+                        }
+                    }
+                }
+            },
+            "zones": [
+                "[parameters('availabiityZone')]"
+            ]
+        },
+        {
+            "name": "[concat('shutdown-computevm-', parameters('virtualMachine_Name'))]",
+            "type": "Microsoft.DevTestLab/schedules",
+            "apiVersion": "2018-09-15",
+            "location": "[parameters('virtualMachine_Location')]",
+            "tags": "[resourceGroup().tags]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachine_Name'))]"
+            ],
+            "properties": {
+                "status": "[variables('vm').autoShutdownStatus]",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "[variables('vm').autoShutdownTime]"
+                },
+                "timeZoneId": "[variables('vm').autoShutdownTimeZone]",
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachine_Name'))]",
+                "notificationSettings": {
+                    "status": "[variables('vm').autoShutdownNotificationStatus]",
+                    "notificationLocale": "[variables('vm').autoShutdownNotificationLocale]",
+                    "timeInMinutes": 30
+                }
+            }
+        },
+     {
+         "name": "[concat(parameters('virtualMachine_Name'), '/WebServerInstall')]",
+         "type": "Microsoft.Compute/virtualMachines/extensions",
+         "apiVersion": "2021-03-01",
+         "location": "[parameters('virtualMachine_Location')]",
+         "tags": "[resourceGroup().tags]",
+         "dependsOn": [
+             "[parameters('virtualMachine_Name')]"
+         ],
+         "properties": {
+             "publisher": "Microsoft.Powershell",
+             "type": "DSC",
+             "typeHandlerVersion": "2.9",
+             "autoUpgradeMinorVersion": true,
+             "settings": {
+                 "modulesUrl": "[concat(parameters('virtualMachine_DscUri'), 'WebServerInstall.ps1.zip')]",
+                 "configurationFunction": "WebServerInstall.ps1\\WebServerInstall"
+             },
+             "protectedSettings": {}
+         }
+     }
+    ],
+    "outputs": {}
+}
