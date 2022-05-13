@@ -236,3 +236,25 @@ module bastion '../Templates/bastion.bicep' = {
     bastion_SKU: 'Basic'
   }
 }
+
+
+// VMs with IIS DSC
+
+
+// appGW
+
+
+// Front Door
+
+
+// Log Analytics workspace
+// TODO:  configure diagostic settings to forward to LA workspace
+
+
+// NSG flow logs
+
+
+// Azure Firewall
+
+
+// Add Defender for Servers to VMs
