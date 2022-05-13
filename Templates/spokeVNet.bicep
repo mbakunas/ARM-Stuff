@@ -14,6 +14,9 @@ param subnet_subnet2_AddressSpace string
 param nsg_subnet1_Name string
 param nsg_subnet2_Name string
 
+// Route Table
+param routeTable_Id string
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnet_Name
   location: vnet_Location
@@ -28,12 +31,24 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
         name: subnet_subnet1_Name
         properties: {
           addressPrefix: subnet_subnet1_AddressSpace
+          networkSecurityGroup: {
+            id: networkSecurityGroup1.id
+          }
+          routeTable: {
+            id: routeTable_Id
+          }
         }
       }
       {
         name: subnet_subnet2_Name
         properties: {
           addressPrefix: subnet_subnet2_AddressSpace
+          networkSecurityGroup: {
+            id: networkSecurityGroup2.id
+          }
+          routeTable: {
+            id: routeTable_Id
+          }
         }
       }
     ]
