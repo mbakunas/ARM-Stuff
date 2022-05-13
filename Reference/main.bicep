@@ -38,7 +38,6 @@ param spoke2Vnet_subnet1_AddressSpace string
 param spoke2Vnet_subnet2_Name string
 param spoke2Vnet_subnet2_AddressSpace string
 
-
 // Route tables
 param routeTable_PrimaryRegion_name string
 param routeTable_SecondaryRegion_name string
