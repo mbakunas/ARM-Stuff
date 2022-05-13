@@ -18,13 +18,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run Bicep Linter
-        run: az bicep build --file ${{ env.templateFile }}
-  
   deploy:
     needs: [lint]
     runs-on: ubuntu-latest
