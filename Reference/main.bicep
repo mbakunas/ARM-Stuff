@@ -227,6 +227,9 @@ module routeTableSecondary '../Templates/routeTable.bicep' = {
 module bastion '../Templates/bastion.bicep' = {
   name: '${deployment().name}-AzureBastion'
   scope: resourceGroup(networkResourceGroup.name)
+  dependsOn: [
+    hubVNet
+  ]
   params: {
     bastion_Location: primaryRegion
     bastion_VNet_Name: hubVnet_Name
