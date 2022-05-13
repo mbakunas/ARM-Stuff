@@ -40,7 +40,7 @@ jobs:
         name: Deploy bicep file
         with:
           scope: subscription
-          deploymentName: 'Github.Actions-${{ github.run_number }}'
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           subscriptionId: ${{ env.subscriptionId }}
           region: ${{env.azureRegion }}
           template: ${{env.templateFile }}
