@@ -141,10 +141,12 @@ module VNetPeerHubSpoke1 '../Templates/VNetPeer.bicep' = {
   ]
   params: {
     localVNet_Name: hubVnet_Name
-    localVNet_isHub: true
     remoteVNet_Name: spoke1Vnet_Name
     remoteVNet_Id: spoke1VNet.outputs.VNet_Id
     remoteVNet_AddressSpace: spoke1Vnet_AddressSpace
+    
+    allowGatewayTransit: false
+    useRemoteGateways: false
   }
 }
 module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
@@ -156,10 +158,12 @@ module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
   ]
   params: {
     localVNet_Name: spoke1Vnet_Name
-    localVNet_isHub: false
     remoteVNet_Name: hubVnet_Name
     remoteVNet_Id: hubVNet.outputs.VNet_Id
     remoteVNet_AddressSpace: hubVnet_AddressSpace
+    
+    allowGatewayTransit: false
+    useRemoteGateways: false
   }
 }
 
@@ -172,10 +176,12 @@ module VNetPeerHubSpoke2 '../Templates/VNetPeer.bicep' = {
   ]
   params: {
     localVNet_Name: hubVnet_Name
-    localVNet_isHub: true
     remoteVNet_Name: spoke2Vnet_Name
     remoteVNet_Id: spoke2VNet.outputs.VNet_Id
     remoteVNet_AddressSpace: spoke2Vnet_AddressSpace
+    
+    allowGatewayTransit: false
+    useRemoteGateways: false
   }
 }
 module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
@@ -187,10 +193,12 @@ module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
   ]
   params: {
     localVNet_Name: spoke2Vnet_Name
-    localVNet_isHub: false
     remoteVNet_Name: hubVnet_Name
     remoteVNet_Id: hubVNet.outputs.VNet_Id
     remoteVNet_AddressSpace: hubVnet_AddressSpace
+    
+    allowGatewayTransit: false
+    useRemoteGateways: false
   }
 }
 
