@@ -8,6 +8,7 @@
         "secondaryRegion": {
             "value": "centralus"
         },
+        
         "networkResourceGroup_Name": {
             "value": "Reference01"
         },
@@ -16,6 +17,7 @@
                 "environment": "sandbox"
             }
         },
+
         "vmResourceGroup_Name": {
             "value": "Reference02"
         },
@@ -24,6 +26,7 @@
                 "environment": "sandbox"
             }
         },
+
         "hubVnet_Name": {
             "value": "Reference-HUB-EastUS2-01"
         },
@@ -51,6 +54,7 @@
         "hubVnet_subnet2_AddressSpace": {
             "value": "10.0.1.0/24"
         },
+
         "spoke1Vnet_Name": {
             "value": "Reference-SPOKE-EastUS2-01"
         },
@@ -69,6 +73,7 @@
         "spoke1Vnet_subnet2_AddressSpace": {
             "value": "10.1.1.0/24"
         },
+
         "spoke2Vnet_Name": {
             "value": "Reference-SPOKE-CentralUS-01"
         },
@@ -87,6 +92,7 @@
         "spoke2Vnet_subnet2_AddressSpace": {
             "value": "10.2.1.0/24"
         },
+
         "routeTable_PrimaryRegion_name": {
             "value": "RouteTable-EastUS2-01"
         },
