@@ -25,7 +25,7 @@ jobs:
       - name: Run Bicep Linter
         run: az bicep build --file ${{ env.templateFile }}
   
-  validate:
+  deploy:
     needs: [lint]
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +37,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDS }}
       
       - uses: Azure/arm-deploy@v1
-        name: Validate bicep file
+        name: Deploy bicep file
         with:
           scope: subscription
           deploymentName: 'Github.Actions-${{ github.run_number }}'
@@ -45,4 +45,3 @@ jobs:
           region: ${{env.azureRegion }}
           template: ${{env.templateFile }}
           parameters: ${{ env.parametersFile}}
-          deploymentMode: Validate
