@@ -5,7 +5,7 @@ param vnet_AddressSpace string
 param vnet_Location string
 
 // Subnets
-param subnet_subnet1_Name string
+param subnet_subnet1_Name string  // Assumes app gateway subnet
 param subnet_subnet1_AddressSpace string
 param subnet_subnet2_Name string
 param subnet_subnet2_AddressSpace string
@@ -59,7 +59,24 @@ resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-
   name: nsg_subnet1_Name
   location: vnet_Location
   properties: {
-    securityRules: []
+    securityRules: [
+      {
+        //NSG rule necessary to attach app gateway to this subnet
+        name: 'AppGW_Allow_65200-65535'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '65200-65535'
+          access: 'Allow'
+          priority: 4010
+          direction: 'Inbound'
+          sourcePortRanges: []
+          destinationPortRanges: []
+          sourceAddressPrefixes: []
+          destinationAddressPrefixes: []
+        }
+      }
+    ]
   }
 }
 
