@@ -19,8 +19,7 @@ param nsg_subnet1_Name string
 param nsg_subnet2_Name string
 
 // Route Table
-param routeTable_Name string
-param routeTable_RouteName string = 'AzureCloudServices'
+param routeTable_Id string
 
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
@@ -59,7 +58,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
             id: networkSecurityGroup1.id
           }
           routeTable: {
-            id: routeTable.id
+            id: routeTable_Id
           }
         }
       }
@@ -71,7 +70,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
             id: networkSecurityGroup2.id
           }
           routeTable: {
-            id: routeTable.id
+            id: routeTable_Id
           }
         }
       }
@@ -95,19 +94,4 @@ resource networkSecurityGroup2 'Microsoft.Network/networkSecurityGroups@2020-11-
   }
 }
 
-resource routeTable 'Microsoft.Network/routeTables@2020-11-01' = {
-  name: routeTable_Name
-  location: vnet_Location
-  properties: {
-    routes: [
-      {
-        name: routeTable_RouteName
-        properties: {
-          addressPrefix: 'AzureCloud'
-          nextHopType: 'Internet'
-        }
-      }
-    ]
-    disableBgpRoutePropagation: true
-  }
-}
+output VNet_Id string = virtualNetwork.id
