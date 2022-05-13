@@ -7,6 +7,7 @@ param routeTable_Location string
 resource routeTable 'Microsoft.Network/routeTables@2021-08-01' = {
   name: routeTable_Name
   location: routeTable_Location
+  tags: resourceGroup().tags
   properties: {
     routes: [
       {

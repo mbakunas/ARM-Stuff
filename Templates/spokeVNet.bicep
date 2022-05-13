@@ -20,6 +20,7 @@ param routeTable_Id string
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnet_Name
   location: vnet_Location
+  tags: resourceGroup().tags
   properties: {
     addressSpace: {
       addressPrefixes: [
