@@ -82,6 +82,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
 resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
   name: nsg_subnet1_Name
   location: vnet_Location
+  tags: resourceGroup().tags
   properties: {
     securityRules: []
   }
@@ -90,6 +91,7 @@ resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-
 resource networkSecurityGroup2 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
   name: nsg_subnet2_Name
   location: vnet_Location
+  tags: resourceGroup().tags
   properties: {
     securityRules: []
   }
