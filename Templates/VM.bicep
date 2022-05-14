@@ -23,7 +23,7 @@ var vm = {
   osDiskType: 'StandardSSD_LRS'
   enableHotpatching: false
   patchMode: 'Manual'
-  autoShutdownStatus: 'Disabled'
+  autoShutdownStatus: 'Enabled'
   autoShutdownTime: '19:00'
   autoShutdownTimeZone: 'Eastern Standard Time'
 }
