@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appGateway_name": {
+            "value": "AppGW01" 
+        },
+        "appGateway_location": {
+            "value": "eastus2" 
+        },
+        "appGateway_VNet_Id": {
+            "value": "/subscriptions/c64ca001-2cce-46de-837e-03f5564fc802/resourceGroups/Reference01/providers/Microsoft.Network/virtualNetworks/Reference-SPOKE-EastUS2-01" 
+        },
+        "appGatewau_Subnet_Name": {
+            "value": "AppGW-10.1.0.0-24" 
+        }
+    }
+}

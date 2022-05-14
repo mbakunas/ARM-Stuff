@@ -1,0 +1,40 @@
+name: appGWtest
+env:
+  subscriptionId: ${{ secrets.SUB_SANDBOX_2 }}
+  azureRegion: East US 2
+  templateFile: ./Templates/appGW.bicep
+  parametersFile: ./Templates/appGW.parameters.json
+
+# Controls when the workflow will run
+on:
+  # Workflow will run on upon a commit
+  push:
+    branches:
+      - main
+    paths:
+      - "Templates/appGW.**"
+
+  # Workflow can be triggered manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: Azure/login@v1
+        name: Login to Azure
+        with:
+          creds: ${{ secrets.AZURE_CREDS }}
+      
+      - uses: Azure/arm-deploy@v1
+        name: Deploy bicep file
+        with:
+          scope: subscription
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          subscriptionId: ${{ env.subscriptionId }}
+          resourceGroup: 'Reference03'
+          region: ${{env.azureRegion }}
+          template: ${{env.templateFile }}
+          parameters: ${{ env.parametersFile}}
