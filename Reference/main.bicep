@@ -5,11 +5,9 @@ targetScope = 'subscription'
 param primaryRegion string = 'eastus2'
 param secondaryRegion string = 'centralus'
 
+// Resource group for nework resources
 param networkResourceGroup_Name string
 param networkResourceGroup_Tags object
-
-param vmResourceGroup_Name string
-param vmResourceGroup_Tags object
 
 // Hub VNet, deployed to the primary Azure region
 param hubVnet_Name string
@@ -41,6 +39,19 @@ param spoke2Vnet_subnet2_AddressSpace string
 // Route tables
 param routeTable_PrimaryRegion_name string
 param routeTable_SecondaryRegion_name string
+
+// Resource group for VMs
+param vmResourceGroup_Name string
+param vmResourceGroup_Tags object
+
+// VMs
+param virtualMachine_NamePrefix string
+param virtualMachine_Size string
+param virtualMachine_UserName string
+@secure()
+param virtualMachine_UserPassword string
+param virtualMachine_DscUri string
+
 
 var nsgSuffix = '-NSG'
 
@@ -239,7 +250,26 @@ module bastion '../Templates/bastion.bicep' = {
 
 
 // VMs with IIS DSC
+module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(0, 2): {
+  name: '${deployment().name}-Spoke1-VM${i}'
+  scope: resourceGroup(vmResourceGroup.name)
+  dependsOn: [
+    spoke1VNet
+  ]
+  params: {
+    virtualMachine_Name: '${virtualMachine_NamePrefix}-Spoke1-${i}'
+    virtualMachine_Size: virtualMachine_Size
+    virtualMachine_Location: primaryRegion
+    virtualMachine_DscUri: virtualMachine_DscUri
+    
+    virtualMachine_virtualNetworkId: spoke1VNet.outputs.VNet_Id
+    virtualMachine_subnetName: spoke1Vnet_subnet2_Name
+    virtualMachine_availabiityZone: '${i}'
 
+    virtualMachine_adminUsername: virtualMachine_UserName
+    virtualMachine_adminPassword: virtualMachine_UserPassword
+  }
+}]
 
 // appGW
 

@@ -98,6 +98,22 @@
         },
         "routeTable_SecondaryRegion_name": {
             "value": "RouteTable-CentralUS-01"
+        },
+
+        "virtualMachine_NamePrefix": {
+            "value": "VM-WEB"
+        },
+        "virtualMachine_Size": {
+            "value": "Standard_E2s_v3"
+        },
+        "virtualMachine_UserName": {
+            "value": "azureAdmin"
+        },
+        "virtualMachine_UserPassword": {
+            "value": "C0mplexPassw0rd!"
+        },
+        "virtualMachine_DscUri": {
+            "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/main/Automation/DSC/"
         }
     }
 }
