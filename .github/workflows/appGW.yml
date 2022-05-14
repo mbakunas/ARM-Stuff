@@ -34,7 +34,7 @@ jobs:
           scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           subscriptionId: ${{ env.subscriptionId }}
-          resourceGroup: 'Reference03'
+          resourceGroupName: 'Reference03'
           region: ${{env.azureRegion }}
           template: ${{env.templateFile }}
           parameters: ${{ env.parametersFile}}
