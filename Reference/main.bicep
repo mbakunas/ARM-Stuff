@@ -280,7 +280,7 @@ module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   params: {
     virtualMachine_Name: '${virtualMachine_NamePrefix}-Spoke2-${i}'
     virtualMachine_Size: virtualMachine_Size
-    virtualMachine_Location: primaryRegion
+    virtualMachine_Location: secondaryRegion
     virtualMachine_DscUri: virtualMachine_DscUri
     
     virtualMachine_virtualNetworkId: spoke2VNet.outputs.VNet_Id
