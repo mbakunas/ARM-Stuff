@@ -250,7 +250,7 @@ module bastion '../Templates/bastion.bicep' = {
 
 
 // VMs with IIS DSC
-module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(0, 2): {
+module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   name: '${deployment().name}-Spoke1-VM${i}'
   scope: resourceGroup(vmResourceGroup.name)
   dependsOn: [
@@ -264,6 +264,27 @@ module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(0, 2): {
     
     virtualMachine_virtualNetworkId: spoke1VNet.outputs.VNet_Id
     virtualMachine_subnetName: spoke1Vnet_subnet2_Name
+    virtualMachine_availabiityZone: '${i}'
+
+    virtualMachine_adminUsername: virtualMachine_UserName
+    virtualMachine_adminPassword: virtualMachine_UserPassword
+  }
+}]
+
+module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
+  name: '${deployment().name}-Spoke2-VM${i}'
+  scope: resourceGroup(vmResourceGroup.name)
+  dependsOn: [
+    spoke2VNet
+  ]
+  params: {
+    virtualMachine_Name: '${virtualMachine_NamePrefix}-Spoke2-${i}'
+    virtualMachine_Size: virtualMachine_Size
+    virtualMachine_Location: primaryRegion
+    virtualMachine_DscUri: virtualMachine_DscUri
+    
+    virtualMachine_virtualNetworkId: spoke2VNet.outputs.VNet_Id
+    virtualMachine_subnetName: spoke2Vnet_subnet2_Name
     virtualMachine_availabiityZone: '${i}'
 
     virtualMachine_adminUsername: virtualMachine_UserName
