@@ -86,7 +86,7 @@ resource appGWresourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 // VNets
-module hubVNet '../Templates/hubVNet.bicep' = {
+module hubVNet '../0-Common/Templates/hubVNet.bicep' = {
   name: '${deployment().name}-HubVNet'
   scope: networkResourceGroup
   dependsOn: [
@@ -112,7 +112,7 @@ module hubVNet '../Templates/hubVNet.bicep' = {
   }
 }
 
-module spoke1VNet '../Templates/spokeVNet.bicep' = {
+module spoke1VNet '../0-Common/Templates/spokeVNet.bicep' = {
   name: '${deployment().name}-Spoke1VNet'
   scope: networkResourceGroup
   dependsOn: [
@@ -135,7 +135,7 @@ module spoke1VNet '../Templates/spokeVNet.bicep' = {
   }
 }
 
-module spoke2VNet '../Templates/spokeVNet.bicep' = {
+module spoke2VNet '../0-Common/Templates/spokeVNet.bicep' = {
   name: '${deployment().name}-Spoke2VNet'
   scope: networkResourceGroup
   dependsOn: [
@@ -159,7 +159,7 @@ module spoke2VNet '../Templates/spokeVNet.bicep' = {
 }
 
 // VNet Peerings
-module VNetPeerHubSpoke1 '../Templates/VNetPeer.bicep' = {
+module VNetPeerHubSpoke1 '../0-Common/Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Hub-Spoke1'
   scope: networkResourceGroup
   dependsOn: [
@@ -176,7 +176,7 @@ module VNetPeerHubSpoke1 '../Templates/VNetPeer.bicep' = {
     useRemoteGateways: false
   }
 }
-module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
+module VNetPeerSpoke1Hub '../0-Common/Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Spoke1-Hub'
   scope: networkResourceGroup
   dependsOn: [
@@ -194,7 +194,7 @@ module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
   }
 }
 
-module VNetPeerHubSpoke2 '../Templates/VNetPeer.bicep' = {
+module VNetPeerHubSpoke2 '../0-Common/Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Hub-Spoke2'
   scope: networkResourceGroup
   dependsOn: [
@@ -211,7 +211,7 @@ module VNetPeerHubSpoke2 '../Templates/VNetPeer.bicep' = {
     useRemoteGateways: false
   }
 }
-module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
+module VNetPeerSpoke2Hub '../0-Common/Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Spoke2-Hub'
   scope: networkResourceGroup
   dependsOn: [
@@ -230,7 +230,7 @@ module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
 }
 
 // Route Tables
-module routeTablePrimary '../Templates/routeTable.bicep' = {
+module routeTablePrimary '../0-Common/Templates/routeTable.bicep' = {
   name: '${deployment().name}-RouteTablePrimary'
   scope: networkResourceGroup
   params: {
@@ -240,7 +240,7 @@ module routeTablePrimary '../Templates/routeTable.bicep' = {
   }
 }
 
-module routeTableSecondary '../Templates/routeTable.bicep' = {
+module routeTableSecondary '../0-Common/Templates/routeTable.bicep' = {
   name: '${deployment().name}-RouteTableSecondary'
   scope: networkResourceGroup
   params: {
@@ -251,7 +251,7 @@ module routeTableSecondary '../Templates/routeTable.bicep' = {
 }
 
 // Azure Bastion
-module bastion '../Templates/bastion.bicep' = {
+module bastion '../0-Common/Templates/bastion.bicep' = {
   name: '${deployment().name}-AzureBastion'
   scope: networkResourceGroup
   dependsOn: [
@@ -266,7 +266,7 @@ module bastion '../Templates/bastion.bicep' = {
 
 
 // VMs with IIS DSC
-module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
+module spoke1VirtualMachines '../0-Common/Templates/VM.bicep' = [for i in range(1,3): {
   name: '${deployment().name}-Spoke1-VM${i}'
   scope: vmResourceGroup
   dependsOn: [
@@ -291,7 +291,7 @@ module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   }
 }]
 
-module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
+module spoke2VirtualMachines '../0-Common/Templates/VM.bicep' = [for i in range(1,3): {
   name: '${deployment().name}-Spoke2-VM${i}'
   scope: vmResourceGroup
   dependsOn: [
@@ -317,7 +317,7 @@ module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
 }]
 
 // appGW
-module appGW1 '../Templates/appGW.bicep' = {
+module appGW1 '../0-Common/Templates/appGW.bicep' = {
   name: '${deployment().name}-appGW1'
   scope: appGWresourceGroup
   dependsOn: [
@@ -333,7 +333,7 @@ module appGW1 '../Templates/appGW.bicep' = {
   }
 }
 
-module appGW2 '../Templates/appGW.bicep' = {
+module appGW2 '../0-Common/Templates/appGW.bicep' = {
   name: '${deployment().name}-appGW2'
   scope: appGWresourceGroup
   dependsOn: [
