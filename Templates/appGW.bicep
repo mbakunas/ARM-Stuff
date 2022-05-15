@@ -25,7 +25,10 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
     tier: 'Regional'
   }
   properties: {
-    publicIPAllocationMethod: 'Static'
+    publicIPAllocationMethod: 'Dynamic'
+    dnsSettings: {
+      domainNameLabel: toLower(appGateway_name)
+    }
   }
 }
 
