@@ -15,13 +15,13 @@
             "value": "Origin01"
         },
         "frontDoor_Origin1_HostName": {
-            "value": "20.242.26.156"
+            "value": "appgw01.eastus2.cloudapp.azure.com"
         },
         "frontDoor_Origin2_Name": {
             "value": "Origin02"
         },
         "frontDoor_Origin2_HostName": {
-            "value": "104.208.33.202"
+            "value": "appgw02.centralus.cloudapp.azure.com"
         },
         "frontDoor_EndpointRoute_Name": {
             "value": "Route01"

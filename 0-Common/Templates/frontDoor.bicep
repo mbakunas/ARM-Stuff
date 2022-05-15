@@ -92,7 +92,7 @@ resource frontDoorEndpointRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021
     ]
     forwardingProtocol: 'MatchRequest'
     linkToDefaultDomain: 'Enabled'
-    httpsRedirect: 'Enabled'
+    httpsRedirect: 'Disabled'
     enabledState: 'Enabled'
   }
 }
