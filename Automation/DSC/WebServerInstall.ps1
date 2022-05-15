@@ -7,5 +7,10 @@ Configuration WebServerInstall
             Ensure = "Present"
             Name   = "Web-Server"
         }
+        WindowsFeature WebServerManagementTools 
+        {
+            Ensure = "Present"
+            Name   = "Web-Mgmt-Console"
+        }
     }
 }
