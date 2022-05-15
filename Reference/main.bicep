@@ -4,6 +4,7 @@ targetScope = 'subscription'
 //https://docs.microsoft.com/en-us/azure/availability-zones/az-overview#azure-regions-with-availability-zones
 param primaryRegion string = 'eastus2'
 param secondaryRegion string = 'centralus'
+param resourceGroupRegion string = deployment().location
 
 // Resource group for nework resources
 param networkResourceGroup_Name string
@@ -59,13 +60,13 @@ var nsgSuffix = '-NSG'
 // Resource groups
 resource networkResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: networkResourceGroup_Name
-  location: primaryRegion
+  location: resourceGroupRegion
   tags: networkResourceGroup_Tags
 }
 
 resource vmResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: vmResourceGroup_Name
-  location: primaryRegion
+  location: resourceGroupRegion
   tags: vmResourceGroup_Tags
 }
 
