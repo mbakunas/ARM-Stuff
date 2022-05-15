@@ -25,7 +25,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
     tier: 'Regional'
   }
   properties: {
-    publicIPAllocationMethod: 'Dynamic'
+    publicIPAllocationMethod: 'Static'  // Required for appGW v2
     dnsSettings: {
       domainNameLabel: toLower(appGateway_name)
     }
