@@ -1,9 +1,9 @@
-name: appGWtest
+name: frontDoorTest
 env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_2 }}
   azureRegion: East US 2
-  templateFile: ./Templates/appGW.bicep
-  parametersFile: ./Templates/appGW.parameters.json
+  templateFile: ./0-Common/Templates/frontDoor.bicep
+  parametersFile: ./0-Common/Templates/frontDoor.parameters.json
 
 # Controls when the workflow will run
 on:
@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - "Templates/appGW.**"
+      - "0-Common/Templates/frontDoor.**"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
           scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           subscriptionId: ${{ env.subscriptionId }}
-          resourceGroupName: 'Reference03'
+          resourceGroupName: 'Reference04'
           region: ${{env.azureRegion }}
           template: ${{env.templateFile }}
           parameters: ${{ env.parametersFile}}
