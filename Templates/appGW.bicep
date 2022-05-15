@@ -2,14 +2,14 @@ targetScope = 'resourceGroup'
 
 param appGateway_name string
 param appGateway_location string
-param appGateway_VNet_Id string
+param appGateway_VNet_Name string
 param appGateway_Subnet_Name string
 param appGateway_VNet_ResourceGroup string
+param appGateway_backendAddressPools_Name string
 
 var gatewayIPConfigurations_Name  = 'appGatewayIpConfig'
 var frontendIPConfigurations_Name = 'appGwPublicFrontendIp'
 var frontendPorts_Name = 'port_80'
-var backendAddressPools_Name = 'Web'
 var backendHttpSettingsCollection_Name = 'HTTP'
 var httpListeners_Name = 'PublicHTTP'
 var requestRoutingRules_Name = 'Public_to_Web'
@@ -43,7 +43,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         name: gatewayIPConfigurations_Name
         properties: {
           subnet: {
-            id: resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Id, appGateway_Subnet_Name)
+            id: resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name)
           }
         }
       }
@@ -69,7 +69,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     backendAddressPools: [
       {
-        name: backendAddressPools_Name
+        name: appGateway_backendAddressPools_Name
       }
     ]
     backendHttpSettingsCollection: [
