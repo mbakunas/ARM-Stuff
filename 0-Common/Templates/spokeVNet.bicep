@@ -68,14 +68,17 @@ resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-
         properties: {
           protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '80,443'
+          destinationPortRanges: [
+            '80'
+            '443'
+          ]
           sourceAddressPrefix: 'Internet'
           destinationAddressPrefix: subnet_subnet1_AddressSpace
           access: 'Allow'
           priority: 1000
           direction: 'Inbound'
           //sourcePortRanges: []
-          //destinationPortRanges: []
+          //destinationPortRange: []
           //sourceAddressPrefixes: []
           //destinationAddressPrefixes: []
         }
