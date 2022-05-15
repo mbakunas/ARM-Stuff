@@ -271,6 +271,7 @@ module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   scope: vmResourceGroup
   dependsOn: [
     spoke1VNet
+    appGW1
   ]
   params: {
     virtualMachine_Name: '${virtualMachine_NamePrefix}-Spoke1-${i}'
@@ -282,6 +283,9 @@ module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
     virtualMachine_subnetName: spoke1Vnet_subnet2_Name
     virtualMachine_availabiityZone: '${i}'
 
+    virtualMachine_appGW_Id: appGW1.outputs.appGW_Id
+    virtualMachine_appGW_BackendPoolName: appGW_backendAddressPools_Name
+
     virtualMachine_adminUsername: virtualMachine_UserName
     virtualMachine_adminPassword: virtualMachine_UserPassword
   }
@@ -292,6 +296,7 @@ module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   scope: vmResourceGroup
   dependsOn: [
     spoke2VNet
+    appGW2
   ]
   params: {
     virtualMachine_Name: '${virtualMachine_NamePrefix}-Spoke2-${i}'
@@ -302,6 +307,9 @@ module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
     virtualMachine_virtualNetworkId: spoke2VNet.outputs.VNet_Id
     virtualMachine_subnetName: spoke2Vnet_subnet2_Name
     virtualMachine_availabiityZone: '${i}'
+
+    virtualMachine_appGW_Id: appGW2.outputs.appGW_Id
+    virtualMachine_appGW_BackendPoolName: appGW_backendAddressPools_Name
 
     virtualMachine_adminUsername: virtualMachine_UserName
     virtualMachine_adminPassword: virtualMachine_UserPassword

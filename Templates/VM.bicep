@@ -11,6 +11,10 @@ param virtualMachine_virtualNetworkId string
 param virtualMachine_subnetName string
 param virtualMachine_availabiityZone string
 
+// appGW
+param virtualMachine_appGW_Id string
+param virtualMachine_appGW_BackendPoolName string
+
 // Admin user account
 param virtualMachine_adminUsername string
 @secure()
@@ -89,6 +93,11 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-08-01' = {
           subnet: {
             id: subnetRef
           }
+          applicationGatewayBackendAddressPools: [
+            {
+              id: '${virtualMachine_appGW_Id}/backendAddressPools/${virtualMachine_appGW_BackendPoolName}'
+            }
+          ]
         }
       }
     ]
