@@ -53,6 +53,15 @@ param virtualMachine_UserName string
 param virtualMachine_UserPassword string
 param virtualMachine_DscUri string
 
+// Resource group for appGW
+param appGWresourceGroup_Name string
+param appGWresourceGroup_Tags object
+
+// appGW
+param appGW_backendAddressPools_Name string
+param appGW_Primary_name string
+param appGW_Secondary_name string
+
 
 var nsgSuffix = '-NSG'
 
@@ -70,10 +79,16 @@ resource vmResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: vmResourceGroup_Tags
 }
 
+resource appGWresourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: appGWresourceGroup_Name
+  location: resourceGroupRegion
+  tags: appGWresourceGroup_Tags
+}
+
 // VNets
 module hubVNet '../Templates/hubVNet.bicep' = {
   name: '${deployment().name}-HubVNet'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     routeTablePrimary
   ]
@@ -99,7 +114,7 @@ module hubVNet '../Templates/hubVNet.bicep' = {
 
 module spoke1VNet '../Templates/spokeVNet.bicep' = {
   name: '${deployment().name}-Spoke1VNet'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     routeTablePrimary
   ]
@@ -122,7 +137,7 @@ module spoke1VNet '../Templates/spokeVNet.bicep' = {
 
 module spoke2VNet '../Templates/spokeVNet.bicep' = {
   name: '${deployment().name}-Spoke2VNet'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     routeTableSecondary
   ]
@@ -146,7 +161,7 @@ module spoke2VNet '../Templates/spokeVNet.bicep' = {
 // VNet Peerings
 module VNetPeerHubSpoke1 '../Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Hub-Spoke1'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     hubVNet
     spoke1VNet
@@ -163,7 +178,7 @@ module VNetPeerHubSpoke1 '../Templates/VNetPeer.bicep' = {
 }
 module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Spoke1-Hub'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     hubVNet
     spoke1VNet
@@ -181,7 +196,7 @@ module VNetPeerSpoke1Hub '../Templates/VNetPeer.bicep' = {
 
 module VNetPeerHubSpoke2 '../Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Hub-Spoke2'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     hubVNet
     spoke2VNet
@@ -198,7 +213,7 @@ module VNetPeerHubSpoke2 '../Templates/VNetPeer.bicep' = {
 }
 module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
   name: '${deployment().name}-VNetPeer-Spoke2-Hub'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     hubVNet
     spoke2VNet
@@ -217,7 +232,7 @@ module VNetPeerSpoke2Hub '../Templates/VNetPeer.bicep' = {
 // Route Tables
 module routeTablePrimary '../Templates/routeTable.bicep' = {
   name: '${deployment().name}-RouteTablePrimary'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   params: {
     routeTable_Name: routeTable_PrimaryRegion_name
     routeTable_Location: primaryRegion
@@ -227,7 +242,7 @@ module routeTablePrimary '../Templates/routeTable.bicep' = {
 
 module routeTableSecondary '../Templates/routeTable.bicep' = {
   name: '${deployment().name}-RouteTableSecondary'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   params: {
     routeTable_Name: routeTable_SecondaryRegion_name
     routeTable_Location: secondaryRegion
@@ -238,7 +253,7 @@ module routeTableSecondary '../Templates/routeTable.bicep' = {
 // Azure Bastion
 module bastion '../Templates/bastion.bicep' = {
   name: '${deployment().name}-AzureBastion'
-  scope: resourceGroup(networkResourceGroup.name)
+  scope: networkResourceGroup
   dependsOn: [
     hubVNet
   ]
@@ -253,7 +268,7 @@ module bastion '../Templates/bastion.bicep' = {
 // VMs with IIS DSC
 module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   name: '${deployment().name}-Spoke1-VM${i}'
-  scope: resourceGroup(vmResourceGroup.name)
+  scope: vmResourceGroup
   dependsOn: [
     spoke1VNet
   ]
@@ -274,7 +289,7 @@ module spoke1VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
 
 module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
   name: '${deployment().name}-Spoke2-VM${i}'
-  scope: resourceGroup(vmResourceGroup.name)
+  scope: vmResourceGroup
   dependsOn: [
     spoke2VNet
   ]
@@ -294,8 +309,37 @@ module spoke2VirtualMachines '../Templates/VM.bicep' = [for i in range(1,3): {
 }]
 
 // appGW
+module appGW1 '../Templates/appGW.bicep' = {
+  name: '${deployment().name}-appGW1'
+  scope: appGWresourceGroup
+  dependsOn: [
+    spoke1VNet
+  ]
+  params: {
+    appGateway_name: appGW_Primary_name
+    appGateway_location: primaryRegion
+    appGateway_VNet_Name: spoke1Vnet_Name
+    appGateway_Subnet_Name: spoke1Vnet_subnet1_Name
+    appGateway_VNet_ResourceGroup: networkResourceGroup_Name
+    appGateway_backendAddressPools_Name: appGW_backendAddressPools_Name
+  }
+}
 
-
+module appGW2 '../Templates/appGW.bicep' = {
+  name: '${deployment().name}-appGW2'
+  scope: appGWresourceGroup
+  dependsOn: [
+    spoke2VNet
+  ]
+  params: {
+    appGateway_name: appGW_Secondary_name
+    appGateway_location: secondaryRegion
+    appGateway_VNet_Name: spoke2Vnet_Name
+    appGateway_Subnet_Name: spoke2Vnet_subnet1_Name
+    appGateway_VNet_ResourceGroup: networkResourceGroup_Name
+    appGateway_backendAddressPools_Name: appGW_backendAddressPools_Name
+  }
+}
 // Front Door
 
 

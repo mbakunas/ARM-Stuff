@@ -114,6 +114,16 @@
         },
         "virtualMachine_DscUri": {
             "value": "https://raw.githubusercontent.com/mbakunas/ARM-Stuff/main/Automation/DSC/"
+        },
+
+        "appGW_backendAddressPools_Name": {
+            "value": "Web"
+        },
+        "appGW_Primary_name": {
+            "value": "AppGW01"
+        },
+        "appGW_Secondary_name": {
+            "value": "AppGW02"
         }
     }
 }
