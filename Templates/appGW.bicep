@@ -37,7 +37,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         name: 'name'
         properties: {
           subnet: {
-            id: '${appGateway_VNet_Id}/subnet/${appGatewau_Subnet_Name}'
+            id: resourceId('Reference01', 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Id, appGatewau_Subnet_Name)
           }
         }
       }
