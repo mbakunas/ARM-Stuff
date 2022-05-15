@@ -3,16 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appGateway_name": {
-            "value": "AppGW01" 
+            "value": "AppGW02" 
         },
         "appGateway_location": {
-            "value": "eastus2" 
+            "value": "centralus" 
         },
         "appGateway_VNet_Id": {
-            "value": "Reference-SPOKE-EastUS2-01" 
+            "value": "Reference-SPOKE-CentralUS-01" 
         },
         "appGatewau_Subnet_Name": {
-            "value": "AppGW-10.1.0.0-24" 
+            "value": "AppGW-10.2.0.0-24" 
+        },
+        "appGateway_VNet_ResourceGroup": {
+            "value": "Reference01"
         }
     }
 }

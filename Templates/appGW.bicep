@@ -3,10 +3,8 @@ targetScope = 'resourceGroup'
 param appGateway_name string
 param appGateway_location string
 param appGateway_VNet_Id string
-param appGatewau_Subnet_Name string
-
-
-
+param appGateway_Subnet_Name string
+param appGateway_VNet_ResourceGroup string
 
 
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
@@ -22,7 +20,6 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
   }
 }
 
-
 resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' = {
   name: appGateway_name
   location: appGateway_location
@@ -37,7 +34,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         name: 'name'
         properties: {
           subnet: {
-            id: resourceId('Reference01', 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Id, appGatewau_Subnet_Name)
+            id: resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Id, appGateway_Subnet_Name)
           }
         }
       }
@@ -63,7 +60,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     backendAddressPools: [
       {
-        name: 'DefaultBackendPool'
+        name: 'Web'
       }
     ]
     backendHttpSettingsCollection: [
@@ -80,7 +77,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     httpListeners: [
       {
-        name: 'PrivateHTTP'
+        name: 'PublicHTTP'
         properties: {
           frontendIPConfiguration: {
             id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway_name, 'appGwPublicFrontendIp')
@@ -95,14 +92,14 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     requestRoutingRules: [
       {
-        name: 'Private_to_DefaultBackendPool'
+        name: 'Public_to_Web'
         properties: {
           ruleType: 'Basic'
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGateway_name, 'PrivateHTTP')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGateway_name, 'PublicHTTP')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGateway_name, 'DefaultBackendPool')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGateway_name, 'Web')
           }
           backendHttpSettings: {
             id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateway_name, 'HTTP')
@@ -117,3 +114,5 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     }
   }
 }
+
+output appGW_Id string = applicationGateway.id
