@@ -35,6 +35,15 @@
                 "environment": "sandbox"
             }
         },
+        
+        "frontDoorResourceGroup_Name": {
+            "value": "Reference04"
+        },
+        "frontDoorResourceGroup_Tags": {
+            "value": {
+                "environment": "sandbox"
+            }
+        },
 
         "hubVnet_Name": {
             "value": "Reference-HUB-EastUS2-01"
@@ -133,6 +142,25 @@
         },
         "appGW_Secondary_name": {
             "value": "AppGW02"
+        },
+
+        "frontDoor_Name": {
+            "value": "ReferenceFrontDoor01"
+        },
+        "frontDoor_Endpoint_Name": {
+            "value": "Endpoint01"
+        },
+        "frontDoor_OriginGroup_Name": {
+            "value": "OriginGroup01"
+        },
+        "frontDoor_Origin1_Name": {
+            "value": "Origin01"
+        },
+        "frontDoor_Origin2_Name": {
+            "value": "Origin02"
+        },
+        "frontDoor_EndpointRoute_Name": {
+            "value": "Route01"
         }
     }
 }

@@ -62,6 +62,18 @@ param appGW_backendAddressPools_Name string
 param appGW_Primary_name string
 param appGW_Secondary_name string
 
+// Resource group for Front Door
+param frontDoorResourceGroup_Name string
+param frontDoorResourceGroup_Tags object
+
+// Front Door
+param frontDoor_Name string
+param frontDoor_Endpoint_Name string
+param frontDoor_OriginGroup_Name string
+param frontDoor_Origin1_Name string
+param frontDoor_Origin2_Name string
+param frontDoor_EndpointRoute_Name string
+
 
 var nsgSuffix = '-NSG'
 
@@ -83,6 +95,12 @@ resource appGWresourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: appGWresourceGroup_Name
   location: resourceGroupRegion
   tags: appGWresourceGroup_Tags
+}
+
+resource frontDoorResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: frontDoorResourceGroup_Name
+  location: resourceGroupRegion
+  tags: frontDoorResourceGroup_Tags
 }
 
 // VNets
@@ -349,7 +367,20 @@ module appGW2 '../0-Common/Templates/appGW.bicep' = {
   }
 }
 // Front Door
-
+module frontDoor '../0-Common/Templates/frontDoor.bicep' = {
+  name: '${deployment().name}-FrontDoor'
+  scope: frontDoorResourceGroup
+  params: {
+    frontDoor_Name: frontDoor_Name
+    frontDoor_Endpoint_Name: frontDoor_Endpoint_Name
+    frontDoor_OriginGroup_Name: frontDoor_OriginGroup_Name
+    frontDoor_Origin1_Name: frontDoor_Origin1_Name
+    frontDoor_Origin1_HostName: appGW1.outputs.appGW_fqdn
+    frontDoor_Origin2_Name: frontDoor_Origin2_Name
+    frontDoor_Origin2_HostName: appGW2.outputs.appGW_fqdn
+    frontDoor_EndpointRoute_Name: frontDoor_EndpointRoute_Name
+  }
+}
 
 // Log Analytics workspace
 // TODO:  configure diagostic settings to forward to LA workspace
