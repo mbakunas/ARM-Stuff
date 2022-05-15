@@ -110,5 +110,9 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         }
       }
     ]
+    autoscaleConfiguration: {
+      minCapacity: 0
+      maxCapacity: 2
+    }
   }
 }
