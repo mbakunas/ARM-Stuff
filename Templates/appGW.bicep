@@ -107,6 +107,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
           backendHttpSettings: {
             id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateway_name, 'HTTP')
           }
+          priority: 1000
         }
       }
     ]
