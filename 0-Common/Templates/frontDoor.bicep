@@ -1,13 +1,13 @@
 targetScope = 'resourceGroup'
 
 param frontDoor_Name string
-param frontDoor_Endpoint_Name string = 'Endpoint01'
-param frontDoor_OriginGroup_Name string = 'OriginGroup01'
+param frontDoor_Endpoint_Name string
+param frontDoor_OriginGroup_Name string
 param frontDoor_Origin1_Name string
 param frontDoor_Origin1_HostName string
 param frontDoor_Origin2_Name string
 param frontDoor_Origin2_HostName string
-param frontDoor_EndpointRoute_Name string = 'Route01'
+param frontDoor_EndpointRoute_Name string
 
 
 resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' = {
