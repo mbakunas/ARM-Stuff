@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "frontDoor_Name": {
+            "value": "ReferenceFrontDoor01"
+        },
+        "frontDoor_Endpoint_Name": {
+            "value": "Endpoint01"
+        },
+        "frontDoor_OriginGroup_Name": {
+            "value": "OriginGroup01"
+        },
+        "frontDoor_Origin1_Name": {
+            "value": "Origin01"
+        },
+        "frontDoor_Origin1_HostName": {
+            "value": "20.242.26.156"
+        },
+        "frontDoor_Origin2_Name": {
+            "value": "Origin02"
+        },
+        "frontDoor_Origin2_HostName": {
+            "value": "104.208.33.202"
+        },
+        "frontDoor_EndpointRoute_Name": {
+            "value": "Route01"
+        }
+    }
+}
