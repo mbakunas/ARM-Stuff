@@ -6,6 +6,15 @@ param appGateway_VNet_Id string
 param appGateway_Subnet_Name string
 param appGateway_VNet_ResourceGroup string
 
+var gatewayIPConfigurations_Name  = 'appGatewayIpConfig'
+var frontendIPConfigurations_Name = 'appGwPublicFrontendIp'
+var frontendPorts_Name = 'port_80'
+var backendAddressPools_Name = 'Web'
+var backendHttpSettingsCollection_Name = 'HTTP'
+var httpListeners_Name = 'PublicHTTP'
+var requestRoutingRules_Name = 'Public_to_Web'
+var requestRoutingRules_Priority = 1000
+
 
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-08-01' = {
   name: '${appGateway_name}-IP'
@@ -31,7 +40,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     }
     gatewayIPConfigurations: [
       {
-        name: 'name'
+        name: gatewayIPConfigurations_Name
         properties: {
           subnet: {
             id: resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Id, appGateway_Subnet_Name)
@@ -41,7 +50,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     frontendIPConfigurations: [
       {
-        name: 'appGwPublicFrontendIp'
+        name: frontendIPConfigurations_Name
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
@@ -52,7 +61,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     frontendPorts: [
       {
-        name: 'port_80'
+        name: frontendPorts_Name
         properties: {
           port: 80
         }
@@ -60,12 +69,12 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     backendAddressPools: [
       {
-        name: 'Web'
+        name: backendAddressPools_Name
       }
     ]
     backendHttpSettingsCollection: [
       {
-        name: 'HTTP'
+        name: backendHttpSettingsCollection_Name
         properties: {
           port: 80
           protocol: 'Http'
@@ -77,7 +86,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     httpListeners: [
       {
-        name: 'PublicHTTP'
+        name: httpListeners_Name
         properties: {
           frontendIPConfiguration: {
             id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway_name, 'appGwPublicFrontendIp')
@@ -92,7 +101,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     ]
     requestRoutingRules: [
       {
-        name: 'Public_to_Web'
+        name: requestRoutingRules_Name
         properties: {
           ruleType: 'Basic'
           httpListener: {
@@ -104,7 +113,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
           backendHttpSettings: {
             id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateway_name, 'HTTP')
           }
-          priority: 1000
+          priority: requestRoutingRules_Priority
         }
       }
     ]
