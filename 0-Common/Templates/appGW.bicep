@@ -38,8 +38,8 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
   tags: resourceGroup().tags
   properties: {
     sku: {
-      name: 'Standard_v2'
-      tier: 'Standard_v2'
+      name: 'WAF_v2'
+      tier: 'WAF_v2'
     }
     gatewayIPConfigurations: [
       {
@@ -123,6 +123,15 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
     autoscaleConfiguration: {
       minCapacity: 0
       maxCapacity: 2
+    }
+    webApplicationFirewallConfiguration: {
+      enabled: true
+      firewallMode: 'Detection'
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.2'
+      requestBodyCheck: true
+      maxRequestBodySize: 128
+      fileUploadLimitInMb: 100
     }
   }
 }
