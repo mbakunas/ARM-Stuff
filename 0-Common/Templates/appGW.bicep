@@ -137,3 +137,4 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
 }
 
 output appGW_Id string = applicationGateway.id
+output appGW_fqdn string = publicIPAddress.properties.dnsSettings.fqdn
