@@ -81,7 +81,7 @@ resource frontDoorEndpointRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021
   name: frontDoor_EndpointRoute_Name
   properties: {
     originGroup: {
-      id: resourceId('Microsoft.Cdn/profiles/originGroups', frontDoor_OriginGroup_Name)
+      id: resourceId('Microsoft.Cdn/profiles/originGroups', frontDoor_Name, frontDoor_OriginGroup_Name)
     }
     supportedProtocols: [
       'Http'
