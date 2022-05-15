@@ -11,7 +11,7 @@
         "appGateway_VNet_Id": {
             "value": "Reference-SPOKE-CentralUS-01" 
         },
-        "appGatewau_Subnet_Name": {
+        "appGateway_Subnet_Name": {
             "value": "AppGW-10.2.0.0-24" 
         },
         "appGateway_VNet_ResourceGroup": {
