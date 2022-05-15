@@ -13,6 +13,13 @@ on:
       - main
     paths:
       - "Reference/**"
+      - "0-Common/appGW.bicep"
+      - "0-Common/bastion.bicep"
+      - "0-Common/hubVNet.bicep"
+      - "0-Common/routeTable.bicep"
+      - "0-Common/spokeVNet.bicep"
+      - "0-Common/VM.bicep"
+      - "0-Common/VNetPeer.bicep"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
