@@ -64,6 +64,24 @@ resource networkSecurityGroup1 'Microsoft.Network/networkSecurityGroups@2020-11-
     securityRules: [
       {
         //NSG rule necessary to attach app gateway to this subnet
+        name: 'Allow_http_https_from_Internet'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '80,443'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: subnet_subnet1_AddressSpace
+          access: 'Allow'
+          priority: 1000
+          direction: 'Inbound'
+          //sourcePortRanges: []
+          //destinationPortRanges: []
+          //sourceAddressPrefixes: []
+          //destinationAddressPrefixes: []
+        }
+      }
+      {
+        //NSG rule necessary to attach app gateway to this subnet
         name: 'AppGW_Allow_65200-65535'
         properties: {
           protocol: 'Tcp'
