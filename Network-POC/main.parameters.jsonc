@@ -54,7 +54,11 @@
                         {
                             "name": "appGW-10.1.1.0_24",
                             "addressSpace": "10.1.1.0/24",
-                            "nsgName": "appGW-10.1.1.0_24-NSG"
+                            "nsgName": "appGW-10.1.1.0_24-NSG",
+                            "appGWservice": {
+                                "name": "AppGW01",
+                                "backendAddressPoolsName": "AKS"
+                            }
                         },
                         {
                             "name": "App01-10.1.2.0_24",
