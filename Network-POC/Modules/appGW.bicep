@@ -91,6 +91,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         }
       }
     ]
+    backendSettingsCollection: []
     httpListeners: [
       {
         name: httpListeners_Name
