@@ -15,8 +15,7 @@
                     "resourceGroup": {
                         "name": "Benihana-POC-Network",
                         "tags": {
-                            "Owner": "brendan.r.eshaghy@avanade.com",
-                            "Client": "Baker Hughes",
+                            "Client": "Benihana",
                             "EndDate": "31-July-2022"
                         }
                     },
@@ -43,8 +42,7 @@
                     "resourceGroup": {
                         "name": "Benihana-POC-Network",
                         "tags": {
-                            "Owner": "brendan.r.eshaghy@avanade.com",
-                            "Client": "Baker Hughes",
+                            "Client": "Benihana",
                             "EndDate": "31-July-2022"
                         }
                     },
@@ -56,7 +54,7 @@
                             "addressSpace": "10.1.1.0/24",
                             "nsgName": "appGW-10.1.1.0_24-NSG",
                             "appGWservice": {
-                                "name": "AppGW01",
+                                "name": "BenihanaAppGW01",
                                 "backendAddressPoolsName": "AKS"
                             }
                         },
