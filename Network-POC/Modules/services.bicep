@@ -1,6 +1,7 @@
 targetScope = 'resourceGroup'
 
 param vnet object
+param location string
 
 // loop through all the VNet's subnets to see if there are any services to be deployed
 
@@ -9,7 +10,7 @@ param vnet object
 //   name: vnet.name
 // }
 
-var vnet_location = reference(resourceId('Microsoft.Network/virtualNetworks', vnet.name)).location
+//var vnet_location = reference(resourceId('Microsoft.Network/virtualNetworks', vnet.name)).location
 
 // appGW
 module appGW 'appGW.bicep' = [for subnet in vnet.subnets: if (contains(subnet, 'appGWservice')) {
@@ -19,7 +20,7 @@ module appGW 'appGW.bicep' = [for subnet in vnet.subnets: if (contains(subnet, '
     appGateway_name: subnet.appGWservice.name
     appGateway_backendAddressPools_Name: subnet.appGWservice.backendAddressPoolsName
     appGateway_VNet_Name: vnet.name
-    appGateway_location: vnet_location
+    appGateway_location: location
     appGateway_Subnet_Name: subnet.name
     appGateway_VNet_ResourceGroup: vnet.resourceGroup.Name
   }

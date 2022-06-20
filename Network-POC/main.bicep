@@ -95,5 +95,6 @@ module services 'Modules/services.bicep' = [for (vnet, i) in vnets: {
   dependsOn: nsgs
   params: {
     vnet: vnet
+    location: primaryRegion
   }
 }]
