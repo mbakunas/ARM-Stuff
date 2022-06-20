@@ -97,10 +97,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         name: httpListeners_Name
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway_name, 'appGwPublicFrontendIp')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway_name, frontendIPConfigurations_Name)
           }
           frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGateway_name, 'port_80')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGateway_name, frontendPorts_Name)
           }
           protocol: 'Http'
           requireServerNameIndication: false
@@ -113,13 +113,13 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
         properties: {
           ruleType: 'Basic'
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGateway_name, 'PublicHTTP')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGateway_name, httpListeners_Name)
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGateway_name, 'Web')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGateway_name, appGateway_backendAddressPools_Name)
           }
           backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateway_name, 'HTTP')
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateway_name, backendHttpSettingsCollection_Name)
           }
           priority: requestRoutingRules_Priority
         }

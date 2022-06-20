@@ -13,7 +13,7 @@
                 {
                     // hub VNet
                     "resourceGroup": {
-                        "name": "Baker-Hughes-POC-Network",
+                        "name": "Benihana-POC-Network",
                         "tags": {
                             "Owner": "brendan.r.eshaghy@avanade.com",
                             "Client": "Baker Hughes",
@@ -41,7 +41,7 @@
                 {
                     // spoke VNet
                     "resourceGroup": {
-                        "name": "Baker-Hughes-POC-Network",
+                        "name": "Benihana-POC-Network",
                         "tags": {
                             "Owner": "brendan.r.eshaghy@avanade.com",
                             "Client": "Baker Hughes",
