@@ -4,6 +4,7 @@ param appGateway_name string
 param appGateway_location string
 param appGateway_VNet_Name string
 param appGateway_Subnet_Name string
+param appGateway_Subnet_AddressPrefix string
 param appGateway_VNet_ResourceGroup string
 param appGateway_backendAddressPools_Name string
 
@@ -148,7 +149,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
 //   name: appGW_subnet.properties.networkSecurityGroup.name
 // }
 
-var appGW_subnet = reference(resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name))
+//var appGW_subnet = reference(resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name))
 //var appGW_nsg = reference(resourceId('Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name)).properties.networkSecurityGroup.name
 
 resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
@@ -161,7 +162,7 @@ resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08
       '443'
     ]
     sourceAddressPrefix: 'Internet'
-    destinationAddressPrefix: appGW_subnet.properties.addressPrefix
+    destinationAddressPrefix: appGateway_Subnet_AddressPrefix
     access: 'Allow'
     priority: 1000
     direction: 'Inbound'

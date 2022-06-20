@@ -22,6 +22,7 @@ module appGW 'appGW.bicep' = [for subnet in vnet.subnets: if (contains(subnet, '
     appGateway_VNet_Name: vnet.name
     appGateway_location: location
     appGateway_Subnet_Name: subnet.name
+    appGateway_Subnet_AddressPrefix: subnet.addressSpace
     appGateway_VNet_ResourceGroup: vnet.resourceGroup.Name
   }
 }]
