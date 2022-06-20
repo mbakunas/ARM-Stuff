@@ -89,9 +89,9 @@ module spoke2HubPeer 'Modules/VnetPeer.bicep' = [for i in range(1, length(vnets)
 }]
 
 // network services
-module services 'Modules/services.bicep' = [for vnet in vnets: {
+module services 'Modules/services.bicep' = [for (vnet, i) in vnets: {
   scope: resourceGroup(vnet.resourceGroup.name)
-  name: '${deployment().name}-NetSvcs'
+  name: '${deployment().name}-NetSvcs${i}'
   dependsOn: nsgs
   params: {
     vnet: vnet
