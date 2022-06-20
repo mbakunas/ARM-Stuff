@@ -139,18 +139,20 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
 // NSG Rules for appGW
 
 // First, get the the subnet into which the appGW will be deployed so we get the NSG
-resource appGW_subnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
-  name: '${appGateway_VNet_Name}/${appGateway_Subnet_Name}'
-}
+// resource appGW_subnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
+//   name: '${appGateway_VNet_Name}/${appGateway_Subnet_Name}'
+// }
 
 // Next, get the NSG for that subnet so we can add the rules
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' existing = {
-  name: appGW_subnet.properties.networkSecurityGroup.name
-}
+// resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' existing = {
+//   name: appGW_subnet.properties.networkSecurityGroup.name
+// }
+
+var appGW_subnet = reference(resourceId(appGateway_VNet_ResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name))
+//var appGW_nsg = reference(resourceId('Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name)).properties.networkSecurityGroup.name
 
 resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  parent: nsg
-  name: 'Allow_http_https_from_Internet'
+  name: '${appGateway_Subnet_Name}-NSG/Allow_http_https_from_Internet'
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -167,8 +169,7 @@ resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08
 }
 
 resource nsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  parent: nsg
-  name: 'AppGW_Allow_65200-65535'
+  name: '${appGateway_Subnet_Name}-NSG/AppGW_Allow_65200-65535'
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
