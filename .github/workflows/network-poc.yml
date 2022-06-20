@@ -12,8 +12,8 @@ on:
     branches:
       - main
     paths:
-      - "Reference/**.bicep"
-      - "Reference/**.jsonc"
+      - "Network-POC/**.bicep"
+      - "Network-POC/**.jsonc"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
