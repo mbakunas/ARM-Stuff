@@ -13,7 +13,7 @@ var frontendIPConfigurations_Name = 'appGwPublicFrontendIp'
 var frontendPorts_Name = 'port_80'
 var backendHttpSettingsCollection_Name = 'HTTP'
 var httpListeners_Name = 'PublicHTTP'
-var requestRoutingRules_Name = 'Public_to_Web'
+var requestRoutingRules_Name = 'Public_to_${appGateway_backendAddressPools_Name}'
 var requestRoutingRules_Priority = 1000
 
 
