@@ -38,6 +38,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
   name: appGateway_name
   location: appGateway_location
   tags: resourceGroup().tags
+  dependsOn: [nsgRule2]
   properties: {
     sku: {
       name: 'WAF_v2'
