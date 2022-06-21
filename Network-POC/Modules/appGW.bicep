@@ -4,8 +4,6 @@ param appGateway_name string
 param appGateway_location string
 param appGateway_VNet_Name string
 param appGateway_Subnet_Name string
-param appGateway_Subnet_AddressPrefix string
-param appGateway_NSG_Name string
 param appGateway_VNet_ResourceGroup string
 param appGateway_backendAddressPools_Name string
 
@@ -38,7 +36,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
   name: appGateway_name
   location: appGateway_location
   tags: resourceGroup().tags
-  dependsOn: [nsgRule2]
   properties: {
     sku: {
       name: 'WAF_v2'
@@ -140,37 +137,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
       maxRequestBodySize: 128
       fileUploadLimitInMb: 100
     }
-  }
-}
-
-resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  name: '${appGateway_NSG_Name}/Allow_http_https_from_Internet'
-  properties: {
-    protocol: 'Tcp'
-    sourcePortRange: '*'
-    destinationPortRanges: [
-      '80'
-      '443'
-    ]
-    sourceAddressPrefix: 'Internet'
-    destinationAddressPrefix: appGateway_Subnet_AddressPrefix
-    access: 'Allow'
-    priority: 1000
-    direction: 'Inbound'
-  }
-}
-
-resource nsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  name: '${appGateway_NSG_Name}/AppGW_Allow_65200-65535'
-  properties: {
-    protocol: 'Tcp'
-    sourcePortRange: '*'
-    destinationPortRange: '65200-65535'
-    sourceAddressPrefix: 'GatewayManager'
-    destinationAddressPrefix: '*'
-    access: 'Allow'
-    priority: 4010
-    direction: 'Inbound'    
   }
 }
 
