@@ -5,6 +5,7 @@ param appGateway_location string
 param appGateway_VNet_Name string
 param appGateway_Subnet_Name string
 param appGateway_Subnet_AddressPrefix string
+param appGateway_NSG_Name string
 param appGateway_VNet_ResourceGroup string
 param appGateway_backendAddressPools_Name string
 
@@ -157,7 +158,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-08-01' =
 //var appGW_nsg = reference(resourceId('Microsoft.Network/virtualNetworks/subnets', appGateway_VNet_Name, appGateway_Subnet_Name)).properties.networkSecurityGroup.name
 
 resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  name: '${appGateway_Subnet_Name}-NSG/Allow_http_https_from_Internet'
+  name: '${appGateway_NSG_Name}/Allow_http_https_from_Internet'
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -174,7 +175,7 @@ resource nsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08
 }
 
 resource nsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = {
-  name: '${appGateway_Subnet_Name}-NSG/AppGW_Allow_65200-65535'
+  name: '${appGateway_NSG_Name}/AppGW_Allow_65200-65535'
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
