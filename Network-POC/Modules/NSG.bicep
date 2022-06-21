@@ -10,7 +10,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
 }
 
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'nsgName')) {
-  name: contains(subnet, 'nsgName') ? subnet.nsgName : 'Foo${i}'
+  name: contains(subnet, 'nsgName') ? subnet.nsgName : 'networkSecurityGroup${i}'
   location: nsg_Location
   tags: resourceGroup().tags
   properties: {
@@ -18,8 +18,8 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
   }
 }]
 
-resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for subnet in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
-  name: '${subnet.nsgName}/AppGW_Allow_65200-65535'
+resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
+  name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/AppGW_Allow_65200-65535' : 'appGWnsgRule1${i}'  
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -32,8 +32,8 @@ resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@20
   }
 }]
 
-resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for subnet in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
-  name: '${subnet.nsgName}/Allow_http_https_from_Internet'
+resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
+  name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/Allow_http_https_from_Internet' : 'appGWnsgRule2${i}' 
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -51,7 +51,7 @@ resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@20
 
 @batchSize(1)
 resource nsgSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'nsgName')) {
-  name: contains(subnet, 'nsgName') ? subnet.name : 'Bar${i}'
+  name: contains(subnet, 'nsgName') ? subnet.name : 'nsgSubnet${i}'
   parent: vnet
   dependsOn: [appGWnsgRule1, appGWnsgRule2]
   properties: {
