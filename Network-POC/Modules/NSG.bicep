@@ -20,6 +20,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
 
 resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/AppGW_Allow_65200-65535' : 'appGWnsgRule1/appGWnsgRule1${i}'  
+  dependsOn: networkSecurityGroup
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -34,6 +35,7 @@ resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@20
 
 resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/Allow_http_https_from_Internet' : 'appGWnsgRule2/appGWnsgRule2${i}' 
+  dependsOn: networkSecurityGroup
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
