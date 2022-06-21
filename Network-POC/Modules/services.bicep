@@ -5,13 +5,6 @@ param location string
 
 // loop through all the VNet's subnets to see if there are any services to be deployed
 
-// get info about the VNet
-// resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
-//   name: vnet.name
-// }
-
-//var vnet_location = reference(resourceId('Microsoft.Network/virtualNetworks', vnet.name)).location
-
 // appGW
 module appGW 'appGW.bicep' = [for subnet in vnet.subnets: if (contains(subnet, 'appGWservice')) {
   name: 'appGW-${subnet.name}'

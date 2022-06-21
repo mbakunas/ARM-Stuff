@@ -6,10 +6,6 @@ param resourceGroupRegion string = deployment().location
 param vnets array
 
 
-// var vnets_temp = [for vnet in vnets: {
-//   subnets: vnet.subnets
-// }]
-
 // resource groups
 
 // first, get the list of unique resource groups
