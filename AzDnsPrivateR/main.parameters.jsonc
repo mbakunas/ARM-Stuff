@@ -6,7 +6,7 @@
             "value": "eastus"
         },
         "dnsResourceGroup_name": {
-            "value": "PrivateDNStest01"
+            "value": "PrivateDNStest02"
         },
         "dnsResourceGroup_tags": {
             "value": {
