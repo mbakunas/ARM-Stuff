@@ -57,14 +57,16 @@ module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
 
 // bastion
 // assumes same resrouce group as its vnet
-module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets, 'service-bastion')) {
+// I'm also cheating because I know the AzureBastionSubnet is the 2nd in the array
+// TODO: move this logic to services.bicep
+module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets[1], 'service-bastion')) {
   scope: resourceGroup(vnet.resourceGroup.name)
   name: '${deployment().name}-Bastion-for-VNet${i}'
   dependsOn: deployVNets
   params: {
     bastion_location: vnet.location
     bastion_name: vnet.name
-    bastion_vnetName: '${vnet.name}-Bastion'
+    bastion_vnetName: vnet.subnets[1].name
   }
 }]
 
