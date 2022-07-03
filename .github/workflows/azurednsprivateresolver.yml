@@ -2,7 +2,7 @@ name: PrivateDnsResolver
 env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
   azureRegion: East US 2
-  templateFile: .AzurePrivateDnsResolver/main.bicep
+  templateFile: ./AzurePrivateDnsResolver/main.bicep
   parametersFile: ./AzurePrivateDnsResolver/main.parameters.jsonc
 
 # Controls when the workflow will run
