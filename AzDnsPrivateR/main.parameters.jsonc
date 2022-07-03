@@ -33,7 +33,10 @@
                         },
                         {
                             "name": "AzureBastionSubnet",
-                            "addressSpace": "10.0.0.128/26"
+                            "addressSpace": "10.0.0.128/26",
+                            "service-bastion": {
+                                "name": "VNet-HUB-EastUS2-01-Bastion"
+                            }
                         },
                         {
                             "name": "AzureDNS-10.0.1.0_24",

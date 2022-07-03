@@ -17,12 +17,12 @@ resource dnsResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 // vnet resource group(s)
-var RgList = [for vnet in vnets: {
+var vnetRgList = [for vnet in vnets: {
   name: vnet.resourceGroup.name
   tags: vnet.resourceGroup.tags
 }]
-var uniqueRgList = union(RgList, RgList)  // make sure the list of resource groups is unique
-resource resourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for rg in uniqueRgList: {
+var uniqueVnetRgList = union(vnetRgList, vnetRgList)  // make sure the list of resource groups is unique
+resource resourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for rg in uniqueVnetRgList: {
   name: rg.name
   location: resourceGroup_location
   tags: rg.tags
@@ -56,9 +56,24 @@ module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
 }]
 
 // bastion
+// assumes same resrouce group as its vnet
+module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets, 'service-bastion')) {
+  scope: resourceGroup(vnet.resourceGroup.name)
+  name: '${deployment().name}-Bastion-for-VNet${i}'
+  dependsOn: deployVNets
+  params: {
+    bastion_location: vnet.location
+    bastion_name: vnet.name
+    bastion_vnetName: '${vnet.name}-Bastion'
+  }
+}]
 
-// domain controllers
+// first domain controller
 
 // private dns resolver
 
-// member servers
+// hub member server
+
+// second DC
+
+// spoke member server
