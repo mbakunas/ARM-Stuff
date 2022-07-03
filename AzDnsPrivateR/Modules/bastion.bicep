@@ -14,6 +14,7 @@ var bastion_enableFileCopy = true
 resource bastionPublicIP 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   name: '${bastion_name}-IP'
   tags: resourceGroup().tags
+  location: bastion_location
   sku: {
     name: 'Standard'
   }
