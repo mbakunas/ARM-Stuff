@@ -2,8 +2,8 @@ name: PrivateDnsResolver
 env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
   azureRegion: East US 2
-  templateFile: ./AzurePrivateDnsResolver/main.bicep
-  parametersFile: ./AzurePrivateDnsResolver/main.parameters.jsonc
+  templateFile: ./AzDnsPrivateR/main.bicep
+  parametersFile: ./AzDnsPrivateR/main.parameters.jsonc
 
 # Controls when the workflow will run
 on:
@@ -12,8 +12,8 @@ on:
     branches:
       - main
     paths:
-      - "AzurePrivateDnsResolver/**.bicep"
-      - "AzurePrivateDnsResolver/**.jsonc"
+      - "AzDnsPrivateR/**.bicep"
+      - "AzDnsPrivateR/**.jsonc"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
