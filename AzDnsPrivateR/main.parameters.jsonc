@@ -34,7 +34,7 @@
                         {
                             "name": "AzureBastionSubnet",
                             "addressSpace": "10.0.0.128/26",
-                            "service-bastion": {
+                            "serviceBastion": {
                                 "name": "VNet-HUB-EastUS2-01-Bastion"
                             }
                         },
