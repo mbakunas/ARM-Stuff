@@ -35,6 +35,6 @@ jobs:
           scope: subscription
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           subscriptionId: ${{ env.subscriptionId }}
-          region: ${{env.azureRegion }}
-          template: ${{env.templateFile }}
+          region: ${{ env.azureRegion }}
+          template: ${{ env.templateFile }}
           parameters: ${{ env.parametersFile}}
