@@ -62,7 +62,7 @@ module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
 module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets[1], 'service-bastion')) {
   scope: resourceGroup(vnet.resourceGroup.name)
   name: '${deployment().name}-Bastion-for-VNet${i}'
-  dependsOn: deployVNets
+  dependsOn: nsgs
   params: {
     bastion_location: vnet.location
     bastion_name: vnet.name
