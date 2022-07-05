@@ -20,6 +20,9 @@ Format the array like this:
 ]
 */
 
+// because we can't pass id:null to networkSecurityGroup, we have to build the json manually
+//var nsgJson = [for i in range(0, length(vnet_subnets)) : contains(vnet_subnets[i], 'nsgName') ? json('{\'id: ${vnet_subnets[i].nsgName}\'}') : null]
+
 // create any NSGs
 resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = [for (subnet, i) in vnet_subnets: if (contains(subnet, 'nsgName')) {
   name: contains(subnet, 'nsgName') ? subnet.nsgName : 'networkSecurityGroup${i}'
@@ -45,9 +48,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressSpace
-        networkSecurityGroup: {
-          id: (contains(subnet, 'nsgName') ? networkSecurityGroup[i].id : null)
-        }
+        networkSecurityGroup: contains(subnet, 'nsgName') ? networkSecurityGroup[i] : null
       }
     }]
   }
