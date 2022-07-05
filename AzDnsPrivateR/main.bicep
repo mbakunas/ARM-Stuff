@@ -43,18 +43,6 @@ module deployVNets 'Modules/VNet.bicep' = [for (vnet, i) in vnets: {
   }
 }]
 
-// @description('NSGs')
-// module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
-//   scope: resourceGroup(vnet.resourceGroup.name)
-//   name: '${deployment().name}-NSGs-for-VNet${i}'
-//   dependsOn: deployVNets
-//   params: {
-//     nsg_Location: vnet.location
-//     nsg_Subnets: vnet.subnets
-//     nsg_VNet: vnet.name
-//   }
-// }]
-
 // bastion
 // assumes same resrouce group as its vnet
 // I'm also cheating because I know the AzureBastionSubnet is the 2nd in the array
