@@ -48,7 +48,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressSpace
-        networkSecurityGroup: contains(subnet, 'nsgName') ? networkSecurityGroup[i] : ''
+        networkSecurityGroup: !(contains(subnet, 'nsgName')) ? null : {
+          id: networkSecurityGroup[i].id
+        }
       }
     }]
   }
