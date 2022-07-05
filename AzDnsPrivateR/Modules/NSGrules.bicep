@@ -1,26 +1,11 @@
 targetScope = 'resourceGroup'
 
-param nsg_Location string
 param nsg_Subnets array
-param nsg_VNet string
 
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
-  name: nsg_VNet
-}
-
-resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'nsgName')) {
-  name: contains(subnet, 'nsgName') ? subnet.nsgName : 'networkSecurityGroup${i}'
-  location: nsg_Location
-  tags: resourceGroup().tags
-  properties: {
-    securityRules: []
-  }
-}]
-
+// rules for application gateway
 resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/AppGW_Allow_65200-65535' : 'appGWnsgRule1/appGWnsgRule1${i}'  
-  dependsOn: networkSecurityGroup
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -35,7 +20,6 @@ resource appGWnsgRule1 'Microsoft.Network/networkSecurityGroups/securityRules@20
 
 resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'appGWservice')) {
   name: contains(subnet, 'nsgName') ? '${subnet.nsgName}/Allow_http_https_from_Internet' : 'appGWnsgRule2/appGWnsgRule2${i}' 
-  dependsOn: networkSecurityGroup
   properties: {
     protocol: 'Tcp'
     sourcePortRange: '*'
@@ -48,18 +32,5 @@ resource appGWnsgRule2 'Microsoft.Network/networkSecurityGroups/securityRules@20
     access: 'Allow'
     priority: 1000
     direction: 'Inbound'
-  }
-}]
-
-@batchSize(1)
-resource nsgSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = [for (subnet, i) in nsg_Subnets: if (contains(subnet, 'nsgName')) {
-  name: contains(subnet, 'nsgName') ? subnet.name : 'nsgSubnet${i}'
-  parent: vnet
-  dependsOn: [appGWnsgRule1, appGWnsgRule2]
-  properties: {
-    addressPrefix: subnet.addressSpace
-    networkSecurityGroup: {
-      id: networkSecurityGroup[i].id
-    }
   }
 }]
