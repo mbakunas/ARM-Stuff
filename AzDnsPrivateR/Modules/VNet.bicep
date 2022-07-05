@@ -6,7 +6,7 @@ param vnet_AddressSpace string
 param vnet_Location string
 
 // Subnets
-param subnets array
+param vnet_subnets array
 /*
 Format the array like this:
   {
@@ -20,7 +20,17 @@ Format the array like this:
 ]
 */
 
+// create any NSGs
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-01' = [for (subnet, i) in vnet_subnets: if (contains(subnet, 'nsgName')) {
+  name: contains(subnet, 'nsgName') ? subnet.nsgName : 'networkSecurityGroup${i}'
+  location: vnet_Location
+  tags: resourceGroup().tags
+  properties: {
+    securityRules: []
+  }
+}]
 
+// create the VNet
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: vnet_Name
   location: vnet_Location
@@ -31,10 +41,13 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
         vnet_AddressSpace
       ]
     }
-    subnets: [for subnet in subnets: {
+    subnets: [for (subnet, i) in vnet_subnets: {
       name: subnet.name
       properties: {
         addressPrefix: subnet.addressSpace
+        networkSecurityGroup: {
+          id: (contains(subnet, 'nsgName') ? networkSecurityGroup[i].id : null)
+        }
       }
     }]
   }

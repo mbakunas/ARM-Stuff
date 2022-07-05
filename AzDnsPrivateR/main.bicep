@@ -29,31 +29,31 @@ resource resourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for r
 }]
 
 
-// vnet
+// vnet and NSGs
 @description('VNets and subnets.  The first VNet is the hub.')
 module deployVNets 'Modules/VNet.bicep' = [for (vnet, i) in vnets: {
   name: '${deployment().name}-VNet${i}'
   scope: resourceGroup(vnet.resourceGroup.name)
   dependsOn: resourceGroups
   params: {
-    subnets: vnet.subnets
+    vnet_subnets: vnet.subnets
     vnet_AddressSpace: vnet.addressSpace
     vnet_Location: vnet.location
     vnet_Name: vnet.name
   }
 }]
 
-@description('NSGs')
-module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
-  scope: resourceGroup(vnet.resourceGroup.name)
-  name: '${deployment().name}-NSGs-for-VNet${i}'
-  dependsOn: deployVNets
-  params: {
-    nsg_Location: vnet.location
-    nsg_Subnets: vnet.subnets
-    nsg_VNet: vnet.name
-  }
-}]
+// @description('NSGs')
+// module nsgs 'Modules/NSG.bicep' = [for (vnet, i) in vnets: {
+//   scope: resourceGroup(vnet.resourceGroup.name)
+//   name: '${deployment().name}-NSGs-for-VNet${i}'
+//   dependsOn: deployVNets
+//   params: {
+//     nsg_Location: vnet.location
+//     nsg_Subnets: vnet.subnets
+//     nsg_VNet: vnet.name
+//   }
+// }]
 
 // bastion
 // assumes same resrouce group as its vnet
