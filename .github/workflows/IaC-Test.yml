@@ -26,6 +26,9 @@ env:
   templateFile: ./IaC-Test/main.bicep
   parametersFile: ./IaC-Test/main.parameters.json
 
+permissions:
+  id-token: write
+
 jobs:
   deploy:
     name: 'Deploy to Azure'
