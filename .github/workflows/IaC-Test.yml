@@ -48,14 +48,11 @@ jobs:
 
       # run a what-if preview of the changes the ARM template will make
       - name: Preview Changes
-        uses: Azure/deployment-what-if-action@v1.0.0
         id: preview
         if: github.event_name == 'pull_request'
-        with:
-          subscription: ${{ env.subscriptionId }}
-          resourceGroup: ${{ env.resourceGroup }}
-          templateFile: ${{ env.templateFile }}
-          parametersFile: ${{ env.parametersFile }}
+        run: |
+          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} --parameters '@${{env.parametersFile}}'
+
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
