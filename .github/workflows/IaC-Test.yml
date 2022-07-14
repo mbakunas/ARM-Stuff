@@ -64,16 +64,11 @@ jobs:
         with: 
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `#### Results
-                
-                <details><summary>Show what-if Results</summary>
-                \`\`\`${process.env.WHATIF}\`\`\`
-                </details>
-                `
+              body: `#### Results`
             })
 
       # on push to main, deploy ARM template
