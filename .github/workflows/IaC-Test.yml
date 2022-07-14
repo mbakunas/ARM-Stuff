@@ -1,0 +1,75 @@
+name: AzureDeploy
+
+on:
+  push:
+    paths:
+    - ./IaC-Test/**.bicep
+    - ./IaC-Test/**.json
+    - ./IaC-Test/**.jsonc
+  pull_request:
+    paths:
+    - ./IaC-Test/**.bicep
+    - ./IaC-Test/**.json
+    - ./IaC-Test/**.jsonc
+  workflow_dispatch:
+
+env:
+  subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
+  resourceGroup: IacTest01
+  azureRegion: eastus2
+  templateFile: ./IaC-Test/main.bicep
+  parametersFile: ./IaC-Test/main.parameters.json
+
+jobs:
+  deploy:
+    name: 'Deploy to Azure'
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      # log in to Azure using OpenID Connect
+      - name: Login to Azure
+        uses: Azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.subscriptionId }}
+
+      # run a what-if preview of the changes the ARM template will make
+      - name: Preview Changes
+        id: preview
+        if: github.event_name == 'pull_request'
+        run: |
+          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} parameters '@${{env.templateParametersFile}}')
+
+      # add a comment to the pull request with the what-if results
+      - name: Add WhatIf Comment
+        id: comment
+        if: github.event_name == 'pull_request'
+        env:
+          WHATIF: "deploy\n${{ steps.preview.outputs.stdout }}"
+        with: 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = Results
+
+            <details><summary>Show Results</summary>
+
+            \`\`\`${process.env.WHATIF}\`\`\`
+
+            </details>
+
+      # on push to main, deploy ARM template
+      - name: Deploy ARM Template
+        id: arm
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: Azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{env.azureRegion }}
+          template: ${{env.templateFile }}
+          parameters: ${{ env.parametersFile}}
