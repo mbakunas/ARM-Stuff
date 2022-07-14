@@ -33,6 +33,7 @@ jobs:
   deploy:
     name: 'Deploy to Azure'
     runs-on: ubuntu-latest
+
     steps:
       # checkout the repository to the GitHub Actions runner
       - name: Checkout
@@ -63,16 +64,16 @@ jobs:
         with: 
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = Results
-              <details><summary>Show Results</summary>
-              \`\`\`${process.env.WHATIF}\`\`\`
-              </details>
-
-             github.rest.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: output
+              body: `#### Results
+                
+                <details><summary>Show what-if Results</summary>
+                \`\`\`${process.env.WHATIF}\`\`\`
+                </details>
+                `
             })
 
       # on push to main, deploy ARM template
