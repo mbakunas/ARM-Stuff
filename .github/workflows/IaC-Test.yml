@@ -24,7 +24,7 @@ env:
   resourceGroup: IacTest01
   azureRegion: eastus2
   templateFile: ./IaC-Test/main.bicep
-  parametersFile: ./IaC-Test/main.parameters.json
+  parametersFile: ./IaC-Test/main.parameters.jsonc
 
 permissions:
   id-token: write
