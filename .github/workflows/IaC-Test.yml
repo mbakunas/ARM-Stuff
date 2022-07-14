@@ -5,18 +5,18 @@ on:
     branches:
       - main
     paths:
-    - ./IaC-Test/**.bicep
-    - ./IaC-Test/**.json
-    - ./IaC-Test/**.jsonc
+    - IaC-Test/**.bicep
+    - IaC-Test/**.json
+    - IaC-Test/**.jsonc
   pull_request:
     branches:
       - main
     types:
       - opened
     paths:
-    - ./IaC-Test/**.bicep
-    - ./IaC-Test/**.json
-    - ./IaC-Test/**.jsonc
+    - IaC-Test/**.bicep
+    - IaC-Test/**.json
+    - IaC-Test/**.jsonc
   workflow_dispatch:
 
 env:
