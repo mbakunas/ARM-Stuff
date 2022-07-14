@@ -51,7 +51,7 @@ jobs:
         id: preview
         if: github.event_name == 'pull_request'
         run: |
-          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} parameters '@${{env.templateParametersFile}}'
+          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} parameters '@${{env.parametersFile}}'
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
