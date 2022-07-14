@@ -46,6 +46,7 @@ jobs:
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
+        uses: actions/github-script@v3
         id: comment
         if: github.event_name == 'pull_request'
         env:
@@ -60,6 +61,13 @@ jobs:
             \`\`\`${process.env.WHATIF}\`\`\`
 
             </details>
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
