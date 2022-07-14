@@ -47,30 +47,15 @@ jobs:
           subscription-id: ${{ env.subscriptionId }}
 
       # run a what-if preview of the changes the ARM template will make
-      - name: Preview Changes (old)
-        id: previewold
-        #if: github.event_name == 'pull_request'
-        if: true == false
-        run: |
-          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} --parameters '@${{env.parametersFile}}'
-
-      # run a what-if preview of the changes the ARM template will make
       - name: Preview Changes
         id: preview
         if: github.event_name == 'pull_request'
-        uses: Azure/arm-deploy@v1
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ env.subscriptionId }}
-          resourceGroupName: ${{ env.resourceGroup }}
-          template: ${{env.templateFile }}
-          parameters: ${{ env.parametersFile}}
-          additionalArguments: "--what-if"
-          
+        run: |
+          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} --parameters '@${{env.parametersFile}}'
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         id: comment
         if: github.event_name == 'pull_request'
         env:
@@ -79,14 +64,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = Results
+              <details><summary>Show Results</summary>
+              \`\`\`${process.env.WHATIF}\`\`\`
+              </details>
 
-            <details><summary>Show Results</summary>
-
-            \`\`\`${process.env.WHATIF}\`\`\`
-
-            </details>
-
-            github.issues.createComment({
+             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
