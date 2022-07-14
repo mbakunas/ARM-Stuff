@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "azureRegion": {
+            "value": "centralus"
+        },
+
+        //hub
+        "hubVNet_name": {
+            "value": "HUB-CentralUS-01"
+        },
+        "hubVNet_addressSpace": {
+            "value": "10.10.0.0/16"
+        },
+        "hubVNet_gwSubnet_addressSpace": {
+            "value": "10.10.0.0/26"
+        },
+        "hubVNet_dcSubnet_name": {
+            "value": "Infra-10.10.0.64_26"
+        },
+        "hubVNet_dcSubnet_addressSpace": {
+            "value": "10.10.0.64/26"
+        },
+        "hubVNet_privateEndpointSubnet_name": {
+            "value": "PrivEndpoint-10.10.1.0_24"
+        },
+        "hubVNet_privateEndpointSubnet_addressSpace": {
+            "value": "10.10.1.0/24"
+        },
+
+        // dev spoke
+        "devSpokeVNet_name": {
+            "value": "SPOKE-DEV-CentralUS-01"
+        },
+        "devSpokeVNet_addressSpace": {
+            "value": "10.11.0.0/16"
+        },
+        "devSpokeVNet_appGw_name": {
+            "value": "appGW-10.11.0.0_24"
+        },
+        "devSpokeVNet_appGw_addressSpace": {
+            "value": "10.11.0.0/24"
+        },
+        "devSpokeVNet_app1subnet_name": {
+            "value": "app1-10.11.1.0_24"
+        },
+        "devSpokeVNet_app1subnet_addressSpace": {
+            "value": "10.11.1.0/24"
+        },
+
+        // uat spoke
+        "uatSpokeVNet_name": {
+            "value": "SPOKE-UAT-CentralUS-01"
+        },
+        "uatSpokeVNet_addressSpace": {
+            "value": "10.12.0.0/16"
+        },
+        "uatSpokeVNet_appGw_name": {
+            "value": "appGW-10.12.0.0_24"
+        },
+        "uatSpokeVNet_appGw_addressSpace": {
+            "value": "10.12.0.0/24"
+        },
+        "uatSpokeVNet_app1subnet_name": {
+            "value": "app1-10.12.0.0_24"
+        },
+        "uatSpokeVNet_app1subnet_addressSpace": {
+            "value": "10.12.0.0/24"
+        },
+
+        //prod spoke
+        "prodSpokeVNet_name": {
+            "value": "SPOKE-PROD-CentralUS-01"
+        },
+        "prodSpokeVNet_addressSpace": {
+            "value": "10.13.0.0/16"
+        },
+        "prodSpokeVNet_appGw_name": {
+            "value": "appGW-10.13.0.0_24"
+        },
+        "prodSpokeVNet_appGw_addressSpace": {
+            "value": "10.13.0.0/24"
+        },
+        "prodSpokeVNet_app1subnet_name": {
+            "value": "app1-10.13.1.0_24"
+        },
+        "prodSpokeVNet_app1subnet_addressSpace": {
+            "value": "10.13.1.0/24"
+        }
+    }
+}

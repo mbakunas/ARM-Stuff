@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataLake_name": {
+            "value": "iamproddatabricksstorage01"
+        },
+        "dataLake_azureRegion": {
+            "value": "eastus2"
+        },
+        "dataLake_skuName": {
+            "value": "Standard_ZRS"
+        },
+        "dataLake_accountKind": {
+            "value": "StorageV2"
+        }
+    }
+}
