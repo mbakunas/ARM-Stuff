@@ -52,24 +52,28 @@ jobs:
         id: preview
         if: github.event_name == 'pull_request'
         run: |
-          az deployment group what-if --subscription ${{ env.subscriptionId }} --resource-group ${{env.resourceGroup}} --template-file ${{env.templateFile}} --parameters '@${{env.parametersFile}}'
+          output="$(az deployment group what-if \
+            --subscription ${{secrets.SUB_SANDBOX_3}} \
+            --resource-group ${{env.resourceGroup}} \
+            --template-file ${{env.templateFile}} \
+            --parameters '@${{env.templateParametersFile}}')"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=response::$output"
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
-        uses: actions/github-script@v6
+        uses: thollander/actions-comment-pull-request@v1
         id: comment
         if: github.event_name == 'pull_request'
-        env:
-          WHATIF: "deploy\n${{ steps.preview.outputs.stdout }}"
         with: 
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `#### Results`
-            })
+          message: |
+            #Results
+            <details><summary>Show Plan</summary>
+            ```${{steps.preview.outputs.response}}```
+            </details>
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
