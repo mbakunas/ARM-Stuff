@@ -27,8 +27,8 @@ env:
   parametersFile: ./IaC-Test/main.parameters.jsonc
 
 permissions:
-  id-token: write       # required for OIDC login to Azure
-  pull-requests: write
+  id-token: write             # required for OIDC login to Azure
+  pull-requests: write        # required to write the PR comment
 
 jobs:
   deploy:
@@ -65,16 +65,24 @@ jobs:
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
-        uses: thollander/actions-comment-pull-request@v1
+        uses: actions/github-script@v3
         id: comment
         if: github.event_name == 'pull_request'
         with: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          message: |
-            #What-If Results
-            <details><summary>Show Results</summary>
-            ```${{steps.preview.outputs.response}}```
-            </details>
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### What-If Results
+
+                <details><summary>Show Results</summary>
+
+                 \`\`\`${{steps.preview.outputs.response}}\`\`\`
+
+                 </details>`
+            })
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
