@@ -74,9 +74,11 @@ jobs:
             ### Some heading here
 
             <details><summary>Show What-If Results</summary>
+
             ```
             ${{steps.preview.outputs.response}}
             ```
+            
             </details>
 
       # on push to main, deploy ARM template
