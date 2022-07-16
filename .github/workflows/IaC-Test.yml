@@ -56,7 +56,7 @@ jobs:
             --subscription ${{secrets.SUB_SANDBOX_3}} \
             --resource-group ${{env.resourceGroup}} \
             --template-file ${{env.templateFile}} \
-            --parameters '@${{env.templateParametersFile}}')"
+            --parameters '@${{env.parametersFile}}')"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
