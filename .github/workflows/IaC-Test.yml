@@ -26,8 +26,8 @@ env:
   templateFile: ./IaC-Test/main.bicep
   parametersFile: ./IaC-Test/main.parameters.jsonc
 
-permissions:
-  id-token: write
+#permissions:
+#  id-token: write
 
 jobs:
   deploy:
