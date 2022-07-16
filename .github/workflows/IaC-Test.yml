@@ -26,8 +26,9 @@ env:
   templateFile: ./IaC-Test/main.bicep
   parametersFile: ./IaC-Test/main.parameters.jsonc
 
-#permissions:
-#  id-token: write
+permissions:
+  id-token: write       # required for OIDC login to Azure
+  pull-requests: write
 
 jobs:
   deploy:
