@@ -65,24 +65,19 @@ jobs:
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
-        uses: actions/github-script@v3
+        uses: thollander/actions-comment-pull-request@v1
         id: comment
         if: github.event_name == 'pull_request'
         with: 
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `### What-If Results
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: |
+            ### Some heading here
 
-                <details><summary>Show Results</summary>
-
-                 \`\`\`${{steps.preview.outputs.response}}\`\`\`
-
-                 </details>`
-            })
+            <details><summary>Show What-If Results</summary>
+            ```
+            ${{steps.preview.outputs.response}}
+            ```
+            </details>
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
