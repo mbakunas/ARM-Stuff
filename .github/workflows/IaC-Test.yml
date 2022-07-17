@@ -53,15 +53,11 @@ jobs:
         id: preview
         if: github.event_name == 'pull_request'
         run: |
-          output="$(az deployment group what-if \
+          az deployment group what-if \
             --subscription ${{secrets.SUB_SANDBOX_3}} \
             --resource-group ${{env.resourceGroup}} \
             --template-file ${{env.templateFile}} \
-            --parameters '@${{env.parametersFile}}')"
-          output="${output//'%'/'%25'}"
-          output="${output//$'\n'/'%0A'}"
-          output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=response::$output"
+            --parameters '@${{env.parametersFile}}')
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
@@ -76,7 +72,7 @@ jobs:
             <details><summary>Show What-If Results</summary>
 
             ```
-            ${{steps.preview.outputs.response}}
+            ${{steps.preview.outputs.stdout}}
             ```
             
             </details>
