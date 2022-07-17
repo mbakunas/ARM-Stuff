@@ -57,7 +57,7 @@ jobs:
             --subscription ${{secrets.SUB_SANDBOX_3}} \
             --resource-group ${{env.resourceGroup}} \
             --template-file ${{env.templateFile}} \
-            --parameters '@${{env.parametersFile}}')
+            --parameters '@${{env.parametersFile}}'
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
