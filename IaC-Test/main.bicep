@@ -13,6 +13,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   }
   kind: storageAccount_accountKind
   properties: {
-    minimumTlsVersion: 'TLS1_0'
+    minimumTlsVersion: 'TLS1_2'
   }
 }
