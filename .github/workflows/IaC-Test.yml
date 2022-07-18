@@ -58,11 +58,11 @@ jobs:
             --resource-group ${{env.resourceGroup}} \
             --template-file ${{env.templateFile}} \
             --parameters '@${{env.parametersFile}}')"
+          echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
           echo "::set-output name=response::$output"
-          echo "$output"
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
@@ -74,13 +74,13 @@ jobs:
           message: |
             ### Test Results
 
-            ::group::Show What-If
+            <details><summary>Show What-If</summary>
 
             ```
             ${{steps.preview.outputs.response}}
             ```
             
-            ::endgroup::
+            </details>
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
