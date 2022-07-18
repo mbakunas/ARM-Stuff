@@ -53,31 +53,34 @@ jobs:
         id: preview
         if: github.event_name == 'pull_request'
         run: |
-          az deployment group what-if \
+          output="$(az deployment group what-if \
             --subscription ${{secrets.SUB_SANDBOX_3}} \
             --resource-group ${{env.resourceGroup}} \
             --template-file ${{env.templateFile}} \
-            --parameters '@${{env.parametersFile}}'
+            --parameters '@${{env.parametersFile}}')"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=response::$output"
+          echo "$output"
 
       # add a comment to the pull request with the what-if results
       - name: Add WhatIf Comment
         uses: thollander/actions-comment-pull-request@v1
         id: comment
         if: github.event_name == 'pull_request'
-        env:
-          WHATIF_RESULTS: "deploy\n${{ steps.preview.outputs.stdout }}"
         with: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
             ### Test Results
 
-            <details><summary>Show What-If</summary>
+            ::group::Show What-If
 
             ```
-            ${{ process.env.WHATIF_RESULTS }}
+            ${{steps.preview.outputs.response}}
             ```
             
-            </details>
+            ::endgroup::
 
       # on push to main, deploy ARM template
       - name: Deploy ARM Template
