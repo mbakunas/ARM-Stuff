@@ -46,17 +46,19 @@ module deployVNets 'Modules/VNet.bicep' = [for (vnet, i) in vnets: {
 // bastion
 // assumes same resrouce group as its vnet
 // I'm also cheating because I know the AzureBastionSubnet is the 2nd in the array
+//  of the first VNet
 // TODO: move this logic to services.bicep
-module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets[1], 'serviceBastion')) {
-  scope: resourceGroup(vnet.resourceGroup.name)
-  name: '${deployment().name}-Bastion-for-VNet${i}'
+//module bastion 'Modules/bastion.bicep' = [for (vnet, i) in vnets: if (contains(vnet.subnets[1], 'serviceBastion')) {
+module bastion 'Modules/bastion.bicep' = {
+scope: resourceGroup(vnets[0].resourceGroup.name)
+  name: '${deployment().name}-Bastion'
   dependsOn: deployVNets
   params: {
-    bastion_location: vnet.location
-    bastion_name: vnet.subnets[1].serviceBastion.name
-    bastion_vnetName: vnet.name
+    bastion_location: vnets[0].location
+    bastion_name: vnets[0].subnets[1].serviceBastion.name
+    bastion_vnetName: vnets[0].name
   }
-}]
+}
 
 // first domain controller
 
