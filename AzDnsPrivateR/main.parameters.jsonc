@@ -49,6 +49,44 @@
                             "nsgName": "Infra-10.0.2.0_24-NSG"
                         }
                     ]
+                },
+                {
+                    // spoke VNet
+                    "resourceGroup": {
+                        "name": "PrivateDNStest01",
+                        "tags": {
+                            "environment": "sandbox"
+                        }
+                    },
+                    "name": "VNet-SPOKE-EastUS2-01",
+                    "addressSpace": "10.1.0.0/16",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "Infra-10.1.0.0_24",
+                            "addressSpace": "10.1.0.0/24",
+                            "nsgName": "Infra-10.1.0.0_24-NSG"
+                        }
+                    ]
+                },
+                {
+                    // on-prem VNet
+                    "resourceGroup": {
+                        "name": "PrivateDNStest01",
+                        "tags": {
+                            "environment": "sandbox"
+                        }
+                    },
+                    "name": "VNet-ONPREM-EastUS2-01",
+                    "addressSpace": "10.2.0.0/16",
+                    "location": "eastus2",
+                    "subnets": [
+                        {
+                            "name": "Infra-10.2.0.0_24",
+                            "addressSpace": "10.2.0.0/24",
+                            "nsgName": "Infra-10.2.0.0_24-NSG"
+                        }
+                    ]
                 }
             ]
         }
