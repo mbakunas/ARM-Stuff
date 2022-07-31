@@ -18,17 +18,26 @@ on:
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  id-token: write             # required for OIDC login to Azure
+  pull-requests: write        # required to write the PR comment
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # checkout the repository to the GitHub Actions runner
       - uses: actions/checkout@v3
       
+      # log in to Azure using OpenID Connect
       - uses: Azure/login@v1
         name: Login to Azure
         with:
-          creds: ${{ secrets.AZURE_CREDS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.subscriptionId }}
       
+      # deploy ARM template
       - uses: Azure/arm-deploy@v1
         name: Deploy bicep file
         with:
