@@ -60,12 +60,11 @@ scope: resourceGroup(vnets[0].resourceGroup.name)
   }
 }
 
-// first domain controller
+// hub DNS server
 
 // private dns resolver
 
-// hub member server
+// spoke VM
 
-// second DC
+// on-prem DNS server
 
-// spoke member server

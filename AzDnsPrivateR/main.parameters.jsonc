@@ -24,29 +24,29 @@
                         }
                     },
                     "name": "VNet-HUB-EastUS2-01",
-                    "addressSpace": "10.0.0.0/22",
+                    "addressSpace": "10.1.0.0/22",
                     "location": "eastus2",
                     "subnets": [
                         {
                             "name": "GatewaySubnet",
-                            "addressSpace": "10.0.0.0/26"
+                            "addressSpace": "10.1.0.0/26"
                         },
                         {
                             "name": "AzureBastionSubnet",
-                            "addressSpace": "10.0.0.128/26",
+                            "addressSpace": "10.1.0.128/26",
                             "serviceBastion": {
                                 "name": "VNet-HUB-EastUS2-01-Bastion"
                             }
                         },
                         {
-                            "name": "AzureDNS-10.0.1.0_24",
-                            "addressSpace": "10.0.1.0/24",
-                            "nsgName": "AzureDNS-10.0.1.0_24-NSG"
+                            "name": "AzureDNS-10.1.1.0_24",
+                            "addressSpace": "10.1.1.0/24",
+                            "nsgName": "AzureDNS-10.1.1.0_24-NSG"
                         },
                         {
-                            "name": "Infra-10.0.2.0_24",
-                            "addressSpace": "10.0.2.0/24",
-                            "nsgName": "Infra-10.0.2.0_24-NSG"
+                            "name": "Infra-10.1.2.0_24",
+                            "addressSpace": "10.1.2.0/24",
+                            "nsgName": "Infra-10.1.2.0_24-NSG"
                         }
                     ]
                 },
@@ -59,13 +59,13 @@
                         }
                     },
                     "name": "VNet-SPOKE-EastUS2-01",
-                    "addressSpace": "10.1.0.0/16",
+                    "addressSpace": "10.2.0.0/16",
                     "location": "eastus2",
                     "subnets": [
                         {
-                            "name": "Infra-10.1.0.0_24",
-                            "addressSpace": "10.1.0.0/24",
-                            "nsgName": "Infra-10.1.0.0_24-NSG"
+                            "name": "Infra-10.2.0.0_24",
+                            "addressSpace": "10.2.0.0/24",
+                            "nsgName": "Infra-10.2.0.0_24-NSG"
                         }
                     ]
                 },
@@ -78,13 +78,13 @@
                         }
                     },
                     "name": "VNet-ONPREM-EastUS2-01",
-                    "addressSpace": "10.2.0.0/16",
+                    "addressSpace": "10.3.0.0/16",
                     "location": "eastus2",
                     "subnets": [
                         {
-                            "name": "Infra-10.2.0.0_24",
-                            "addressSpace": "10.2.0.0/24",
-                            "nsgName": "Infra-10.2.0.0_24-NSG"
+                            "name": "Infra-10.3.0.0_24",
+                            "addressSpace": "10.3.0.0/24",
+                            "nsgName": "Infra-10.3.0.0_24-NSG"
                         }
                     ]
                 }
