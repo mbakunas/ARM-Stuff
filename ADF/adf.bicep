@@ -1,10 +1,27 @@
+/*
+
+    Template to deploy an empty Azure Data Factory instance connected to the
+    specified VNet/subnet via a private endpoint.  This template does NOT
+    configure a source control repo.
+
+*/
+
 targetScope = 'resourceGroup'
 
+@description('Name of the Data Factory instance')
 param dataFactory_name string
+
+@description('Azure region where the Data Factory instance will be deployed')
 param dataFactory_location string
 
+
+@description('Name of the VNet where the private endpoint will be attached')
 param privateEndpoint_vnetName string
+
+@description('Name of the subnet to which the private endpoint will be attached')
 param privateEndpoint_subnetName string
+
+@description('Name of the resource group where the private endpoint VNet resides')
 param privateEndpoint_vnetRg string
 
 
@@ -21,7 +38,7 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Disabled'  // set to disabled to use the private endpoint
   }
 }
 
