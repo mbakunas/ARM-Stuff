@@ -2,7 +2,7 @@ name: AzureDataFactory
 
 # resource group scope deployment
 env:
-  subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
+  subscriptionId: ${{ secrets.SUB_SANDBOX_1 }}
   resourceGroupName: 'ADF-Test01'
   azureRegion: East US 2
   templateFile: ./ADF/adf.bicep
