@@ -1,6 +1,6 @@
 name: PrivateDnsResolver
 env:
-  subscriptionId: ${{ secrets.SUB_SANDBOX_3 }}
+  subscriptionId: ${{ secrets.SUB_SANDBOX_2 }}
   azureRegion: East US 2
   templateFile: ./AzDnsPrivateR/main.bicep
   parametersFile: ./AzDnsPrivateR/main.parameters.jsonc
