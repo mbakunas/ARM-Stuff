@@ -19,6 +19,9 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
   identity: {
     type: 'SystemAssigned'
   }
+  properties: {
+    publicNetworkAccess: 'Disabled'
+  }
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
