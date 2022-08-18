@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactory_name": {
+            "value": "BakunasADFtest02"
+        },
+        "dataFactory_location": {
+            "value": "eastus2"
+        },
+        "privateEndpoint_vnetName": {
+            "value": "ADF-Network-01"
+        },
+        "privateEndpoint_subnetName": {
+            "value": "Endpoints"
+        },
+        "privateEndpoint_vnetRg": {
+            "value": "ADF-Net-Test01"
+        }
+    }
+}
