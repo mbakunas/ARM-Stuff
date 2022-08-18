@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         //Resource goup details
-        "resrourceGroup_Name": {
+        "resourceGroup_Name": {
             "type": "string"
         },
 
