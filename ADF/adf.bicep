@@ -9,6 +9,7 @@ param privateEndpoint_vnetRg string
 
 
 var privateEndpoint_name = '${dataFactory_name}-PE'
+var privateEndpoint_NICname = '${privateEndpoint_name}-NIC'
 var privateEndpoint_subnetId = resourceId(privateEndpoint_vnetRg, 'Microsoft.Network/virtualNetworks/subnets', privateEndpoint_vnetName, privateEndpoint_subnetName)
 var privateEndpoint_groupId = 'datafactory'
 
@@ -42,5 +43,6 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
     subnet: {
       id: privateEndpoint_subnetId
     }
+    customNetworkInterfaceName: privateEndpoint_NICname
   }
 }

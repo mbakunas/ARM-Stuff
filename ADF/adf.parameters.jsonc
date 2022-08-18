@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "dataFactory_name": {
-            "value": "BakunasADFtest02"
+            "value": "BakunasADFtest03"
         },
         "dataFactory_location": {
             "value": "eastus2"
