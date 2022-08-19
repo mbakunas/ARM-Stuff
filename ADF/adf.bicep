@@ -24,11 +24,14 @@ param privateEndpoint_subnetName string
 @description('Name of the resource group where the private endpoint VNet resides')
 param privateEndpoint_vnetRg string
 
+param dnsZone_resourceGroup string
+
 
 var privateEndpoint_name = '${dataFactory_name}-PE'
 var privateEndpoint_NICname = '${privateEndpoint_name}-NIC'
 var privateEndpoint_subnetId = resourceId(privateEndpoint_vnetRg, 'Microsoft.Network/virtualNetworks/subnets', privateEndpoint_vnetName, privateEndpoint_subnetName)
 var privateEndpoint_groupId = 'datafactory'
+var dnsZone_Id = resourceId(dnsZone_resourceGroup, 'Microsoft.Network/privateDnsZones', 'privatelink.datafactory.azure.net')
 
 
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
@@ -61,5 +64,20 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-01-01' = {
       id: privateEndpoint_subnetId
     }
     customNetworkInterfaceName: privateEndpoint_NICname
+  }
+}
+
+resource dnsRecord 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = {
+  name: 'PrivateDnsZoneGroup'
+  parent: privateEndpoint
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'config1'
+        properties: {
+          privateDnsZoneId: dnsZone_Id
+        }
+      }
+    ]
   }
 }
