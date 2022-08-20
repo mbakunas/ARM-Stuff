@@ -14,8 +14,8 @@ on:
     branches:
       - main
     paths:
-      - "RgDeploy/**..bicep"
-      - "RgDeploy/**..jsonc"
+      - "RgDeploy/**.bicep"
+      - "RgDeploy/**.jsonc"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
