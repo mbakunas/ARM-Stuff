@@ -49,6 +49,8 @@ jobs:
           subscription-id: ${{ inputs.subscriptionId }}
       
       # look up the user's ID
+      # NOTE: SP specified in previous step must have at least Directory Readers AAD Role Assignment
+      #       to perform the lookup
       - name: Look up user id
         id: userid
         run: |
