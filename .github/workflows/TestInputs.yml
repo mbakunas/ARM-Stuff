@@ -1,0 +1,51 @@
+name: TestInputs
+
+# subscription scope deployment
+env:
+  #subscriptionId: ${{ secrets.SUB_SANDBOX_1 }}
+  #azureRegion: East US 2
+  templateFile: ./RgDeploy/main.bicep
+  parametersFile: ./RgDeploy/main.parameters.jsonc
+
+# Controls when the workflow will run
+on:
+  # Workflow can be triggered manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      subscription-id:
+        description: 'Subscription ID to which to deploy the RG'
+        required: true
+      resourceGroupName:
+        description: 'Resource Group Name'
+        required: true
+      azureRegion:
+        description: 'Azure region where the RG will be deployed'
+        required: true
+      tags:
+        description: 'Object of resource tags for the RG'
+        required: true
+      userName:
+        description: 'The UPN of the user to assign the RBAC role'
+        required: true
+
+permissions:
+  id-token: write             # required for OIDC login to Azure
+  contents: read              # required for authenticated repos
+  pull-requests: write        # required to write the PR comment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repository to the GitHub Actions runner
+      - uses: actions/checkout@v3
+            
+      # Test inputs
+      - name: Test inputs
+        id: inputs
+        run: |
+          echo Subscroption ID ${{ inputs.subscriptionId}}
+          echo Resource group name ${{ inputs.resourceGroupName}}
+          echo Azure region ${{ inputs.azureRegion}}
+          echo Tags ${{ inputs.tags}}
+          echo User name ${{ inputs.userName}}
