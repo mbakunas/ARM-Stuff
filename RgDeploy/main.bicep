@@ -21,7 +21,7 @@ param rg_tags object
 param rgRbac_userId string
 
 
-var ownerRoleDefinitionId = '/subscriptions/${subscription().id}/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
+var ownerRoleDefinitionId = '${subscription().id}/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: rg_name
