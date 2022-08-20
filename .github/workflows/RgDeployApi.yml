@@ -21,9 +21,6 @@ on:
       azureRegion:
         description: 'Azure region where the RG will be deployed'
         required: true
-      tags:
-        description: 'Object of resource tags for the RG'
-        required: true
       userName:
         description: 'The UPN of the user to assign the RBAC role'
         required: true
@@ -67,5 +64,4 @@ jobs:
           parameters:
             rg_name=${{ inputs.resourceGroupName}}
             rg_location=${{ inputs.azureRegion }}
-            rg_tags=${{ inputs.tags }}
             rgRbac_userId=${{ steps.userid.outputs.objectid }}
