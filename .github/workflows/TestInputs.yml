@@ -63,4 +63,4 @@ jobs:
           echo Resource group name ${{ inputs.resourceGroupName }}
           echo Azure region ${{ inputs.azureRegion }}
           echo UserID ${{ steps.userid.outputs.objectid }}
-          echo Tags ${{ inputs.tags }}
+          echo Tags ${{ toJSON(inputs.tags) }}
