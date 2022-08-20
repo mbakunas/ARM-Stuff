@@ -7,9 +7,15 @@
 
 targetScope = 'subscription'
 
+@description('Name of the resource group to be deployed')
 param rg_name string
+
+@description('Azure region where the resource group will be deployed')
 param rg_location string
+
+@description('Resouce tags to be applied to the resource grouop')
 param rg_tags object
+
 
 @description('The object ID of the user to whom to assign permissions')
 param rgRbac_userId string
