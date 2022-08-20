@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rg_name": {
+            "value": "App1-SBX"
+        },
+        "rg_location": {
+            "value": "eastus2"
+        },
+        "rg_tags": {
+            "value": {
+               "environment": "sandbox"
+            }
+        },
+        "rgRbac_userId": {
+            "value": "a3511f4c-84fe-41ed-a506-9955dbc78e5c" //Fred Flinstone
+        }
+    }
+}
