@@ -5,7 +5,7 @@ env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_1 }}
   azureRegion: East US 2
   templateFile: ./RgDeploy/main.bicep
-  parametersFile: ./RgDeploy/main.parameters.json
+  parametersFile: ./RgDeploy/main.parameters.jsonc
 
 # Controls when the workflow will run
 on:
