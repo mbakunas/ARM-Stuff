@@ -12,7 +12,7 @@ on:
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
     inputs:
-      subscription-id:
+      subscriptionId:
         description: 'Subscription ID to which to deploy the RG'
         required: true
       resourceGroupName:
