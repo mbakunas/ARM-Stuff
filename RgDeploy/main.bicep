@@ -18,6 +18,7 @@ param rg_tags object
 param rgRbac_userId string
 
 // this is an optional parameter that doesn't need to be overrided seeing as we specify the location in the GH Action
+// it's here to prevent the GH Action from failing with deployment().location directly in the rg resource
 @description('Azure region where the resource group will be deployed')
 param rg_location string = deployment().location
 
