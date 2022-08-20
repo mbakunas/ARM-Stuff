@@ -52,7 +52,7 @@ jobs:
       - name: Look up user id
         id: userid
         run: |
-          output="az ad user show --id ${{ inputs.userName }} --query id --output tsv"
+          output="$(az ad user show --id ${{ inputs.userName }} --query id --output tsv)"
           echo "::set-output name=objectid::$output"
       
       # deploy ARM template
