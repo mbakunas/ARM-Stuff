@@ -66,6 +66,6 @@ jobs:
           template: ${{ env.templateFile }}
           parameters:
             rg_name=${{ inputs.resourceGroupName}}
-            rg_location=${{ inputs.azureRegion }}
             rgRbac_userId=${{ steps.userid.outputs.objectid }}
             rg_tags=${{ toJSON(inputs.tags) }}
+            #rg_location=${{ inputs.azureRegion }}
