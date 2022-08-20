@@ -11,6 +11,7 @@ param rg_name string
 param rg_location string
 param rg_tags object
 
+@description('The object ID of the user to whom to assign permissions')
 param rgRbac_userId string
 
 
