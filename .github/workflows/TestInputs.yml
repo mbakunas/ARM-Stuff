@@ -23,7 +23,7 @@ on:
         required: true
       tags:
         description: 'Object of resource tags for the RG'
-        required: true
+        required: false
       userName:
         description: 'The UPN of the user to assign the RBAC role'
         required: true
@@ -62,5 +62,5 @@ jobs:
           echo Subscroption ID ${{ inputs.subscriptionId }}
           echo Resource group name ${{ inputs.resourceGroupName }}
           echo Azure region ${{ inputs.azureRegion }}
-          echo Tags ${{ inputs.tags }}
           echo UserID ${{ steps.userid.outputs.objectid }}
+          #echo Tags ${{ inputs.tags }}
