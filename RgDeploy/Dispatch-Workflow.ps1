@@ -15,12 +15,12 @@ $inputs = @{
 }
 
 $body = @{
-    'ref' = 'main'
+    'ref'    = 'main'
     'inputs' = $inputs
 } | ConvertTo-Json
 
 $headers = @{
-    'Accept' = 'application/vnd.github+json'
+    'Accept'        = 'application/vnd.github+json'
     'Authorization' = 'token <token>'
 }
 
