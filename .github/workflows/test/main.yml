@@ -1,0 +1,14 @@
+name: folderTest
+
+# Controls when the workflow will run
+on:
+  # Workflow can be triggered manually from the Actions tab
+  workflow_dispatch:
+  
+jobs:
+  test:
+    name: Test Folders
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
