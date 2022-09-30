@@ -8,7 +8,7 @@ param workspace_VNet_resourceGroup string
 param workspace_privateSubnetName string
 param workspace_publicSubnetName string
 
-param endpoint_name string
+
 param endpoint_subnetName string
 param endpoint_privateDnsZoneResourceGroup string
 
@@ -16,6 +16,7 @@ param endpoint_privateDnsZoneResourceGroup string
 var deploymentName = deployment().name
 var workspace_managedResourceGroupName = 'databricks-rg-${workspace_name}-${uniqueString(workspace_name, workspace_resourceGroupName)}'
 var workspace_customVirtualNetworkId = resourceId(workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks', workspace_VNet_Name)
+var endpoint_name = '${workspace_name}-endpoint'
 var endpoint_subnetId = resourceId(workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', workspace_VNet_Name, endpoint_subnetName)
 var privateDnsZoneId = resourceId(endpoint_privateDnsZoneResourceGroup, 'Microsoft.Network/privateDnsZones', 'privatelink.azuredatabricks.net')
 
