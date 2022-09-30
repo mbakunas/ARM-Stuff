@@ -12,7 +12,7 @@ param enableNoPublicIp bool = true
 param publicNetworkAccess string = 'Disabled'
 param requiredNsgRules string = 'NoAzureDatabricksRules'
 
-resource workspace 'Microsoft.Databricks/workspaces@2022-10-01-preview' = {
+resource workspace 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
   name: name
   location: location
   sku: {
