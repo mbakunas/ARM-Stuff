@@ -34,19 +34,6 @@ resource rgNetwork 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: workspace_VNet_resourceGroup
 }
 
-module workspace 'Modules/databricks.bicep' = {
-  scope: rgWorkspace
-  name: '${deploymentName}-databricks'
-  params: {
-    customVirtualNetworkId: workspace_customVirtualNetworkId
-    location: workspace_location
-    managedResourceGroupId: rgManaged.id
-    name: workspace_name
-    privateSubnetName: workspace_privateSubnetName
-    publicSubnetName: workspace_publicSubnetName
-  }
-}
-
 module network 'Modules/databricks-network.bicep' = {
   scope: rgNetwork
   name: '${deploymentName}-network'
@@ -59,7 +46,26 @@ module network 'Modules/databricks-network.bicep' = {
   }
 }
 
+module workspace 'Modules/databricks.bicep' = {
+  dependsOn: [
+    network
+  ]
+  scope: rgWorkspace
+  name: '${deploymentName}-databricks'
+  params: {
+    customVirtualNetworkId: workspace_customVirtualNetworkId
+    location: workspace_location
+    managedResourceGroupId: rgManaged.id
+    name: workspace_name
+    privateSubnetName: workspace_privateSubnetName
+    publicSubnetName: workspace_publicSubnetName
+  }
+}
+
 module privateEndpoint 'Modules/privateEndpoint.bicep' = {
+  dependsOn: [
+    workspace
+  ]
   scope: rgWorkspace
   name: '${deploymentName}-endpoint'
   params: {
