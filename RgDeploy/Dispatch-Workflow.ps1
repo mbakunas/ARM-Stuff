@@ -21,7 +21,7 @@ $body = @{
 
 $headers = @{
     'Accept'        = 'application/vnd.github+json'
-    'Authorization' = 'token <token>'
+    'Authorization' = 'token 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'
 }
 
 $uri = "https://api.github.com/repos/$owner/$repo/actions/workflows/$workflowId/dispatches"

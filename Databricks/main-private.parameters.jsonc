@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace_name": {
+            "value": "databricks-test-03"
+        },
+        "workspace_location": {
+            "value": "eastus2"
+        },
+        "workspace_resourceGroupName": {
+            "value": "DatabricksTest03"
+        },
+        "workspace_VNet_Name": {
+            "value": "VNet-Databricks-01"
+        },
+        "workspace_VNet_resourceGroup": {
+            "value": "DatabricksNetTest01"
+        },
+        "workspace_privateSubnetName": {
+            "value": "dbks2-private"
+        },
+        "workspace_publicSubnetName": {
+            "value": "dbks2-public"
+        },
+        "endpoint_subnetName": {
+            "value": "PrivateLink"
+        },
+        "endpoint_privateDnsZoneResourceGroup": {
+            "value": "DatabricksNetTest01"
+        }
+    }
+}
