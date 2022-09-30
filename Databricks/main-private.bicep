@@ -27,9 +27,8 @@ resource rgWorkspace 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: workspace_location
 }
 
-resource rgManaged 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource rgManaged 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: workspace_managedResourceGroupName
-  location: workspace_location
 }
 
 resource rgNetwork 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
