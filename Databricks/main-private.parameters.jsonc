@@ -18,10 +18,10 @@
             "value": "DatabricksNetTest01"
         },
         "workspace_privateSubnetName": {
-            "value": "dbks2-private"
+            "value": "dbks3-private"
         },
         "workspace_publicSubnetName": {
-            "value": "dbks2-public"
+            "value": "dbks3-public"
         },
         "endpoint_subnetName": {
             "value": "PrivateLink"
@@ -30,10 +30,10 @@
             "value": "DatabricksNetTest01"
         },
         "workspace_privateSubnetPrefix": {
-            "value": "10.0.5.0/24"
+            "value": "10.0.7.0/24"
         },
         "workspace_publicSubnetPrefix": {
-            "value": "10.0.6.0/24"
+            "value": "10.0.8.0/24"
         }
     }
 }
