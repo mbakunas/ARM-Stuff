@@ -22,6 +22,7 @@ resource privateSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = 
     }
     delegations: [
       {
+        name: 'databricks-private-delegation'
         properties: {
           serviceName: 'Microsoft.Databricks/workspaces'
         }
@@ -42,6 +43,7 @@ resource publicSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
     }
     delegations: [
       {
+        name: 'databricks-public-delegation'
         properties: {
           serviceName: 'Microsoft.Databricks/workspaces'
         }
