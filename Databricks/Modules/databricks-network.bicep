@@ -14,7 +14,9 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
 resource privateSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
   name: '${vnetName}/${privateSubnetName}'
   properties: {
-    networkSecurityGroup: nsg
+    networkSecurityGroup: {
+      id: nsg.id
+    }
     delegations: [
       {
         properties: {
@@ -31,7 +33,9 @@ resource publicSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
   ]
   name: '${vnetName}/${publicSubnetName}'
   properties: {
-    networkSecurityGroup: nsg
+    networkSecurityGroup:  {
+      id: nsg.id
+    }
     delegations: [
       {
         properties: {
