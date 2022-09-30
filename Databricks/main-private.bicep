@@ -6,7 +6,9 @@ param workspace_resourceGroupName string
 param workspace_VNet_Name string
 param workspace_VNet_resourceGroup string
 param workspace_privateSubnetName string
+param workspace_privateSubnetPrefix string
 param workspace_publicSubnetName string
+param workspace_publicSubnetPrefix string
 
 
 param endpoint_subnetName string
@@ -43,6 +45,8 @@ module network 'Modules/databricks-network.bicep' = {
     privateSubnetName: workspace_privateSubnetName
     publicSubnetName: workspace_publicSubnetName
     vnetName: workspace_VNet_Name
+    privateSubnetPrefix: workspace_privateSubnetPrefix
+    publicSubnetPrefix: workspace_publicSubnetPrefix
   }
 }
 

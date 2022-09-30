@@ -28,6 +28,12 @@
         },
         "endpoint_privateDnsZoneResourceGroup": {
             "value": "DatabricksNetTest01"
+        },
+        "workspace_privateSubnetPrefix": {
+            "value": "10.0.5.0/24"
+        },
+        "workspace_publicSubnetPrefix": {
+            "value": "10.0.6.0/24"
         }
     }
 }
