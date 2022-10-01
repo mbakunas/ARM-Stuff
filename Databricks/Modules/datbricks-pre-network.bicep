@@ -11,10 +11,12 @@ param subnet1AddressSpace string = '10.0.2.0/24'
 
 resource nsgPrivateLink 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
   name: '${subnetPrivateLinkName}-NSG'
+  location: vnetLocation
 }
 
 resource nsgSubnet1 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
   name: '${subnet1Name}-NSG'
+  location: vnetLocation
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-01-01' = {
