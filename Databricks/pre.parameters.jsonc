@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroup_name": {
+            "value": "DatabricksNetTest02"
+        },
+        "resourceGroup_location": {
+            "value": "eastus2"
+        },
+        "vnetName": {
+            "value": "VNET-Databricks-02"
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/21"
+        },
+        "subnetBastionAddressSpace": {
+            "value": "10.0.0.128/26"
+        },
+        "subnetPrivateLinkName": {
+            "value": "PrivateLink"
+        },
+        "subnetPrivateLinkAddressSpace": {
+            "value": "10.0.1.0/24"
+        },
+        "subnet1Name": {
+            "value": "CorpNet"
+        },
+        "subnet1AddressSpace": {
+            "value": "10.0.2.0/24"
+        }
+    }
+}

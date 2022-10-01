@@ -1,0 +1,251 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.10.61.36676",
+      "templateHash": "2764362818871569490"
+    }
+  },
+  "parameters": {
+    "resourceGroup_name": {
+      "type": "string"
+    },
+    "resourceGroup_location": {
+      "type": "string"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetAddressSpace": {
+      "type": "string"
+    },
+    "subnetBastionAddressSpace": {
+      "type": "string"
+    },
+    "subnetPrivateLinkName": {
+      "type": "string",
+      "defaultValue": "PrivateLink"
+    },
+    "subnetPrivateLinkAddressSpace": {
+      "type": "string"
+    },
+    "subnet1Name": {
+      "type": "string",
+      "defaultValue": "CorpNet"
+    },
+    "subnet1AddressSpace": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('resourceGroup_name')]",
+      "location": "[parameters('resourceGroup_location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}-prerequisites', deployment().name)]",
+      "resourceGroup": "[parameters('resourceGroup_name')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vnetLocation": {
+            "value": "[parameters('resourceGroup_location')]"
+          },
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          },
+          "vnetAddressSpace": {
+            "value": "[parameters('vnetAddressSpace')]"
+          },
+          "subnetBastionAddressSpace": {
+            "value": "[parameters('subnetBastionAddressSpace')]"
+          },
+          "subnetPrivateLinkName": {
+            "value": "[parameters('subnetPrivateLinkName')]"
+          },
+          "subnetPrivateLinkAddressSpace": {
+            "value": "[parameters('subnetPrivateLinkAddressSpace')]"
+          },
+          "subnet1Name": {
+            "value": "[parameters('subnet1Name')]"
+          },
+          "subnet1AddressSpace": {
+            "value": "[parameters('subnet1AddressSpace')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.10.61.36676",
+              "templateHash": "9452291777526971961"
+            }
+          },
+          "parameters": {
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetLocation": {
+              "type": "string"
+            },
+            "vnetAddressSpace": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/21"
+            },
+            "subnetBastionAddressSpace": {
+              "type": "string",
+              "defaultValue": "10.0.0.128/26"
+            },
+            "subnetPrivateLinkName": {
+              "type": "string",
+              "defaultValue": "PrivateLink"
+            },
+            "subnetPrivateLinkAddressSpace": {
+              "type": "string",
+              "defaultValue": "10.0.1.0/24"
+            },
+            "subnet1Name": {
+              "type": "string",
+              "defaultValue": "CorpNet"
+            },
+            "subnet1AddressSpace": {
+              "type": "string",
+              "defaultValue": "10.0.2.0/24"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}-NSG', parameters('subnetPrivateLinkName'))]"
+            },
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}-NSG', parameters('subnet1Name'))]"
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('vnetLocation')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressSpace')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "AzureBastionSubnet",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetBastionAddressSpace')]"
+                    }
+                  },
+                  {
+                    "name": "[parameters('subnetPrivateLinkName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetPrivateLinkAddressSpace')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}-NSG', parameters('subnetPrivateLinkName')))]"
+                      }
+                    }
+                  },
+                  {
+                    "name": "[parameters('subnet1Name')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnet1AddressSpace')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}-NSG', parameters('subnet1Name')))]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}-NSG', parameters('subnetPrivateLinkName')))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('{0}-NSG', parameters('subnet1Name')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/bastionHosts",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}-Bastion', parameters('vnetName'))]",
+              "location": "[parameters('vnetLocation')]",
+              "sku": {
+                "name": "Basic"
+              },
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-Bastion-IP', parameters('vnetName')))]"
+                      },
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'AzureBastionSubnet')]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-Bastion-IP', parameters('vnetName')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}-Bastion-IP', parameters('vnetName'))]",
+              "location": "[parameters('vnetLocation')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "Static"
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "privatelink.azuredatabricks.net",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.azuredatabricks.net', uniqueString(resourceId('Microsoft.Network/privateDnsZones', 'privatelink.azuredatabricks.net'), resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.azuredatabricks.net')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroup_name'))]"
+      ]
+    }
+  ]
+}
