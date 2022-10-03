@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspace_name": {
-            "value": "databricks-test-03"
+            "value": "databricks-test-01"
         },
         "workspace_location": {
             "value": "eastus2"
         },
         "workspace_resourceGroupName": {
-            "value": "DatabricksTest03"
+            "value": "DatabricksTest01"
         },
         "workspace_VNet_Name": {
             "value": "VNet-Databricks-01"
@@ -18,10 +18,10 @@
             "value": "DatabricksNetTest01"
         },
         "workspace_privateSubnetName": {
-            "value": "dbks3-private"
+            "value": "dbks1-private"
         },
         "workspace_publicSubnetName": {
-            "value": "dbks3-public"
+            "value": "dbks1-public"
         },
         "endpoint_subnetName": {
             "value": "PrivateLink"
@@ -30,10 +30,10 @@
             "value": "DatabricksNetTest01"
         },
         "workspace_privateSubnetPrefix": {
-            "value": "10.0.7.0/24"
+            "value": "10.0.3.0/24"
         },
         "workspace_publicSubnetPrefix": {
-            "value": "10.0.8.0/24"
+            "value": "10.0.4.0/24"
         }
     }
 }
