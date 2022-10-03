@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "resourceGroup_name": {
-            "value": "DatabricksNetTest02"
+            "value": "DatabricksNetTest01"
         },
         "resourceGroup_location": {
             "value": "eastus2"
         },
         "vnetName": {
-            "value": "VNET-Databricks-02"
+            "value": "VNET-Databricks-01"
         },
         "vnetAddressSpace": {
             "value": "10.0.0.0/21"
