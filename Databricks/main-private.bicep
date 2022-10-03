@@ -18,7 +18,7 @@ param endpoint_privateDnsZoneResourceGroup string
 var deploymentName = deployment().name
 var workspace_managedResourceGroupName = 'databricks-rg-${workspace_name}-${uniqueString(workspace_name, workspace_resourceGroupName)}'
 var workspace_customVirtualNetworkId = resourceId(subscription().subscriptionId, workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks', workspace_VNet_Name)
-var endpoint_name = '${workspace_name}-endpoint'
+//var endpoint_name = '${workspace_name}-endpoint'
 var endpoint_subnetId = resourceId(subscription().subscriptionId, workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', workspace_VNet_Name, endpoint_subnetName)
 var privateDnsZoneId = resourceId(subscription().subscriptionId, endpoint_privateDnsZoneResourceGroup, 'Microsoft.Network/privateDnsZones', 'privatelink.azuredatabricks.net')
 
@@ -65,16 +65,32 @@ module workspace 'Modules/databricks.bicep' = {
   }
 }
 
-module privateEndpoint 'Modules/privateEndpoint.bicep' = {
+module privateEndpointUi 'Modules/privateEndpoint.bicep' = {
   dependsOn: [
     workspace
   ]
   scope: rgWorkspace
-  name: '${deploymentName}-endpoint'
+  name: '${deploymentName}-endpoint-ui'
   params: {
     groupId: 'databricks_ui_api'
     location: workspace_location
-    privateEndpointName: endpoint_name
+    privateEndpointName: '${workspace_name}-endpoint-ui'
+    privateLinkServiceId: workspace.outputs.workspaceId
+    subnetId: endpoint_subnetId
+    privateDnsZoneId: privateDnsZoneId
+  }
+}
+
+module privateEndpointAuth 'Modules/privateEndpoint.bicep' = {
+  dependsOn: [
+    workspace
+  ]
+  scope: rgWorkspace
+  name: '${deploymentName}-endpoint-auth'
+  params: {
+    groupId: 'browser_authentication'
+    location: workspace_location
+    privateEndpointName: '${workspace_name}-endpoint-auth'
     privateLinkServiceId: workspace.outputs.workspaceId
     subnetId: endpoint_subnetId
     privateDnsZoneId: privateDnsZoneId
