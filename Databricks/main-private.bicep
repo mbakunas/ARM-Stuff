@@ -83,7 +83,7 @@ module privateEndpointUi 'Modules/privateEndpoint.bicep' = {
 
 module privateEndpointAuth 'Modules/privateEndpoint.bicep' = {
   dependsOn: [
-    workspace
+    privateEndpointUi
   ]
   scope: rgWorkspace
   name: '${deploymentName}-endpoint-auth'
