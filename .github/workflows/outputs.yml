@@ -1,0 +1,69 @@
+name: TestOutput
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: Target environment
+        type: string
+        required: true
+        options:
+          - "dev"
+          - "qa"
+          - "prd"
+    outputs:
+      config_name:
+        value: ${{ jobs.config.outputs.config_name }}
+      app_Resource_Group:
+        value: ${{ jobs.config.outputs.app_Resource_Group }}
+      data_Resource_Group:
+        value: ${{ jobs.config.outputs.data_Resource_Group }}
+      region:
+        value: ${{ jobs.config.outputs.region }}
+      vnetName:
+        value: ${{ jobs.config.outputs.vnetName }}
+      vnetRG:
+        value: ${{ jobs.config.outputs.vnetRG }}
+      subnet_Private_Endpoint:
+        value: ${{ jobs.config.outputs.subnet_Private_Endpoint }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get_configuration:
+    name: "Get Environment Configuration"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    
+    outputs:
+      config_name: ${{ fromJson(steps.config.outputs.json).configName }}
+      app_Resource_Group: ${{ fromJson(steps.config.outputs.json).appResourceGroup }}
+      data_Resource_Group: ${{ fromJson(steps.config.outputs.json).dataResourceGroup }}
+      region: ${{ fromJson(steps.config.outputs.json).region }}
+      vnetName: ${{ fromJson(steps.config.outputs.json).vnetName }}
+      vnetRG: ${{ fromJson(steps.config.outputs.json).vnetRG }}
+      subnet_Private_Endpoint: ${{ fromJson(steps.config.outputs.json).subnetPrivateEndpoint }}
+  
+    steps:
+        # checkout the repository to the GitHub Actions runner
+        - name: Checkout
+          uses: actions/checkout@v3
+        
+        - name: Get Configuration
+          id: config
+          env:
+            target: ${{ inputs.target_environment }}
+          run: |
+            content=`cat ./.github/workflows/config.${target,,}.json`
+            # the following lines are only required for multi line json
+            # content="${content//'%'/'%25'}"
+            # content="${content//$'\n'/'%0A'}"
+            # content="${content//$'\r'/'%0D'}"
+            # end of optional handling for multi line json
+            content_end=`uuidgen`
+            echo "json<<$content_end" >> $GITHUB_OUTPUT
+            echo "$content" >> $GITHUB_OUTPUT
+            echo "$content_end" >> $GITHUB_OUTPUT
+        

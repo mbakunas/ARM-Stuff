@@ -1,0 +1,9 @@
+{
+    "configName": "qa",
+    "appResourceGroup": "rg_iam_app_qa_nonprod_eastus",
+    "dataResourceGroup": "rg_iam_data_qa_nonprod_eastus",
+    "region": "eastus",
+    "vnetName": "Spoke_iam_qa_non_prod_EastUS",
+    "vnetRG": "rg_infra_iam_qa_nonprod_eastus",
+    "subnetPrivateEndpoint": "Private_endpoint_Subnet_EastUS"
+}
