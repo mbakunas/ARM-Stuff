@@ -5,7 +5,7 @@ on:
     inputs:
       target_environment:
         description: Target environment
-        type: string
+        type: choice
         required: true
         options:
           - "dev"
