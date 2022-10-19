@@ -13,19 +13,19 @@ on:
           - "prd"
     outputs:
       config_name:
-        value: ${{ jobs.config.outputs.config_name }}
+        value: ${{ jobs.get_configuration.outputs.config_name }}
       app_Resource_Group:
-        value: ${{ jobs.config.outputs.app_Resource_Group }}
+        value: ${{ jobs.get_configuration.outputs.app_Resource_Group }}
       data_Resource_Group:
-        value: ${{ jobs.config.outputs.data_Resource_Group }}
+        value: ${{ jobs.get_configuration.outputs.data_Resource_Group }}
       region:
-        value: ${{ jobs.config.outputs.region }}
+        value: ${{ jobs.get_configuration.outputs.region }}
       vnetName:
-        value: ${{ jobs.config.outputs.vnetName }}
+        value: ${{ jobs.get_configuration.outputs.vnetName }}
       vnetRG:
-        value: ${{ jobs.config.outputs.vnetRG }}
+        value: ${{ jobs.get_configuration.outputs.vnetRG }}
       subnet_Private_Endpoint:
-        value: ${{ jobs.config.outputs.subnet_Private_Endpoint }}
+        value: ${{ jobs.get_configuration.outputs.subnet_Private_Endpoint }}
 
 permissions:
   id-token: write
