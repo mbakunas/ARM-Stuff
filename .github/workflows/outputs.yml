@@ -42,7 +42,7 @@ jobs:
           env:
             target: ${{ inputs.target_environment }}
           run: |
-            content=`cat ./.github/workflows/config.${target,,}.json`
+            content=`cat ./.github/workflows/common/config.${target,,}.json`
             # the following lines are only required for multi line json
             # content="${content//'%'/'%25'}"
             # content="${content//$'\n'/'%0A'}"
