@@ -1,0 +1,39 @@
+name: deploy-arm-template
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+      folderName:
+        description: Name of the folder that contains the deployment template file and parameters file(s)
+        required: true
+        type: string
+      environment:
+        description: Target environment
+        required: true
+        type: environment
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+  
+permissions:
+  id-token: write
+  contents: read
+
+  jobs:
+    config:
+      uses: ./.github/workflows/common/getConfig.yml
+      with:
+        target_environment: ${{ inputs.environment }}
+    
+    deploy:
+      name: 'Deploy to Azure'
+      runs-on: ubuntu-latest
+      environment: ${{ inputs.environment }}
+      needs: config
+      

@@ -1,17 +1,27 @@
 name: TestOutput
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       target_environment:
         description: Target environment
-        type: choice
+        type: string
         required: true
-        options:
-          - "dev"
-          - "qa"
-          - "prd"
-
+    outputs:      
+      config_name:
+        value: ${{ jobs.get_configuration.outputs.config_name }}
+      app_Resource_Group:
+        value: ${{ jobs.get_configuration.outputs.app_Resource_Group }}
+      data_Resource_Group:
+        value: ${{ jobs.get_configuration.outputs.data_Resource_Group }}
+      region:
+        value: ${{ jobs.get_configuration.outputs.region }}
+      vnetName:
+        value: ${{ jobs.get_configuration.outputs.vnetName }}
+      vnetRG:
+        value: ${{ jobs.get_configuration.outputs.vnetRG }}
+      subnet_Private_Endpoint:
+        value: ${{ jobs.get_configuration.outputs.subnet_Private_Endpoint }}
 
 permissions:
   id-token: write
