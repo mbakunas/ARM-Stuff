@@ -1,3 +1,17 @@
+/*
+  This template deploys the necessary Azure resources for the Databricks central metastore
+  
+  - A "central" Databricks workspace:
+    - Injected to a VNet
+    - with both private endpoints (the browser authN and workspace_ui_api)
+  
+  - A data lake storage account with blob and dfs private endpoints
+
+  - The Databricks Access Connector
+    - RBAC assignment of Storage Blob Data Contributor to the data lake
+
+*/
+
 targetScope = 'subscription'
 
 param workspace_location string = deployment().location
