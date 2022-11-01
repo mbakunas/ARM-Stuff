@@ -1,22 +1,22 @@
 targetScope = 'resourceGroup'
 
-param name string
+param nsgName string
 param location string
 param vnetName string
 param privateSubnetName string
-param privateSubnetPrefix string
+param privateSubnetAddressSpace string
 param publicSubnetName string
-param publicSubnetPrefix string
+param publicSubnetAddressSpace string
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2022-01-01' = {
-  name: '${name}-NSG'
+  name: nsgName
   location: location
 }
 
 resource privateSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
   name: '${vnetName}/${privateSubnetName}'
   properties: {
-    addressPrefix: privateSubnetPrefix
+    addressPrefix: privateSubnetAddressSpace
     networkSecurityGroup: {
       id: nsg.id
     }
@@ -37,7 +37,7 @@ resource publicSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' = {
   ]
   name: '${vnetName}/${publicSubnetName}'
   properties: {
-    addressPrefix: publicSubnetPrefix
+    addressPrefix: publicSubnetAddressSpace
     networkSecurityGroup:  {
       id: nsg.id
     }
