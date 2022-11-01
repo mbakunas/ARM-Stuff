@@ -40,12 +40,12 @@ module network 'Modules/databricks-network.bicep' = {
   name: '${deploymentName}-network'
   params: {
     location: workspace_location
-    name: workspace_name
+    nsgName: '${workspace_name}-NSG'
     privateSubnetName: workspace_privateSubnetName
     publicSubnetName: workspace_publicSubnetName
     vnetName: workspace_VNet_Name
-    privateSubnetPrefix: workspace_privateSubnetPrefix
-    publicSubnetPrefix: workspace_publicSubnetPrefix
+    privateSubnetAddressSpace: workspace_privateSubnetPrefix
+    publicSubnetAddressSpace: workspace_publicSubnetPrefix
   }
 }
 
