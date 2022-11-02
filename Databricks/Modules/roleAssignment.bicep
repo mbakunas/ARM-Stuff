@@ -4,7 +4,7 @@ param roleDefinitionId string
 param principalId string
 param dataLakeName string
 
-var rbac_assignmentName = uniqueString(principalId, dataLakeName)
+var rbac_assignmentName = guid(principalId, dataLakeName)
 
 resource dataLake 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
   name: dataLakeName
