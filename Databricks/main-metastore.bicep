@@ -9,7 +9,10 @@
 
   - The Databricks Access Connector
     - RBAC assignment of Storage Blob Data Contributor to the data lake
-
+  
+  - The "private" and "public" subnets (OK if they already exist)
+  - The NSG and attach it to the "private" and "public" subnets
+  - Delegate the "private" and "public" subnets to Microsoft.Databricks/workspaces
 */
 
 targetScope = 'subscription'
@@ -160,7 +163,7 @@ module privateEndpointDfs 'Modules/privateEndpoint.bicep' = {
   scope: rgWorkspace
   name: '${deploymentName}-endpoint-dfs'
   params: {
-    groupId: 'blob'
+    groupId: 'dfs'
     location: workspace_location
     privateEndpointName: '${metastore_name}-endpoint-dfs'
     privateLinkServiceId: dataLake.outputs.datalakeID
