@@ -1,6 +1,6 @@
 /*
   This template deploys the necessary Azure resources for the Databricks central metastore
-  
+
   - A "central" Databricks workspace:
     - Injected to a VNet
     - with both private endpoints (the browser authN and workspace_ui_api)
@@ -194,7 +194,7 @@ module rbac_assignment 'Modules/roleAssignment.bicep' = {
   name: '${deploymentName}-rbacAssignment'
   params: {
     dataLakeName: metastore_name
-    principalId: databricksConnector.outputs.databricksAccessConnectorID
+    principalId: databricksConnector.outputs.databricksAccessConnectorPrincipalID
     roleDefinitionId: rbacRole_storageBlobDataContributorID
   }
 }

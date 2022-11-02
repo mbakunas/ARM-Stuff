@@ -11,4 +11,4 @@ resource databricksAccessConnector 'Microsoft.Databricks/accessConnectors@2022-0
   }
 }
 
-output databricksAccessConnectorID string = databricksAccessConnector.id
+output databricksAccessConnectorPrincipalID string = databricksAccessConnector.identity.principalId
