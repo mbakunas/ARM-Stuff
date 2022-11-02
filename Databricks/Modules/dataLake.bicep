@@ -22,7 +22,7 @@ param storageAccount_requireInfrastructureEncryption bool = true
 resource storage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   name: storageAccount_name
   location: storageAccount_location
-  tags: resourceGroup().tags
+  //tags: resourceGroup().tags
 
   kind: storageAccount_kind
   sku: {
