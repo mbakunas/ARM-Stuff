@@ -33,7 +33,7 @@
       "value": "DatabricksNetTest01"
     },
     "metastore_name": {
-      "value": "metastore01"
+      "value": "bakunasmetastore01"
     },
     "databricksConnector_Name": {
       "value": "DatabricksConnector01"
