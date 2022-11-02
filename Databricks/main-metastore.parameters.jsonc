@@ -9,7 +9,7 @@
       "value": "DatabricksNetTest01"
     },
     "workspace_name": {
-      "value": ""
+      "value": "databricks-test-03"
     },
     "workspace_vnetName": {
       "value": "VNET-Databricks-01"
