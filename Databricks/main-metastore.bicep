@@ -13,6 +13,8 @@
   - The "private" and "public" subnets (OK if they already exist)
   - The NSG and attach it to the "private" and "public" subnets
   - Delegate the "private" and "public" subnets to Microsoft.Databricks/workspaces
+
+  Assumes VNet has already been deployed 
 */
 
 targetScope = 'subscription'
@@ -137,6 +139,18 @@ module dataLake 'Modules/dataLake.bicep' = {
   }
 }
 
+// metastore container
+module container 'Modules/container.bicep' = {
+  dependsOn: [
+    dataLake
+  ]
+  scope: rgWorkspace
+  name: '${deploymentName}-dataLake-container'
+  params: {
+    storageAccountName: metastore_name
+  }
+}
+
 // blob endpoint
 module privateEndpointBlob 'Modules/privateEndpoint.bicep' = {
   dependsOn: [
@@ -201,3 +215,4 @@ module rbac_assignment 'Modules/roleAssignment.bicep' = {
     roleDefinitionId: rbacRole_storageBlobDataContributorID
   }
 }
+

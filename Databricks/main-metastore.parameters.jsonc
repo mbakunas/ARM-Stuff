@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "workspace_resourceGroupName": {
-      "value": "DatabricksTest03"
+      "value": "DatabricksTest04"
     },
     "workspace_VNet_resourceGroup": {
       "value": "DatabricksNetTest01"
     },
     "workspace_name": {
-      "value": "databricks-test-03"
+      "value": "databricks-test-04"
     },
     "workspace_vnetName": {
       "value": "VNET-Databricks-01"
@@ -33,7 +33,7 @@
       "value": "DatabricksNetTest01"
     },
     "metastore_name": {
-      "value": "bakunasmetastore01"
+      "value": "bakunasmetastore02"
     },
     "databricksConnector_Name": {
       "value": "DatabricksConnector01"
