@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace_resourceGroupName": {
+      "value": "DatabricksTest05"
+    },
+    "metastore_name": {
+      "value": "bakunasmetastore03"
+    },
+    "databricksConnector_Name": {
+      "value": "DatabricksPublicConnector01"
+    }
+  }
+}
