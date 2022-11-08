@@ -7,9 +7,6 @@
     },
     "metastore_name": {
       "value": "bakunasmetastore03"
-    },
-    "databricksConnector_Name": {
-      "value": "DatabricksPublicConnector01"
     }
   }
 }
