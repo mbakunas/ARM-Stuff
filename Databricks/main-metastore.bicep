@@ -7,14 +7,15 @@
   
   - A data lake storage account with blob and dfs private endpoints
 
-  - The Databricks Access Connector
-    - RBAC assignment of Storage Blob Data Contributor to the data lake
+  - RBAC assignment of Storage Blob Data Contributor on the data lake to an existing Databricks Access Connector
   
   - The "private" and "public" subnets (OK if they already exist)
   - The NSG and attach it to the "private" and "public" subnets
   - Delegate the "private" and "public" subnets to Microsoft.Databricks/workspaces
 
-  Assumes VNet has already been deployed 
+  Assumes:
+  - VNet has already been deployed 
+  - An existing Access Connector for Databricks was deployed via the Azure Portal
 */
 
 targetScope = 'subscription'
@@ -36,7 +37,7 @@ param endpoint_subnetName string
 param endpoint_privateDnsZoneResourceGroup string
 
 param metastore_name string
-param databricksConnector_Name string
+param databricksConnectorMI_Id string
 
 
 var deploymentName = deployment().name
@@ -186,32 +187,18 @@ module privateEndpointDfs 'Modules/privateEndpoint.bicep' = {
   }
 }
 
-// databricks access connector
-module databricksConnector 'Modules/databricksAccessConnector.bicep' = {
-  dependsOn: [
-    workspace
-  ]
-  scope: rgWorkspace
-  name: '${deploymentName}-databricksConnector'
-  params: {
-    accessConnector_location: workspace_location
-    accessConnector_Name: databricksConnector_Name
-  }
-}
-
 // RBAC assignment - databricks access connector gets storage blob data contributor 
 var rbacRole_storageBlobDataContributorID = resourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
 
 module rbac_assignment 'Modules/roleAssignment.bicep' = {
   dependsOn: [
-    databricksConnector
     dataLake
   ]
   scope: rgWorkspace
   name: '${deploymentName}-rbacAssignment'
   params: {
     dataLakeName: metastore_name
-    principalId: databricksConnector.outputs.databricksAccessConnectorPrincipalID
+    principalId: databricksConnectorMI_Id
     roleDefinitionId: rbacRole_storageBlobDataContributorID
   }
 }

@@ -35,8 +35,8 @@
     "metastore_name": {
       "value": "bakunasmetastore02"
     },
-    "databricksConnector_Name": {
-      "value": "DatabricksConnector01"
+    "databricksConnectorMI_Id": {
+      "value": "1e935240-3928-449a-be21-d2b93b5f2a60"
     }
   }
 }
