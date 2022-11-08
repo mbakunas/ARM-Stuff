@@ -10,12 +10,12 @@ env:
 # Controls when the workflow will run
 on:
   # Workflow will run on upon a commit
-  push:
-    branches:
-      - main
-    paths:
-      - "Databricks/**.bicep"
-      - "Databricks/**.jsonc"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "Databricks/**.bicep"
+  #     - "Databricks/**.jsonc"
 
   # Workflow can be triggered manually from the Actions tab
   workflow_dispatch:
