@@ -29,7 +29,7 @@ param endpoint_privateDnsZoneResourceGroup string
 
 var deploymentName = deployment().name
 var workspace_managedResourceGroupName = 'databricks-rg-${workspace_name}-${uniqueString(workspace_name, resourceGroup().name)}'
-var workspace_managedResourceGroupId = resourceId('Microsoft.Resources/resourceGroups', workspace_managedResourceGroupName)
+var workspace_managedResourceGroupId = subscriptionResourceId('Microsoft.Resources/resourceGroups', workspace_managedResourceGroupName)
 var workspace_customVirtualNetworkId = resourceId(workspace_VNet_subscriptionId, workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks', workspace_vnetName)
 var endpoint_subnetId = resourceId(workspace_VNet_subscriptionId, workspace_VNet_resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', workspace_vnetName, endpoint_subnetName)
 var workspace_privateDnsZoneId = resourceId(endpoint_privateDnsZone_subscriptionId, endpoint_privateDnsZoneResourceGroup, 'Microsoft.Network/privateDnsZones', 'privatelink.azuredatabricks.net')
