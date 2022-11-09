@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace_deploy_browserAuth": {
+      "value": true
+    },
+    "workspace_VNet_resourceGroup": {
+      "value": "DatabricksNetTest01"
+    },
+    "workspace_name": {
+      "value": "DatabricksTest10"
+    },
+    "workspace_vnetName": {
+      "value": "VNET-Databricks-01"
+    },
+    "workspace_privateSubnetName": {
+      "value": "dbks2-private"
+    },
+    "workspace_publicSubnetName": {
+      "value": "dbks2-public"
+    },
+    "endpoint_subnetName": {
+      "value": "PrivateLink"
+    },
+    "endpoint_privateDnsZoneResourceGroup": {
+      "value": "DatabricksNetTest01"
+    }
+  }
+}

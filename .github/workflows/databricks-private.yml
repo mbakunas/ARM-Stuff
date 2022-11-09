@@ -1,11 +1,11 @@
 # subscription scoped deployment
 
-name: Databricks
+name: DatabricksPrivate
 env:
   subscriptionId: ${{ secrets.SUB_SANDBOX_4 }}
   azureRegion: East US 2
-  templateFile: ./Databricks/main-databricks.bicep
-  parametersFile: ./Databricks/main-databricks.parameters.jsonc
+  templateFile: ./Databricks/main-private.bicep
+  parametersFile: ./Databricks/main-private.parameters.jsonc
 
 # Controls when the workflow will run
 on:
@@ -44,10 +44,9 @@ jobs:
       - uses: Azure/arm-deploy@v1
         name: Deploy bicep file
         with:
-          scope: resourcegroup
+          scope: subscription
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           subscriptionId: ${{ env.subscriptionId }}
-          resourceGroupName: 'DatabricksTest01'
           region: ${{env.azureRegion }}
           template: ${{env.templateFile }}
           parameters: ${{ env.parametersFile}}
