@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "metastore_location": {
+            "value": "eastus2"
+        },
+        "metastore_storageAccountName": {
+            "value": "bakunasmetastore10"
+        },
+        "mestastore_connectorName": {
+            "value": "DatabricksNetTest01"
+        }
+    }
+}

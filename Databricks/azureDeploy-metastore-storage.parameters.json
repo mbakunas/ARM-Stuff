@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "metastore_location": {
+            "value": "eastus"
+        },
+        "metastore_storageAccountName": {
+            "value": "stbhdbksmetastore01"
+        },
+        "metastore_privateEndpointVnetName": {
+            "value": "Spoke-DBKSCM-Prod-EastUS"
+        },
+        "metastore_privateEndpointSubnetName": {
+            "value": "SNET-INF-DBKS-PrivateLink"
+        },
+        "metastore_privateEndpointVnetRgName": {
+            "value": "RG-dbkscm-infra-eastus-prod"
+        }
+    }
+}
