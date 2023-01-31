@@ -67,6 +67,34 @@ var nsgRuleSets = {
       }
     }
   ]
+  web: [
+    {
+      name: 'DenyAllInbound'
+      properties: {
+        protocol: 'Tcp'
+        sourcePortRange: '*'
+        sourceAddressPrefix: '*'
+        destinationPortRange: '*'
+        destinationAddressPrefix: '*'
+        access: 'Deny'
+        direction: 'Inbound'
+        priority: 4096
+      }
+    }
+    {
+      name: 'https'
+      properties: {
+        protocol: 'Tcp'
+        sourcePortRange: '*'
+        sourceAddressPrefix: 'virtualNetwork'
+        destinationAddressPrefix: '*'
+        destinationPortRange: '80'
+        access: 'Allow'
+        direction: 'Inbound'
+        priority: 4010
+      }
+    }
+  ]
   
 }
 
