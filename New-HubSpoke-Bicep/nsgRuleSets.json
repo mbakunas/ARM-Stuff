@@ -1,0 +1,151 @@
+{
+    "appgw": [
+        {
+            "name": "DenyAllInbound",
+            "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationPortRange": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "direction": "Inbound",
+                "priority": 4096
+            }
+        },
+        {
+            "name": "AllowAzureLoadBalancerCustomInbound",
+            "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "AzureLoadBalancer",
+                "destinationPortRange": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4095
+            }
+        },
+        {
+            "name": "AppGwV2HealthProbe",
+            "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "GatewayManager",
+                "destinationAddressPrefix": "*",
+                "destinationPortRange": "65200-65535",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4010
+            }
+        }
+    ],
+    "web": [
+        {
+            "name": "DenyAllInbound",
+            "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationPortRange": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "direction": "Inbound",
+                "priority": 4096
+            }
+        },
+        {
+            "name": "https",
+            "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationAddressPrefix": "*",
+                "destinationPortRange": "443",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4010
+            }
+        }
+    ],
+    "DomainControllers":[
+        {
+            "name": "W32Time",
+            "properties": {
+                "protocol": "",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "123",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4000
+            }
+        },
+        {
+            "name": "RPC",
+            "properties": {
+                "protocol": "tcp",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "135",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4010
+            }
+        },
+        {
+            "name": "Kerberos-TCP",
+            "properties": {
+                "protocol": "tcp",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "464",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4020
+            }
+        },
+        {
+            "name": "Kerberos-UDP",
+            "properties": {
+                "protocol": "udp",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "464",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4030
+            }
+        },
+        {
+            "name": "LDAP-TCP",
+            "properties": {
+                "protocol": "tcp",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "389",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4040
+            }
+        },
+        {
+            "name": "LDAP-UDP",
+            "properties": {
+                "protocol": "udp",
+                "sourcePortRange": "49152-65535",
+                "sourceAddressPrefix": "virtualNetwork",
+                "destinationPortRange": "389",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "direction": "Inbound",
+                "priority": 4050
+            }
+        }
+    ]
+}

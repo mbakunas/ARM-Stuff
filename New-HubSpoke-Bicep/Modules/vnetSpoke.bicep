@@ -25,78 +25,7 @@ param vnet object = {
     ]  
 }
 
-var nsgRuleSets = {
-  appgw: [
-    {
-      name: 'DenyAllInbound'
-      properties: {
-        protocol: 'Tcp'
-        sourcePortRange: '*'
-        sourceAddressPrefix: '*'
-        destinationPortRange: '*'
-        destinationAddressPrefix: '*'
-        access: 'Deny'
-        direction: 'Inbound'
-        priority: 4096
-      }
-    }
-    {
-      name: 'AllowAzureLoadBalancerCustomInbound'
-      properties: {
-        protocol: '*'
-        sourcePortRange: '*'
-        sourceAddressPrefix: 'AzureLoadBalancer'
-        destinationPortRange: '*'
-        destinationAddressPrefix: '*'
-        access: 'Allow'
-        direction: 'Inbound'
-        priority: 4095
-      }
-    }
-    {
-      name: 'AppGwV2HealthProbe'
-      properties: {
-        protocol: 'Tcp'
-        sourcePortRange: '*'
-        sourceAddressPrefix: 'GatewayManager'
-        destinationAddressPrefix: '*'
-        destinationPortRange: '65200-65535'
-        access: 'Allow'
-        direction: 'Inbound'
-        priority: 4010
-      }
-    }
-  ]
-  web: [
-    {
-      name: 'DenyAllInbound'
-      properties: {
-        protocol: 'Tcp'
-        sourcePortRange: '*'
-        sourceAddressPrefix: '*'
-        destinationPortRange: '*'
-        destinationAddressPrefix: '*'
-        access: 'Deny'
-        direction: 'Inbound'
-        priority: 4096
-      }
-    }
-    {
-      name: 'https'
-      properties: {
-        protocol: 'Tcp'
-        sourcePortRange: '*'
-        sourceAddressPrefix: 'virtualNetwork'
-        destinationAddressPrefix: '*'
-        destinationPortRange: '80'
-        access: 'Allow'
-        direction: 'Inbound'
-        priority: 4010
-      }
-    }
-  ]
-  
-}
+var nsgRuleSets = loadJsonContent('../nsgRuleSets.json')
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: vnet.name
